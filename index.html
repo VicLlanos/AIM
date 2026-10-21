@@ -154,6 +154,7 @@
       pointer-events: none;
     }
 
+    /* Animated background layers */
     .splash-bg {
       position: absolute;
       inset: 0;
@@ -195,6 +196,7 @@
       50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
     }
 
+    /* Floating particles */
     .particle {
       position: absolute;
       width: 6px;
@@ -212,6 +214,7 @@
       100% { transform: translateY(-50px) scale(1.2); opacity: 0; }
     }
 
+    /* Logo */
     .splash-logo {
       position: relative;
       z-index: 5;
@@ -253,6 +256,7 @@
       100% { transform: translateY(0); opacity: 1; }
     }
 
+    /* Bow & arrow icon animation */
     .splash-bow {
       margin-top: 20px;
       font-size: clamp(40px, 8vh, 70px);
@@ -266,6 +270,7 @@
       50% { transform: translateY(-10px) rotate(5deg); }
     }
 
+    /* Character showcase row */
     .splash-chars {
       display: flex;
       gap: clamp(10px, 3vw, 30px);
@@ -288,6 +293,7 @@
       50% { transform: translateY(-8px); }
     }
 
+    /* Loading / tap to start */
     .splash-start {
       margin-top: clamp(16px, 4vh, 40px);
       position: relative;
@@ -317,6 +323,7 @@
       box-shadow: 0 1px 0 #b86a1d, 0 0 15px rgba(255, 209, 102, 0.3);
     }
 
+    /* Rotate hint */
     .splash-rotate {
       margin-top: 14px;
       font-size: clamp(10px, 1.9vh, 14px);
@@ -343,6 +350,7 @@
       75% { transform: rotate(0deg); }
     }
 
+    /* Splash figure styles (reused fig markup but larger) */
     .splash-chars .fig {
       transform: scale(1.1);
       transform-origin: bottom center;
@@ -385,6 +393,7 @@
       -webkit-overflow-scrolling: touch;
     }
 
+    /* ========== HEADINGS ========== */
     h1 {
       font-size: clamp(26px, 7.5vh, 52px);
       letter-spacing: 0.14em;
@@ -405,6 +414,7 @@
       font-weight: 700;
     }
 
+    /* ========== ROW LAYOUT ========== */
     .row {
       display: flex;
       gap: clamp(6px, 1.4vw, 14px);
@@ -413,6 +423,7 @@
       align-items: flex-end;
     }
 
+    /* ========== CHARACTER CARDS ========== */
     .ch {
       background: linear-gradient(180deg, #2a1a57 0%, #1e1240 100%);
       border: 3px solid #4b3490;
@@ -438,6 +449,7 @@
       transform: translateY(-2px) scale(1.02);
     }
 
+    /* ========== SCENE CHIPS ========== */
     .chip {
       padding: 0.45em 1em;
       border-radius: 99px;
@@ -461,6 +473,7 @@
       transform: scale(1.02);
     }
 
+    /* ========== MESSAGE ========== */
     #msg {
       min-height: 1.3em;
       color: #ff8fab;
@@ -472,6 +485,7 @@
       padding: 0 8px;
     }
 
+    /* ========== FIGURE PREVIEW ========== */
     .fig {
       position: relative;
       width: 46px;
@@ -642,6 +656,7 @@
       touch-action: none;
     }
 
+    /* ========== HUD ========== */
     #hud {
       position: fixed;
       top: max(8px, env(safe-area-inset-top));
@@ -701,6 +716,7 @@
       line-height: 1.3;
     }
 
+    /* ========== WEAPON PICKER ========== */
     #wp {
       position: fixed;
       bottom: max(10px, env(safe-area-inset-bottom));
@@ -735,6 +751,7 @@
       box-shadow: 0 1px 0 rgba(0,0,0,0.4);
     }
 
+    /* ========== ICON BUTTONS ========== */
     .ib {
       position: fixed;
       top: max(8px, env(safe-area-inset-top));
@@ -765,6 +782,7 @@
       box-shadow: 0 1px 0 rgba(0,0,0,0.4);
     }
 
+    /* ========== BANNER ========== */
     #ban {
       position: fixed;
       inset: 0;
@@ -795,6 +813,7 @@
       100% { opacity: 0; transform: scale(1.25); }
     }
 
+    /* ========== END SCREEN ========== */
     #end {
       position: fixed;
       inset: 0;
@@ -827,6 +846,7 @@
       text-align: center;
     }
 
+    /* ========== ROTATE OVERLAY (in-game only) ========== */
     #rot {
       display: none;
       position: fixed;
@@ -847,11 +867,13 @@
       #rot {
         display: flex;
       }
+      /* Hide rotate overlay while splash is active */
       #splash.on ~ #rot {
         display: none !important;
       }
     }
 
+    /* ========== INFO HELP OVERLAY ========== */
     #ihelp {
       position: fixed;
       inset: 0;
@@ -882,6 +904,7 @@
       box-shadow: 0 12px 40px rgba(0,0,0,0.5);
     }
 
+    /* ========== SCROLLBAR ========== */
     #menu::-webkit-scrollbar {
       width: 5px;
     }
@@ -895,6 +918,7 @@
       border-radius: 99px;
     }
 
+    /* ========== SAFE AREA ========== */
     @supports(padding: max(0px)) {
       #hud {
         padding-top: max(0px, env(safe-area-inset-top));
@@ -903,6 +927,7 @@
       }
     }
 
+    /* ========== SMALL HEIGHT ========== */
     @media(max-height: 500px) {
       #menu {
         gap: 4px;
@@ -915,6 +940,7 @@
       }
     }
 
+    /* ========== OBSTACLE INFO PILL ========== */
     #obsInfo {
       position: fixed;
       bottom: max(12px, env(safe-area-inset-bottom));
@@ -935,6 +961,7 @@
       white-space: nowrap;
     }
 
+    /* ========== OBSTACLE LEGEND ========== */
     .obs-legend {
       font-size: clamp(9px, 1.9vh, 12px);
       color: #8b7ab8;
@@ -973,8 +1000,10 @@
   </div>
 </div>
 
+<!-- ========== INFO HELP OVERLAY ========== -->
 <div id="ihelp"><div id="itx"></div></div>
 
+<!-- ========== ROTATE PROMPT (in-game only) ========== -->
 <div id="rot">&#10227;<br>Rotate your phone to landscape</div>
 
 <!-- ========== AUTH SCREEN ========== -->
@@ -1054,80 +1083,56 @@ const CH = [
   { n:'Mossbeard',  k:'wizard', sk:'#f3cfa6', bd:'#6c3fd1', lg:'#3b2a73' }
 ];
 
-/* ============================================================
-   SCENES WITH TERRAIN PLATFORMS
-   ------------------------------------------------------------
-   - Each side has a player platform (terrain-based)
-   - Obstacles sit between/around for cover
-   - Heights vary so aiming is asymmetric and harder
-   ============================================================ */
+/* Scene definitions with obstacle layouts */
 const SC = [
   {
     n:'Sunny Meadow',
     sky:['#58b8ff','#d6f3ff'], orb:[1240,130,'#fff3a0',70],
     hill:['#8fd97c','#5fbf4a'], gr:['#5fbf4a','#3b7d2c'],
     x:'clouds', pr:'tree',
-    /* Left player stands on a tall hill, right player on flat ground */
-    terrain: [
-      { type:'hill',  x:220, baseY:GY, topY:GY-110, w:340 },
-      { type:'flat',  x:W-220, baseY:GY, topY:GY, w:320 }
-    ],
     obs: [
-      { type:'hill', x:720, w:180, h:100, hp:3, maxHp:3 },
-      { type:'rock', x:920, w:60, h:55, hp:2, maxHp:2 }
+      { type:'hill', x:640, w:180, h:110, hp:3, maxHp:3 },
+      { type:'hill', x:920, w:180, h:110, hp:3, maxHp:3 },
+      { type:'rock', x:800, w:60, h:55, hp:2, maxHp:2 }
     ],
-    obsLabel: '⛰ 2 Hills · 1 Rock · Left archer stands higher'
+    obsLabel: '⛰ 2 Hills · 1 Rock'
   },
   {
     n:'Desert Dusk',
     sky:['#6a2a8e','#ff9a5c'], orb:[420,430,'#ffd27a',115],
     hill:['#d98a4a','#c26d34'], gr:['#e0a45c','#a8672b'],
     x:'', pr:'cactus',
-    /* Right player stands on a dune, left is flat */
-    terrain: [
-      { type:'flat',  x:220, baseY:GY, topY:GY, w:320 },
-      { type:'dune',  x:W-220, baseY:GY, topY:GY-90, w:360 }
-    ],
     obs: [
-      { type:'cactus', x:600, w:40, h:100, hp:2, maxHp:2 },
-      { type:'dune',   x:800, w:200, h:60, hp:4, maxHp:4 },
-      { type:'cactus', x:1000, w:40, h:100, hp:2, maxHp:2 }
+      { type:'cactus', x:560, w:40, h:100, hp:2, maxHp:2 },
+      { type:'cactus', x:1000, w:40, h:100, hp:2, maxHp:2 },
+      { type:'dune', x:780, w:220, h:70, hp:4, maxHp:4 }
     ],
-    obsLabel: '🌵 2 Cacti · 2 Dunes · Right archer on higher dune'
+    obsLabel: '🌵 2 Cacti · 1 Dune'
   },
   {
     n:'Frost Night',
     sky:['#0b1033','#38508f'], orb:[1150,140,'#f4f7ff',55],
     hill:['#9fb4d8','#c9d8f2'], gr:['#eef5ff','#9db3d6'],
     x:'snow', pr:'pine',
-    /* Both players stand on ice platforms (elevated) */
-    terrain: [
-      { type:'iceblock', x:220, baseY:GY, topY:GY-80, w:320 },
-      { type:'iceblock', x:W-220, baseY:GY, topY:GY-120, w:320 }
-    ],
     obs: [
-      { type:'icewall',   x:640, w:120, h:140, hp:3, maxHp:3 },
-      { type:'snowdrift', x:800, w:180, h:50, hp:2, maxHp:2 },
-      { type:'icewall',   x:960, w:120, h:140, hp:3, maxHp:3 }
+      { type:'icewall', x:700, w:140, h:140, hp:3, maxHp:3 },
+      { type:'icewall', x:860, w:140, h:140, hp:3, maxHp:3 },
+      { type:'snowdrift', x:800, w:160, h:50, hp:2, maxHp:2 }
     ],
-    obsLabel: '🧊 2 Ice Walls · Snowdrift · Right archer stands higher'
+    obsLabel: '🧊 2 Ice Walls · 1 Snowdrift'
   },
   {
     n:'Ember Peak',
     sky:['#2a0a12','#c8401f'], orb:[800,330,'#ff7b3a',140],
     hill:['#4a2020','#2a1212'], gr:['#4a2a22','#1c0e0c'],
     x:'embers', pr:'spire',
-    /* Left on a pillar, right on a lava rock — asymmetric heights */
-    terrain: [
-      { type:'pillar',    x:220, baseY:GY, topY:GY-140, w:200 },
-      { type:'lavarock',  x:W-220, baseY:GY, topY:GY-60,  w:280 }
-    ],
     obs: [
-      { type:'pillar',   x:620, w:50, h:180, hp:2, maxHp:2 },
-      { type:'lavarock', x:800, w:90, h:60,  hp:3, maxHp:3 },
-      { type:'pillar',   x:980, w:50, h:180, hp:2, maxHp:2 }
+      { type:'pillar', x:600, w:50, h:180, hp:2, maxHp:2 },
+      { type:'pillar', x:1000, w:50, h:180, hp:2, maxHp:2 },
+      { type:'lavarock', x:800, w:90, h:60, hp:3, maxHp:3 },
+      { type:'pillar', x:800, w:40, h:100, hp:1, maxHp:1 }
     ],
-    obsLabel: '🔥 2 Pillars · 2 Lava Rocks · Left archer stands way higher'
+    obsLabel: '🔥 3 Pillars · 1 Lava Rock'
   }
 ];
 
@@ -1167,6 +1172,7 @@ const save = () => {
    SPLASH SCREEN SETUP
    ============================================================ */
 function buildSplash() {
+  /* Stars */
   const starsBox = $('splashStars');
   let starHTML = '';
   for (let i = 0; i < 40; i++) {
@@ -1179,6 +1185,7 @@ function buildSplash() {
   }
   starsBox.innerHTML = starHTML;
 
+  /* Floating particles */
   for (let i = 0; i < 15; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
@@ -1190,18 +1197,23 @@ function buildSplash() {
     $('splash').querySelector('.splash-bg').appendChild(p);
   }
 
+  /* Character showcase */
   $('splashChars').innerHTML = CH.map(c => `<div class="ch-fig">${fig(c)}</div>`).join('');
 }
 
+/* Figure markup (reused) */
 const fig = c => `<div class="fig ${c.k}" style="--skin:${c.sk};--body:${c.bd};--leg:${c.lg}"><i class="lg"></i><i class="bd"></i><i class="hd"></i><i class="ht"></i></div>`;
 
 buildSplash();
 
+/* Splash → Auth/Menu transition */
 $('splashBtn').onclick = () => {
   $('splash').classList.add('fade');
   setTimeout(() => {
     $('splash').classList.remove('on');
+    /* Route to auth or menu depending on firebase user */
     if (auth) {
+      /* onAuthStateChanged will route automatically */
       if (!user) show('auth');
     } else {
       show('auth');
@@ -1240,6 +1252,7 @@ const show = id => document.querySelectorAll('.scr').forEach(s => s.classList.to
 const nameOf = () => me.name;
 const pickScene = () => me.sc == 4 ? Math.random() * 4 | 0 : me.sc;
 
+/* Fullscreen helper */
 function fsGo() {
   try {
     const d = document.documentElement;
@@ -1258,7 +1271,6 @@ const c = cv.getContext('2d');
 
 let st = null, P = [], sim = null, stuck = [], fx = [], tx = [];
 let obstacles = [];
-let terrain = [];
 let shotN = 0, lastN = 0, botErr = .4, botWait = 0, drag = null, wsel = 0;
 let sc = 1, ox = 0, oy = 0, dpr = 1, acc = 0, last = 0, T = 0;
 
@@ -1277,25 +1289,15 @@ const Y = e => (e.clientY * dpr - oy) / sc;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 /* ============================================================
-   START GAME — sets players on terrain
+   START GAME
    ============================================================ */
 function startGame(o) {
-  const sceneDef = SC[o.sc];
-
-  /* Build terrain */
-  terrain = sceneDef.terrain.map(t => ({ ...t }));
-
-  /* Player floor Y = terrain top for that side */
-  const leftTop = terrain[0].topY;
-  const rightTop = terrain[1].topY;
-
   const mk = (d, i) => ({
     name: d.name,
     ch: d.ch,
     f: i ? -1 : 1,
     x: i ? W - 220 : 220,
     dx: i ? W - 220 : 220,
-    floorY: i ? rightTop : leftTop,  /* stand on terrain */
     hp: 100,
     fin: 0,
     dead: 0,
@@ -1309,7 +1311,7 @@ function startGame(o) {
   sim = null; stuck = []; fx = []; tx = []; shotN = 0; lastN = 0;
   botErr = .4; botWait = 0; drag = null; started = true;
 
-  obstacles = sceneDef.obs.map(o2 => ({
+  obstacles = SC[o.sc].obs.map(o2 => ({
     type: o2.type,
     x: o2.x,
     baseX: o2.x,
@@ -1324,7 +1326,7 @@ function startGame(o) {
   $('n0').textContent = P[0].name;
   $('n1').textContent = P[1].name;
   $('end').classList.remove('on');
-  $('obsInfo').textContent = sceneDef.obsLabel;
+  $('obsInfo').textContent = SC[o.sc].obsLabel;
   show('game');
   resize();
   hud();
@@ -1419,7 +1421,7 @@ function fire(by, a, pw, w, sp, rec) {
     by, w, sp, step: 0,
     fin: P[1 - by].fin,
     rec, a, pw,
-    pr: [mkp(p.x, p.floorY - 70, p.f * Math.cos(r) * s, -Math.sin(r) * s, w)]
+    pr: [mkp(p.x, GY - 70, p.f * Math.cos(r) * s, -Math.sin(r) * s, w)]
   };
   p.rec = 1;
   hud();
@@ -1484,10 +1486,8 @@ function stepSim() {
       continue;
     }
 
-    /* Head hit — relative to the target's floor height */
-    if (!t.dead && Math.hypot(q.x - t.x, q.y - (t.floorY - 100)) < 22 + r) h = 2;
-    /* Body hit */
-    else if (!t.dead && Math.abs(q.x - t.x) < 24 + r * .5 && q.y > t.floorY - 80 - r * .3 && q.y < t.floorY) h = 1;
+    if (!t.dead && Math.hypot(q.x - t.x, q.y - (GY - 100)) < 22 + r) h = 2;
+    else if (!t.dead && Math.abs(q.x - t.x) < 24 + r * .5 && q.y > GY - 80 - r * .3 && q.y < GY) h = 1;
 
     if (h) {
       hit(s, q, t, h == 2);
@@ -1514,13 +1514,13 @@ function hit(s, q, t, head) {
     t.hp = 0;
     t.dead = 1;
     ragdoll(t, f);
-    txt(t.x, t.floorY - 140, 'FATALITY!', '#ff3b5c', 46);
+    txt(t.x, GY - 140, 'FATALITY!', '#ff3b5c', 46);
     ban('FATALITY!');
   } else {
     t.hp = Math.max(0, t.hp - dmg);
     t.x = clamp(t.x + f * (25 + dmg * 1.4), 80, W - 80);
     t.lean = 1;
-    txt(t.x, t.floorY - 150, (head ? 'HEADSHOT -' : '-') + dmg, head ? '#ffd166' : '#fff', head ? 40 : 30);
+    txt(t.x, GY - 150, (head ? 'HEADSHOT -' : '-') + dmg, head ? '#ffd166' : '#fff', head ? 40 : 30);
     if (head) ban('HEADSHOT!');
     if (t.hp <= 0) t.fin = 1;
   }
@@ -1579,7 +1579,7 @@ function ragdoll(t, f) {
   t.parts = [100, 55, 15, 15, 60, 60].map((y, i) => ({
     k: i,
     x: t.dx,
-    y: t.floorY - y,
+    y: GY - y,
     vx: f * (200 + Math.random() * 500) + (Math.random() - .5) * 200,
     vy: -400 - Math.random() * 500,
     r: 0,
@@ -1598,40 +1598,24 @@ const burst = (x, y, col, n) => {
 const txt = (x, y, s, c2, z) => tx.push({ x, y, s, c: c2, z, l: 1.4 });
 
 /* ============================================================
-   BOT AI (terrain-aware)
+   BOT AI
    ============================================================ */
 function botShot() {
   botWait = 0;
   if (!st || st.over || sim || st.turn != 1 || st.mode != 'bot') return;
 
-  const bot = P[1];
-  const opp = P[0];
-  const dx = Math.abs(bot.x - opp.x);
-  const dy = opp.floorY - bot.floorY;  /* positive if target is LOWER */
-
-  /* Pick weapon */
+  const d = Math.abs(P[1].x - P[0].x);
   const w = Math.random() < .25 ? 1 : (Math.random() < .2 ? 2 : 0);
-  const speed = V * (w == 1 ? .8 : 1);
+  const a = .5 + Math.random() * .35;
 
-  /* Solve ballistic: with height difference */
-  const g = G;
-  const aRad = .5 + Math.random() * .35;
-  /* v² = g*dx² / (2*cos²a*(dx*tan a - dy)) */
-  const tanA = Math.tan(aRad);
-  const cosA = Math.cos(aRad);
-  const denom = 2 * cosA * cosA * (dx * tanA - dy);
-  let v = denom > 0 ? Math.sqrt(g * dx * dx / denom) : speed;
-  let pw = clamp(v / speed * 100, 15, 100);
-
+  let pw = Math.sqrt(d * G / Math.sin(2 * a)) / (V * (w == 1 ? .8 : 1)) * 100;
   pw *= 1 + (Math.random() - .5) * botErr;
   botErr = Math.max(.05, botErr * .72);
 
-  /* Avoid obstacle if directly in path */
-  const blocker = obstacles.find(o => !o.destroyed && Math.abs(o.x - (P[0].x + P[1].x) / 2) < 90);
-  const aimAdj = blocker ? (Math.random() - .5) * 10 : 0;
+  const blocker = obstacles.find(o => !o.destroyed && Math.abs(o.x - (P[0].x + P[1].x) / 2) < 100);
+  const aimAdj = blocker ? (Math.random() - .5) * 8 : 0;
 
-  /* Reverse angle since bot faces left */
-  fire(1, 180 - (aRad * 180 / PI) + aimAdj + (Math.random() - .5) * botErr * 14, pw, w, -1, null);
+  fire(1, a * 180 / PI + aimAdj + (Math.random() - .5) * botErr * 14, clamp(pw, 15, 100), w, -1, null);
 }
 
 /* ============================================================
@@ -1755,126 +1739,6 @@ function prop(k, x, y, z) {
   }
 
   c.restore();
-}
-
-/* ---------- TERRAIN (player platforms) ---------- */
-function drawTerrain() {
-  terrain.forEach(t => {
-    const x = t.x;
-    const w = t.w;
-    const baseY = t.baseY;
-    const topY = t.topY;
-
-    if (t.type === 'hill') {
-      /* Grass hill — player stands on top */
-      c.fillStyle = '#4a7a33';
-      c.beginPath();
-      c.moveTo(x - w / 2, baseY);
-      c.quadraticCurveTo(x, topY - 30, x + w / 2, baseY);
-      c.lineTo(x + w / 2, baseY);
-      c.closePath();
-      c.fill();
-
-      /* Grass top */
-      c.fillStyle = '#6bb84a';
-      c.beginPath();
-      c.moveTo(x - w / 2, baseY);
-      c.quadraticCurveTo(x, topY - 20, x + w / 2, baseY);
-      c.lineTo(x + w / 2 - 40, baseY - 15);
-      c.quadraticCurveTo(x, topY + 30, x - w / 2 + 40, baseY - 15);
-      c.fill();
-
-      /* Grass tufts on top */
-      c.fillStyle = '#3d7a28';
-      for (let i = 0; i < 6; i++) {
-        const gx = x - w / 3 + i * (w / 9);
-        c.fillRect(gx, topY - 6, 3, 8);
-      }
-
-      /* Peak highlight */
-      c.fillStyle = 'rgba(255,255,255,0.15)';
-      c.beginPath();
-      c.ellipse(x, topY + 5, w / 3, 12, 0, 0, 7);
-      c.fill();
-    } else if (t.type === 'dune') {
-      c.fillStyle = '#b87a3a';
-      c.beginPath();
-      c.moveTo(x - w / 2, baseY);
-      c.quadraticCurveTo(x - w / 4, topY - 25, x, topY);
-      c.quadraticCurveTo(x + w / 4, topY + 20, x + w / 2, baseY);
-      c.fill();
-      c.fillStyle = '#d99a4a';
-      c.beginPath();
-      c.moveTo(x - w / 2, baseY);
-      c.quadraticCurveTo(x - w / 4, topY - 10, x, topY + 5);
-      c.quadraticCurveTo(x + w / 6, topY + 25, x + w / 2, baseY);
-      c.fill();
-    } else if (t.type === 'iceblock') {
-      /* Ice platform */
-      c.fillStyle = 'rgba(140,210,255,0.85)';
-      c.fillRect(x - w / 2, topY, w, baseY - topY);
-      c.fillStyle = 'rgba(220,245,255,0.95)';
-      c.beginPath();
-      c.moveTo(x - w / 2, topY);
-      c.lineTo(x - w / 2 + 20, topY - 14);
-      c.lineTo(x + w / 2 - 20, topY - 14);
-      c.lineTo(x + w / 2, topY);
-      c.fill();
-      /* Cracks */
-      c.strokeStyle = 'rgba(255,255,255,0.6)';
-      c.lineWidth = 2;
-      for (let i = 0; i < 4; i++) {
-        const cx = x - w / 2 + 30 + i * (w / 5);
-        c.beginPath();
-        c.moveTo(cx, topY);
-        c.lineTo(cx + 8, baseY);
-        c.stroke();
-      }
-      /* Sparkle */
-      c.fillStyle = '#fff';
-      for (let i = 0; i < 3; i++) {
-        const sx = x - w / 3 + i * (w / 3);
-        c.globalAlpha = 0.6 + 0.4 * Math.sin(T * 3 + i);
-        c.beginPath();
-        c.arc(sx, topY - 6, 3, 0, 7);
-        c.fill();
-      }
-      c.globalAlpha = 1;
-    } else if (t.type === 'pillar') {
-      /* Stone pillar */
-      c.fillStyle = '#3a1e1e';
-      c.fillRect(x - w / 2, topY, w, baseY - topY);
-      c.fillStyle = '#5a2e2e';
-      c.fillRect(x - w / 2, topY, w * 0.4, baseY - topY);
-      /* Lava cracks */
-      c.fillStyle = '#ff6a2a';
-      for (let i = 0; i < 3; i++) {
-        c.fillRect(x - w / 2 + 4, topY + 20 + i * 40, w - 8, 3);
-      }
-      /* Glow */
-      c.fillStyle = 'rgba(255,120,40,0.25)';
-      c.beginPath();
-      c.ellipse(x, topY - 4, w / 2 + 10, 12, 0, 0, 7);
-      c.fill();
-    } else if (t.type === 'lavarock') {
-      /* Lava rock platform */
-      c.fillStyle = '#4a2020';
-      c.beginPath();
-      c.ellipse(x, (topY + baseY) / 2, w / 2, (baseY - topY) / 2 + 10, 0, 0, 7);
-      c.fill();
-      c.fillStyle = '#ff6a2a';
-      c.beginPath();
-      c.ellipse(x, (topY + baseY) / 2 + 5, w / 2 - 10, (baseY - topY) / 2 - 4, 0, 0, 7);
-      c.fill();
-      /* Glow */
-      c.fillStyle = 'rgba(255,120,40,0.4)';
-      c.beginPath();
-      c.ellipse(x, topY - 2, w / 2, 14, 0, 0, 7);
-      c.fill();
-    } else if (t.type === 'flat') {
-      /* No platform drawn — just ground */
-    }
-  });
 }
 
 /* ---------- OBSTACLE RENDERING ---------- */
@@ -2125,7 +1989,7 @@ function drawChar(p, i, aim) {
   }
 
   c.save();
-  c.translate(p.dx, p.floorY);  /* Use per-player floor */
+  c.translate(p.dx, GY);
   c.rotate(-f * p.lean * .5 - (p.fin ? f * .45 : 0));
   if (p.fin) c.scale(1, .9);
 
@@ -2319,7 +2183,7 @@ function frame(ts) {
     const r = a.a * PI / 180;
     const s = a.pw / 100 * V * (wsel == 1 ? .8 : 1);
 
-    let x = p.x, y = p.floorY - 70;
+    let x = p.x, y = GY - 70;
     let vx = p.f * Math.cos(r) * s, vy = -Math.sin(r) * s;
     pts = [];
 
@@ -2333,10 +2197,6 @@ function frame(ts) {
     }
   }
 
-  /* Draw terrain (player platforms) FIRST so chars stand on them */
-  drawTerrain();
-
-  /* Obstacles */
   drawObstacles();
 
   P.forEach((p, i) => drawChar(p, i, i == st.my && drag ? aim : null));
@@ -2360,9 +2220,9 @@ function frame(ts) {
     c.lineWidth = 5;
     c.strokeStyle = '#0008';
     const t = Math.round(a.a) + '\u00b0  ' + Math.round(a.pw) + '%';
-    c.strokeText(t, p.dx, p.floorY - 190);
+    c.strokeText(t, p.dx, GY - 190);
     c.fillStyle = '#fff';
-    c.fillText(t, p.dx, p.floorY - 190);
+    c.fillText(t, p.dx, GY - 190);
   }
 
   fx.forEach(f => {
@@ -2403,7 +2263,6 @@ function leave() {
   st = null;
   sim = null;
   obstacles = [];
-  terrain = [];
   show('menu');
 }
 
@@ -2535,6 +2394,7 @@ if (auth) {
         if (d) { me.ch = d.ch | 0; me.sc = d.sc == null ? 4 : d.sc; }
       } catch (e) { }
       buildMenu();
+      /* Only route to menu if splash is already dismissed */
       if (!$('splash').classList.contains('on')) show('menu');
     } else {
       if (st) leave();
