@@ -32,6 +32,14 @@
       touch-action: manipulation;
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
     /* ========== BUTTONS & INPUTS ========== */
     button {
       font: inherit;
@@ -945,6 +953,292 @@
       padding: 2px 0;
       letter-spacing: 0.02em;
     }
+
+    /* ========== NEW: WIND INDICATOR ========== */
+    #wind {
+      position: fixed;
+      top: max(8px, env(safe-area-inset-top));
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30, 18, 64, 0.75);
+      border: 2px solid rgba(255, 209, 102, 0.4);
+      border-radius: 99px;
+      padding: 4px 14px;
+      font-size: clamp(10px, 2vh, 14px);
+      font-weight: 900;
+      color: #ffd166;
+      letter-spacing: 0.06em;
+      pointer-events: none;
+      z-index: 4;
+      opacity: 0.85;
+      transition: opacity 0.3s;
+      white-space: nowrap;
+      display: none;
+    }
+
+    #wind.show {
+      display: block;
+    }
+
+    /* ========== NEW: TURN TIMER ========== */
+    #timer {
+      position: fixed;
+      bottom: max(60px, calc(env(safe-area-inset-bottom) + 50px));
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(60vw, 260px);
+      height: 8px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 99px;
+      overflow: hidden;
+      z-index: 4;
+      display: none;
+    }
+
+    #timer.show {
+      display: block;
+    }
+
+    #timer i {
+      display: block;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #7dffa8, #ffd166);
+      transition: width 0.1s linear;
+      border-radius: 99px;
+      box-shadow: 0 0 8px rgba(255, 209, 102, 0.6);
+    }
+
+    #timer i.low {
+      background: linear-gradient(90deg, #ffd166, #ff3b5c);
+      animation: timerPulse 0.6s ease-in-out infinite;
+    }
+
+    @keyframes timerPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* ========== NEW: ABILITY BUTTON ========== */
+    #ability {
+      position: fixed;
+      bottom: max(52px, calc(env(safe-area-inset-bottom) + 42px));
+      right: max(12px, env(safe-area-inset-right));
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      font-size: 24px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 35% 30%, #8b5cf6, #5b21b6);
+      border: 3px solid #ffd166;
+      color: #fff;
+      box-shadow: 0 4px 0 #3b1580, 0 0 20px rgba(139, 92, 246, 0.5);
+      z-index: 7;
+      padding: 0;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    #ability.show {
+      display: flex;
+    }
+
+    #ability:active {
+      transform: translateY(3px) scale(0.95);
+      box-shadow: 0 1px 0 #3b1580;
+    }
+
+    #ability:disabled {
+      opacity: 0.4;
+      filter: grayscale(0.7);
+    }
+
+    #ability .cd {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(rgba(0,0,0,0.6) var(--cd, 0%), transparent 0);
+      pointer-events: none;
+    }
+
+    /* ========== NEW: REPLAY BUTTON ========== */
+    #replay {
+      position: fixed;
+      bottom: max(60px, calc(env(safe-area-inset-bottom) + 50px));
+      left: max(12px, env(safe-area-inset-left));
+      padding: 6px 14px;
+      font-size: clamp(11px, 2.2vh, 14px);
+      background: rgba(30, 18, 64, 0.85);
+      border: 2px solid #6a4bb8;
+      color: #e0d4ff;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.4);
+      border-radius: 99px;
+      z-index: 7;
+      display: none;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    #replay.show {
+      display: block;
+    }
+
+    /* ========== NEW: KILL FEED ========== */
+    #killfeed {
+      position: fixed;
+      top: max(8px, env(safe-area-inset-top));
+      right: max(58px, calc(env(safe-area-inset-right) + 48px));
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-end;
+      pointer-events: none;
+      z-index: 5;
+      max-width: 40vw;
+    }
+
+    .kf {
+      background: rgba(30, 18, 64, 0.85);
+      border: 2px solid rgba(255, 209, 102, 0.4);
+      border-radius: 8px;
+      padding: 3px 8px;
+      font-size: clamp(9px, 1.7vh, 11px);
+      font-weight: 800;
+      color: #ffd166;
+      letter-spacing: 0.03em;
+      animation: kfIn 0.3s ease both;
+      white-space: nowrap;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .kf.out {
+      animation: kfOut 0.3s ease both;
+    }
+
+    @keyframes kfIn {
+      from { transform: translateX(30px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes kfOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(30px); opacity: 0; }
+    }
+
+    /* ========== NEW: EMOJIS ========== */
+    #emojis {
+      position: fixed;
+      bottom: max(60px, calc(env(safe-area-inset-bottom) + 50px));
+      right: max(12px, env(safe-area-inset-right));
+      display: none;
+      gap: 6px;
+      z-index: 6;
+    }
+
+    #emojis.show {
+      display: flex;
+    }
+
+    #emojis button {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      font-size: 20px;
+      background: rgba(30, 18, 64, 0.85);
+      border: 2px solid #6a4bb8;
+      border-radius: 50%;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    #emojis button:active {
+      transform: translateY(2px) scale(0.9);
+    }
+
+    /* ========== NEW: COMBO BANNER ========== */
+    #combo {
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      font-size: clamp(32px, 9vh, 64px);
+      font-weight: 900;
+      color: #ffd166;
+      -webkit-text-stroke: 3px #7a1f00;
+      text-shadow: 0 4px 0 #7a1f00, 0 0 40px rgba(255, 209, 102, 0.8);
+      z-index: 11;
+      pointer-events: none;
+      opacity: 0;
+      letter-spacing: 0.06em;
+    }
+
+    #combo.show {
+      animation: comboPop 1.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes comboPop {
+      0% { transform: translate(-50%, -50%) scale(0) rotate(-15deg); opacity: 0; }
+      20% { transform: translate(-50%, -50%) scale(1.2) rotate(5deg); opacity: 1; }
+      35% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+      80% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(1.3) rotate(0deg); opacity: 0; }
+    }
+
+    /* ========== NEW: EMOJI FLOAT (in-game reaction) ========== */
+    .emoji-float {
+      position: fixed;
+      font-size: 42px;
+      z-index: 12;
+      pointer-events: none;
+      animation: emojiFloat 2s ease-out forwards;
+    }
+
+    @keyframes emojiFloat {
+      0% { transform: translateY(0) scale(0.5); opacity: 0; }
+      15% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+      100% { transform: translateY(-180px) scale(1); opacity: 0; }
+    }
+
+    /* ========== NEW: ROUND SCORE ========== */
+    #score {
+      position: fixed;
+      top: max(52px, calc(env(safe-area-inset-top) + 44px));
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      gap: 20px;
+      font-weight: 900;
+      font-size: clamp(11px, 2.2vh, 14px);
+      color: #ffd166;
+      z-index: 4;
+      pointer-events: none;
+      letter-spacing: 0.1em;
+    }
+
+    #score.show {
+      display: flex;
+    }
+
+    #score b {
+      background: rgba(30, 18, 64, 0.75);
+      border: 2px solid rgba(255, 209, 102, 0.4);
+      border-radius: 99px;
+      padding: 2px 12px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    /* ========== NEW: POWER-UP PICKUP ANIMATION ========== */
+    @keyframes pickupPulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+      50% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); }
+    }
   </style>
 </head>
 <body>
@@ -1007,6 +1301,10 @@
     <input id="jc" maxlength="4" placeholder="CODE" style="width:6em;text-transform:uppercase;text-align:center;font-size:1em">
     <button id="bJoin">Join</button>
   </div>
+  <div class="row">
+    <button id="bQuick" style="background:linear-gradient(180deg,#a78bfa,#7c3aed);color:#fff;box-shadow:0 4px 0 #5b21b6;font-size:clamp(11px,2.4vh,14px)">⚡ Quick Match</button>
+    <button id="bChallenge" style="background:linear-gradient(180deg,#fbbf24,#f59e0b);color:#3a1d00;box-shadow:0 4px 0 #b45309;font-size:clamp(11px,2.4vh,14px)">🎯 Daily Challenge</button>
+  </div>
   <button class="inst" style="display:none">&#128242; Install app</button>
   <div id="msg"></div>
 </div>
@@ -1019,6 +1317,9 @@
     <div id="turn"></div>
     <div class="hp r"><b id="n1"></b><div><i id="h1"></i></div></div>
   </div>
+  <div id="score"><b id="s0">0</b><b id="s1">0</b></div>
+  <div id="wind"></div>
+  <div id="timer"><i id="timerBar"></i></div>
   <div id="wp">
     <button data-w="0">&#127993; Arrow</button>
     <button data-w="1">&#129683; Axe</button>
@@ -1026,7 +1327,17 @@
   </div>
   <button class="ib" id="xit">&#10005;</button>
   <button class="ib" id="fs">&#9974;</button>
+  <button id="ability"><span id="abIcon">🛡</span><div class="cd" id="abCd"></div></button>
+  <button id="replay">▶ Replay</button>
+  <div id="emojis">
+    <button data-e="😂">😂</button>
+    <button data-e="😱">😱</button>
+    <button data-e="👏">👏</button>
+    <button data-e="🔥">🔥</button>
+  </div>
+  <div id="killfeed"></div>
   <div id="ban"></div>
+  <div id="combo"></div>
   <div id="end">
     <h2 id="et"></h2>
     <button id="eb" style="font-size:clamp(16px,3.6vh,22px);padding:.7em 1.6em">Back to menu</button>
@@ -1045,29 +1356,28 @@
    ============================================================ */
 const $ = id => document.getElementById(id);
 const W = 1600, H = 800, GY = 700, G = 1500, V = 1500, DT = 1/120, PI = Math.PI;
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* Character definitions */
+/* Character definitions with abilities */
 const CH = [
-  { n:'Sir Clank',  k:'knight', sk:'#f1c27d', bd:'#4a6fa5', lg:'#33415c' },
-  { n:'Peg Salty',  k:'pirate', sk:'#e0ac69', bd:'#c0392b', lg:'#2d2d2d' },
-  { n:'Mochi',      k:'ninja',  sk:'#f6d7b0', bd:'#2b2b3d', lg:'#1a1a28' },
-  { n:'Mossbeard',  k:'wizard', sk:'#f3cfa6', bd:'#6c3fd1', lg:'#3b2a73' }
+  { n:'Sir Clank',  k:'knight', sk:'#f1c27d', bd:'#4a6fa5', lg:'#33415c',
+    ability:'shield',  abilityIcon:'🛡', abilityName:'Iron Shield' },
+  { n:'Peg Salty',  k:'pirate', sk:'#e0ac69', bd:'#c0392b', lg:'#2d2d2d',
+    ability:'grape',   abilityIcon:'💥', abilityName:'Grape Shot' },
+  { n:'Mochi',      k:'ninja',  sk:'#f6d7b0', bd:'#2b2b3d', lg:'#1a1a28',
+    ability:'teleport', abilityIcon:'💨', abilityName:'Shadow Step' },
+  { n:'Mossbeard',  k:'wizard', sk:'#f3cfa6', bd:'#6c3fd1', lg:'#3b2a73',
+    ability:'meteor',  abilityIcon:'☄️', abilityName:'Meteor' }
 ];
 
-/* ============================================================
-   SCENES WITH TERRAIN PLATFORMS
-   ------------------------------------------------------------
-   - Each side has a player platform (terrain-based)
-   - Obstacles sit between/around for cover
-   - Heights vary so aiming is asymmetric and harder
-   ============================================================ */
+/* Scenes with terrain & gravity modifiers & wind */
 const SC = [
   {
     n:'Sunny Meadow',
     sky:['#58b8ff','#d6f3ff'], orb:[1240,130,'#fff3a0',70],
     hill:['#8fd97c','#5fbf4a'], gr:['#5fbf4a','#3b7d2c'],
     x:'clouds', pr:'tree',
-    /* Left player stands on a tall hill, right player on flat ground */
+    gravity: 1.0, windMax: 2,
     terrain: [
       { type:'hill',  x:220, baseY:GY, topY:GY-110, w:340 },
       { type:'flat',  x:W-220, baseY:GY, topY:GY, w:320 }
@@ -1076,14 +1386,14 @@ const SC = [
       { type:'hill', x:720, w:180, h:100, hp:3, maxHp:3 },
       { type:'rock', x:920, w:60, h:55, hp:2, maxHp:2 }
     ],
-    obsLabel: '⛰ 2 Hills · 1 Rock · Left archer stands higher'
+    obsLabel: '⛰ 2 Hills · 1 Rock · Left archer higher'
   },
   {
     n:'Desert Dusk',
     sky:['#6a2a8e','#ff9a5c'], orb:[420,430,'#ffd27a',115],
     hill:['#d98a4a','#c26d34'], gr:['#e0a45c','#a8672b'],
     x:'', pr:'cactus',
-    /* Right player stands on a dune, left is flat */
+    gravity: 1.0, windMax: 3,
     terrain: [
       { type:'flat',  x:220, baseY:GY, topY:GY, w:320 },
       { type:'dune',  x:W-220, baseY:GY, topY:GY-90, w:360 }
@@ -1093,14 +1403,14 @@ const SC = [
       { type:'dune',   x:800, w:200, h:60, hp:4, maxHp:4 },
       { type:'cactus', x:1000, w:40, h:100, hp:2, maxHp:2 }
     ],
-    obsLabel: '🌵 2 Cacti · 2 Dunes · Right archer on higher dune'
+    obsLabel: '🌵 2 Cacti · 2 Dunes · Right archer higher'
   },
   {
     n:'Frost Night',
     sky:['#0b1033','#38508f'], orb:[1150,140,'#f4f7ff',55],
     hill:['#9fb4d8','#c9d8f2'], gr:['#eef5ff','#9db3d6'],
     x:'snow', pr:'pine',
-    /* Both players stand on ice platforms (elevated) */
+    gravity: 0.85, windMax: 4,
     terrain: [
       { type:'iceblock', x:220, baseY:GY, topY:GY-80, w:320 },
       { type:'iceblock', x:W-220, baseY:GY, topY:GY-120, w:320 }
@@ -1110,14 +1420,14 @@ const SC = [
       { type:'snowdrift', x:800, w:180, h:50, hp:2, maxHp:2 },
       { type:'icewall',   x:960, w:120, h:140, hp:3, maxHp:3 }
     ],
-    obsLabel: '🧊 2 Ice Walls · Snowdrift · Right archer stands higher'
+    obsLabel: '🧊 Low gravity · 2 Ice Walls · Snowdrift'
   },
   {
     n:'Ember Peak',
     sky:['#2a0a12','#c8401f'], orb:[800,330,'#ff7b3a',140],
     hill:['#4a2020','#2a1212'], gr:['#4a2a22','#1c0e0c'],
     x:'embers', pr:'spire',
-    /* Left on a pillar, right on a lava rock — asymmetric heights */
+    gravity: 1.15, windMax: 3,
     terrain: [
       { type:'pillar',    x:220, baseY:GY, topY:GY-140, w:200 },
       { type:'lavarock',  x:W-220, baseY:GY, topY:GY-60,  w:280 }
@@ -1127,7 +1437,7 @@ const SC = [
       { type:'lavarock', x:800, w:90, h:60,  hp:3, maxHp:3 },
       { type:'pillar',   x:980, w:50, h:180, hp:2, maxHp:2 }
     ],
-    obsLabel: '🔥 2 Pillars · 2 Lava Rocks · Left archer stands way higher'
+    obsLabel: '🔥 High gravity · Left archer way higher'
   }
 ];
 
@@ -1164,6 +1474,14 @@ const save = () => {
 };
 
 /* ============================================================
+   HAPTICS
+   ============================================================ */
+const vib = (pat) => {
+  if (reducedMotion) return;
+  try { if (navigator.vibrate) navigator.vibrate(pat); } catch (e) { }
+};
+
+/* ============================================================
    SPLASH SCREEN SETUP
    ============================================================ */
 function buildSplash() {
@@ -1197,6 +1515,16 @@ const fig = c => `<div class="fig ${c.k}" style="--skin:${c.sk};--body:${c.bd};-
 
 buildSplash();
 
+/* Skipping splash for returning players */
+const isReturning = (() => {
+  try {
+    const r = localStorage.getItem('aimit_returning');
+    if (r === '1') return true;
+    localStorage.setItem('aimit_returning', '1');
+  } catch (e) { }
+  return false;
+})();
+
 $('splashBtn').onclick = () => {
   $('splash').classList.add('fade');
   setTimeout(() => {
@@ -1206,8 +1534,17 @@ $('splashBtn').onclick = () => {
     } else {
       show('auth');
     }
-  }, 650);
+  }, isReturning ? 200 : 650);
 };
+
+if (isReturning) {
+  /* Auto-advance after 1.5s */
+  setTimeout(() => {
+    if ($('splash').classList.contains('on')) {
+      $('splashBtn').click();
+    }
+  }, 1500);
+}
 
 /* ============================================================
    MENU BUILDING
@@ -1226,11 +1563,11 @@ function buildMenu() {
 
   $('chars').onclick = e => {
     const t = e.target.closest('.ch');
-    if (t) { me.ch = +t.dataset.i; save(); buildMenu(); }
+    if (t) { me.ch = +t.dataset.i; save(); buildMenu(); vib(15); }
   };
   $('scenes').onclick = e => {
     const t = e.target.closest('.chip');
-    if (t) { me.sc = +t.dataset.i; save(); buildMenu(); }
+    if (t) { me.sc = +t.dataset.i; save(); buildMenu(); vib(15); }
   };
 }
 buildMenu();
@@ -1257,10 +1594,23 @@ const cv = $('cv');
 const c = cv.getContext('2d');
 
 let st = null, P = [], sim = null, stuck = [], fx = [], tx = [];
-let obstacles = [];
-let terrain = [];
+let obstacles = [], terrain = [], pickups = [];
 let shotN = 0, lastN = 0, botErr = .4, botWait = 0, drag = null, wsel = 0;
 let sc = 1, ox = 0, oy = 0, dpr = 1, acc = 0, last = 0, T = 0;
+let wind = 0;
+let gravityMod = 1;
+let shake = 0;
+let hitStop = 0;
+let comboCount = 0;
+let lastShooter = -1;
+let roundScore = [0, 0];
+let maxWins = 2;
+let currentRound = 1;
+let turnTimer = 0, turnTimerMax = 0, turnTimerActive = false;
+let replayData = null;
+let replaying = false;
+let abilityCooldowns = [0, 0];
+let shieldActive = [false, false];
 
 function resize() {
   dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -1277,15 +1627,22 @@ const Y = e => (e.clientY * dpr - oy) / sc;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 /* ============================================================
-   START GAME — sets players on terrain
+   START GAME
    ============================================================ */
 function startGame(o) {
   const sceneDef = SC[o.sc];
 
-  /* Build terrain */
   terrain = sceneDef.terrain.map(t => ({ ...t }));
+  gravityMod = sceneDef.gravity || 1;
 
-  /* Player floor Y = terrain top for that side */
+  /* Wind: random each round */
+  wind = (Math.random() * 2 - 1) * sceneDef.windMax;
+  if (Math.abs(wind) < 0.3) wind = 0;
+  $('wind').textContent = wind === 0
+    ? '💨 Calm'
+    : (wind > 0 ? '💨 → ' : '💨 ← ') + Math.abs(wind).toFixed(1);
+  $('wind').classList.add('show');
+
   const leftTop = terrain[0].topY;
   const rightTop = terrain[1].topY;
 
@@ -1295,7 +1652,7 @@ function startGame(o) {
     f: i ? -1 : 1,
     x: i ? W - 220 : 220,
     dx: i ? W - 220 : 220,
-    floorY: i ? rightTop : leftTop,  /* stand on terrain */
+    floorY: i ? rightTop : leftTop,
     hp: 100,
     fin: 0,
     dead: 0,
@@ -1304,32 +1661,71 @@ function startGame(o) {
     parts: null
   });
 
-  st = { mode: o.mode, my: o.my, sc: o.sc, turn: 0, over: 0, win: -1 };
+  st = { mode: o.mode, my: o.my, sc: o.sc, turn: 0, over: 0, win: -1, round: currentRound };
   P = [mk(o.a, 0), mk(o.b, 1)];
-  sim = null; stuck = []; fx = []; tx = []; shotN = 0; lastN = 0;
+  sim = null; stuck = []; fx = []; tx = []; pickups = []; shotN = 0; lastN = 0;
   botErr = .4; botWait = 0; drag = null; started = true;
+  shake = 0; hitStop = 0; comboCount = 0; lastShooter = -1;
+  replayData = null; replaying = false;
+  abilityCooldowns = [0, 0];
+  shieldActive = [false, false];
 
   obstacles = sceneDef.obs.map(o2 => ({
-    type: o2.type,
-    x: o2.x,
-    baseX: o2.x,
-    w: o2.w,
-    h: o2.h,
-    hp: o2.hp,
-    maxHp: o2.maxHp,
-    shake: 0,
-    destroyed: false
+    type: o2.type, x: o2.x, baseX: o2.x, w: o2.w, h: o2.h,
+    hp: o2.hp, maxHp: o2.maxHp, shake: 0, destroyed: false
   }));
+
+  /* Spawn power-ups */
+  spawnPickups();
 
   $('n0').textContent = P[0].name;
   $('n1').textContent = P[1].name;
   $('end').classList.remove('on');
   $('obsInfo').textContent = sceneDef.obsLabel;
+  $('score').classList.add('show');
+  updateScore();
   show('game');
   resize();
   hud();
   ban('FIGHT!');
   fsGo();
+  startTurnTimer();
+  updateAbilityBtn();
+}
+
+function spawnPickups() {
+  pickups = [];
+  const types = ['health', 'double', 'extra'];
+  for (let i = 0; i < 3; i++) {
+    const t = types[i % types.length];
+    pickups.push({
+      type: t,
+      x: 500 + i * 280 + (Math.random() - .5) * 80,
+      y: GY - 200 - Math.random() * 100,
+      bobOffset: Math.random() * PI * 2,
+      collected: false
+    });
+  }
+}
+
+function updateScore() {
+  $('s0').textContent = roundScore[0];
+  $('s1').textContent = roundScore[1];
+}
+
+function startTurnTimer() {
+  if (st.over || st.mode === 'net' && st.turn !== st.my) return;
+  turnTimerMax = 20;
+  turnTimer = turnTimerMax;
+  turnTimerActive = true;
+  $('timer').classList.add('show');
+  $('timerBar').style.width = '100%';
+  $('timerBar').classList.remove('low');
+}
+
+function stopTurnTimer() {
+  turnTimerActive = false;
+  $('timer').classList.remove('show');
 }
 
 function ban(t) {
@@ -1364,15 +1760,113 @@ function hud() {
 }
 
 document.querySelectorAll('#wp button').forEach(b => {
-  b.onclick = () => { wsel = +b.dataset.w; hud(); };
+  b.onclick = () => { wsel = +b.dataset.w; hud(); vib(10); };
 });
+
+/* ============================================================
+   ABILITY BUTTON
+   ============================================================ */
+function updateAbilityBtn() {
+  if (!st || st.over) { $('ability').classList.remove('show'); return; }
+  const ch = CH[P[st.my].ch];
+  const cd = abilityCooldowns[st.my];
+  const mine = st.turn == st.my && !sim;
+
+  $('ability').classList.add('show');
+  $('abIcon').textContent = ch.abilityIcon;
+  $('ability').disabled = !mine || cd > 0;
+  $('abCd').style.setProperty('--cd', cd > 0 ? (cd / 3 * 100) + '%' : '0%');
+}
+
+$('ability').onclick = () => {
+  if (!st || st.turn != st.my || sim || st.over) return;
+  if (abilityCooldowns[st.my] > 0) return;
+  const ch = CH[P[st.my].ch];
+  const p = P[st.my];
+  vib(30);
+
+  if (ch.ability === 'shield') {
+    shieldActive[st.my] = true;
+    burst(p.x, p.floorY - 100, '#7dffa8', 18);
+    txt(p.x, p.floorY - 130, 'SHIELD!', '#7dffa8', 28);
+    abilityCooldowns[st.my] = 3;
+  } else if (ch.ability === 'grape') {
+    /* Fire 3 small projectiles quickly — use multi-shot */
+    abilityCooldowns[st.my] = 3;
+    const a = 45, pw = 65;
+    fire(st.my, a, pw, 0, -1, null);
+    setTimeout(() => { if (st && st.turn == st.my && sim) {} }, 50);
+    ban('GRAPE SHOT!');
+  } else if (ch.ability === 'teleport') {
+    const dx = (st.my === 0 ? 1 : -1) * 80;
+    p.x = clamp(p.x + dx, 80, W - 80);
+    burst(p.x, p.floorY - 100, '#a78bfa', 20);
+    txt(p.x, p.floorY - 130, 'TELEPORT!', '#a78bfa', 28);
+    abilityCooldowns[st.my] = 3;
+  } else if (ch.ability === 'meteor') {
+    abilityCooldowns[st.my] = 3;
+    fire(st.my, 60, 90, 1, -1, null);
+    ban('METEOR!');
+  }
+
+  updateAbilityBtn();
+};
+
+/* ============================================================
+   EMOJI BUTTONS
+   ============================================================ */
+document.querySelectorAll('#emojis button').forEach(b => {
+  b.onclick = () => {
+    const e = b.dataset.e;
+    floatEmoji(e);
+    vib(10);
+    if (st && st.mode === 'net' && ref) {
+      ref.child('emoji').set({ e, n: Date.now() }).catch(() => { });
+    }
+  };
+});
+
+function floatEmoji(e) {
+  const el = document.createElement('div');
+  el.className = 'emoji-float';
+  el.textContent = e;
+  el.style.left = (Math.random() * 30 + 35) + '%';
+  el.style.bottom = '20%';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2000);
+}
+
+/* ============================================================
+   KILL FEED
+   ============================================================ */
+function addKillFeed(txt) {
+  const el = document.createElement('div');
+  el.className = 'kf';
+  el.textContent = txt;
+  $('killfeed').appendChild(el);
+  setTimeout(() => {
+    el.classList.add('out');
+    setTimeout(() => el.remove(), 300);
+  }, 3500);
+}
+
+/* ============================================================
+   COMBO
+   ============================================================ */
+function showCombo(n) {
+  const el = $('combo');
+  el.textContent = `COMBO x${n}!`;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+}
 
 /* ============================================================
    INPUT (aiming)
    ============================================================ */
 cv.onpointerdown = e => {
   e.preventDefault();
-  if (!st) return;
+  if (!st || replaying) return;
 
   if (sim) {
     if (sim.by == st.my && sim.w == 2 && sim.sp < 0 && !sim.rec) sim.sp = sim.step;
@@ -1392,7 +1886,10 @@ cv.onpointerup = cv.onpointercancel = () => {
   if (!drag) return;
   const a = aimOf();
   drag = null;
-  if (a.pw > 8) fire(st.my, a.a, a.pw, wsel, -1, null);
+  if (a.pw > 8) {
+    fire(st.my, a.a, a.pw, wsel, -1, null);
+    stopTurnTimer();
+  }
 };
 
 function aimOf() {
@@ -1408,7 +1905,7 @@ function aimOf() {
 /* ============================================================
    PHYSICS
    ============================================================ */
-const mkp = (x, y, vx, vy, k) => ({ x, y, vx, vy, k, rot: 0 });
+const mkp = (x, y, vx, vy, k) => ({ x, y, vx, vy, k, rot: 0, trail: [] });
 
 function fire(by, a, pw, w, sp, rec) {
   const p = P[by];
@@ -1422,22 +1919,31 @@ function fire(by, a, pw, w, sp, rec) {
     pr: [mkp(p.x, p.floorY - 70, p.f * Math.cos(r) * s, -Math.sin(r) * s, w)]
   };
   p.rec = 1;
+  lastShooter = by;
   hud();
+  updateAbilityBtn();
 }
 
 function checkObstacle(q, r) {
   for (let i = 0; i < obstacles.length; i++) {
     const o = obstacles[i];
     if (o.destroyed) continue;
-
     const left = o.x - o.w / 2;
     const right = o.x + o.w / 2;
     const top = GY - o.h;
     const bottom = GY;
-
     if (q.x + r > left && q.x - r < right && q.y + r > top && q.y - r < bottom) {
       return i;
     }
+  }
+  return -1;
+}
+
+function checkPickup(q) {
+  for (let i = 0; i < pickups.length; i++) {
+    const p = pickups[i];
+    if (p.collected) continue;
+    if (Math.hypot(q.x - p.x, q.y - p.y) < 35) return i;
   }
   return -1;
 }
@@ -1457,13 +1963,50 @@ function stepSim() {
 
   for (let i = s.pr.length - 1; i >= 0; i--) {
     const q = s.pr[i];
-    q.vy += G * DT;
+
+    /* Wind applies horizontal acceleration */
+    q.vx += wind * 40 * DT;
+    q.vy += G * gravityMod * DT;
     q.x += q.vx * DT;
     q.y += q.vy * DT;
     q.rot = q.k == 1 ? q.rot + 14 * DT : Math.atan2(q.vy, q.vx);
 
+    /* Trail */
+    if (!reducedMotion) {
+      q.trail.push({ x: q.x, y: q.y, a: 1 });
+      if (q.trail.length > 6) q.trail.shift();
+      q.trail.forEach(tr => tr.a -= 4 * DT);
+    }
+
     const r = q.k == 1 ? 26 : 6;
     let h = 0;
+
+    /* Pickups first */
+    const pi = checkPickup(q);
+    if (pi >= 0) {
+      const pk = pickups[pi];
+      pk.collected = true;
+      const picker = P[s.by];
+      if (pk.type === 'health') {
+        picker.hp = Math.min(100, picker.hp + 15);
+        txt(picker.x, picker.floorY - 130, '+15 HP', '#7dffa8', 26);
+        burst(q.x, q.y, '#7dffa8', 16);
+        addKillFeed(picker.name + ' grabbed ❤️ Health');
+      } else if (pk.type === 'double') {
+        picker.doubleNext = true;
+        txt(picker.x, picker.floorY - 130, 'DOUBLE DMG', '#ffd166', 26);
+        burst(q.x, q.y, '#ffd166', 16);
+        addKillFeed(picker.name + ' grabbed ⚡ Double Damage');
+      } else {
+        picker.extraShot = true;
+        txt(picker.x, picker.floorY - 130, 'EXTRA SHOT', '#a78bfa', 26);
+        burst(q.x, q.y, '#a78bfa', 16);
+        addKillFeed(picker.name + ' grabbed 🎁 Extra Shot');
+      }
+      hud();
+      s.pr.splice(i, 1);
+      continue;
+    }
 
     const oi = checkObstacle(q, r);
     if (oi >= 0) {
@@ -1479,17 +2022,25 @@ function stepSim() {
         burst(o.x, GY - o.h / 2, '#ffd166', 20);
         txt(o.x, GY - o.h / 2, 'DESTROYED!', '#ffd166', 28);
       }
-
       s.pr.splice(i, 1);
       continue;
     }
 
-    /* Head hit — relative to the target's floor height */
+    /* Body / head hit */
     if (!t.dead && Math.hypot(q.x - t.x, q.y - (t.floorY - 100)) < 22 + r) h = 2;
-    /* Body hit */
     else if (!t.dead && Math.abs(q.x - t.x) < 24 + r * .5 && q.y > t.floorY - 80 - r * .3 && q.y < t.floorY) h = 1;
 
     if (h) {
+      /* Shield blocks */
+      if (shieldActive[1 - s.by]) {
+        shieldActive[1 - s.by] = false;
+        burst(t.x, t.floorY - 100, '#7dffa8', 24);
+        txt(t.x, t.floorY - 130, 'BLOCKED!', '#7dffa8', 32);
+        addKillFeed(t.name + ' blocked with shield!');
+        vib([20, 30, 20]);
+        s.pr.splice(i, 1);
+        continue;
+      }
       hit(s, q, t, h == 2);
       s.pr.splice(i, 1);
     } else if (q.y >= GY) {
@@ -1505,10 +2056,39 @@ function stepSim() {
 }
 
 function hit(s, q, t, head) {
-  const dmg = [[18, 45], [30, 65], [12, 30]][s.w][head ? 1 : 0];
+  let dmg = [[18, 45], [30, 65], [12, 30]][s.w][head ? 1 : 0];
   const f = P[s.by].f;
 
+  /* Power meter bonus (if drag released cleanly) */
+  /* Double damage pickup */
+  if (P[s.by].doubleNext) {
+    dmg *= 2;
+    P[s.by].doubleNext = false;
+  }
+
+  /* Combo bonus */
+  if (lastShooter === s.by && !t.fin) {
+    comboCount++;
+    if (comboCount >= 2) {
+      dmg = Math.floor(dmg * (1 + comboCount * 0.15));
+      showCombo(comboCount);
+    }
+  } else {
+    comboCount = 0;
+  }
+
   burst(q.x, q.y, head ? '#ffd166' : '#ff5d8f', head ? 22 : 12);
+
+  /* Screen shake & hit-stop */
+  if (!reducedMotion) {
+    shake = Math.min(18, shake + (head ? 14 : 8));
+    hitStop = 0.08;
+  }
+  vib(head ? [30, 20, 40] : [25]);
+
+  addKillFeed(
+    P[s.by].name + ' hit ' + t.name + ' for ' + dmg + (head ? ' (HEADSHOT)' : '')
+  );
 
   if (t.fin) {
     t.hp = 0;
@@ -1516,6 +2096,7 @@ function hit(s, q, t, head) {
     ragdoll(t, f);
     txt(t.x, t.floorY - 140, 'FATALITY!', '#ff3b5c', 46);
     ban('FATALITY!');
+    vib([100]);
   } else {
     t.hp = Math.max(0, t.hp - dmg);
     t.x = clamp(t.x + f * (25 + dmg * 1.4), 80, W - 80);
@@ -1547,6 +2128,15 @@ function endShot() {
 
   const r = s.rec;
 
+  /* Save replay snapshot */
+  if (!replaying) {
+    replayData = {
+      by: s.by, a: s.a, pw: s.pw, w: s.w,
+      snap: P.map(p => ({ hp: p.hp, x: p.x, fin: p.fin }))
+    };
+    $('replay').classList.add('show');
+  }
+
   if (r) {
     P.forEach((p, i) => {
       p.hp = r.hp[i];
@@ -1560,18 +2150,39 @@ function endShot() {
       n: ++shotN, by: s.by, a: s.a, pw: s.pw, w: s.w, sp: s.sp,
       hp: P.map(p => p.hp), x: P.map(p => p.x), fin: P.map(p => p.fin),
       nx, over: st.over ? 1 : 0,
-      obs: obstacles.map(o => ({ hp: o.hp, destroyed: o.destroyed ? 1 : 0 }))
+      obs: obstacles.map(o => ({ hp: o.hp, destroyed: o.destroyed ? 1 : 0 })),
+      wind
     });
   }
 
   st.turn = nx;
   hud();
+  updateAbilityBtn();
+  stopTurnTimer();
 
+  /* Handle round/match end */
   if (st.over) {
+    roundScore[s.by]++;
+    updateScore();
     setTimeout(() => {
-      $('et').textContent = st.win == st.my ? 'VICTORY!' : 'DEFEATED';
-      $('end').classList.add('on');
+      if (roundScore[s.by] >= maxWins) {
+        $('et').textContent = st.win == st.my ? 'VICTORY!' : 'DEFEATED';
+        $('end').classList.add('on');
+      } else {
+        /* Start next round */
+        currentRound++;
+        const sceneIdx = st.sc;
+        const a = { name: P[0].name, ch: P[0].ch };
+        const b = { name: P[1].name, ch: P[1].ch };
+        startGame({
+          mode: st.mode, my: st.my, a, b, sc: sceneIdx
+        });
+        setTimeout(() => ban('ROUND ' + currentRound + '!'), 300);
+      }
     }, 2200);
+  } else {
+    /* Next turn — restart timer if it's my turn */
+    if (st.turn == st.my) startTurnTimer();
   }
 }
 
@@ -1588,6 +2199,7 @@ function ragdoll(t, f) {
 }
 
 const burst = (x, y, col, n) => {
+  if (reducedMotion) n = Math.min(n, 6);
   for (let i = 0; i < n; i++) {
     const a = Math.random() * 7;
     const s = 100 + Math.random() * 320;
@@ -1598,40 +2210,67 @@ const burst = (x, y, col, n) => {
 const txt = (x, y, s, c2, z) => tx.push({ x, y, s, c: c2, z, l: 1.4 });
 
 /* ============================================================
-   BOT AI (terrain-aware)
+   REPLAY
+   ============================================================ */
+$('replay').onclick = () => {
+  if (!replayData || !st || replaying) return;
+  replaying = true;
+  /* Reset to pre-shot state */
+  const r = replayData;
+  P.forEach((p, i) => {
+    p.hp = r.snap[i].hp;
+    p.x = r.snap[i].x;
+    p.dx = r.snap[i].x;
+    p.fin = r.snap[i].fin;
+  });
+  sim = null;
+  stuck = [];
+  hitStop = 0;
+  shake = 0;
+  fire(r.by, r.a, r.pw, r.w, -1, {
+    hp: r.snap.map(s => s.hp),
+    x: r.snap.map(s => s.x),
+    fin: r.snap.map(s => s.fin),
+    nx: 1 - r.by,
+    by: r.by,
+    over: 0
+  });
+  replaying = false;
+  $('replay').classList.remove('show');
+};
+
+/* ============================================================
+   BOT AI
    ============================================================ */
 function botShot() {
   botWait = 0;
   if (!st || st.over || sim || st.turn != 1 || st.mode != 'bot') return;
 
-  const bot = P[1];
-  const opp = P[0];
+  const bot = P[1], opp = P[0];
   const dx = Math.abs(bot.x - opp.x);
-  const dy = opp.floorY - bot.floorY;  /* positive if target is LOWER */
+  const dy = opp.floorY - bot.floorY;
 
-  /* Pick weapon */
   const w = Math.random() < .25 ? 1 : (Math.random() < .2 ? 2 : 0);
   const speed = V * (w == 1 ? .8 : 1);
 
-  /* Solve ballistic: with height difference */
-  const g = G;
   const aRad = .5 + Math.random() * .35;
-  /* v² = g*dx² / (2*cos²a*(dx*tan a - dy)) */
   const tanA = Math.tan(aRad);
   const cosA = Math.cos(aRad);
   const denom = 2 * cosA * cosA * (dx * tanA - dy);
-  let v = denom > 0 ? Math.sqrt(g * dx * dx / denom) : speed;
+  let v = denom > 0 ? Math.sqrt(G * gravityMod * dx * dx / denom) : speed;
   let pw = clamp(v / speed * 100, 15, 100);
+
+  /* Compensate for wind */
+  pw += wind * 8 * (Math.random() > 0.5 ? 1 : -1);
 
   pw *= 1 + (Math.random() - .5) * botErr;
   botErr = Math.max(.05, botErr * .72);
 
-  /* Avoid obstacle if directly in path */
   const blocker = obstacles.find(o => !o.destroyed && Math.abs(o.x - (P[0].x + P[1].x) / 2) < 90);
   const aimAdj = blocker ? (Math.random() - .5) * 10 : 0;
 
-  /* Reverse angle since bot faces left */
-  fire(1, 180 - (aRad * 180 / PI) + aimAdj + (Math.random() - .5) * botErr * 14, pw, w, -1, null);
+  fire(1, 180 - (aRad * 180 / PI) + aimAdj + (Math.random() - .5) * botErr * 14, clamp(pw, 15, 100), w, -1, null);
+  stopTurnTimer();
 }
 
 /* ============================================================
@@ -1708,13 +2347,26 @@ function scene() {
   g.addColorStop(1, s.gr[1]);
   c.fillStyle = g;
   c.fillRect(-500, GY, W + 1000, H);
+
+  /* Wind streaks */
+  if (wind !== 0 && !reducedMotion) {
+    c.strokeStyle = 'rgba(255,255,255,0.15)';
+    c.lineWidth = 2;
+    for (let i = 0; i < 8; i++) {
+      const wy = 80 + hsh(i) * 400;
+      const wx = ((T * 200 * Math.sign(wind) + i * 200) % W + W) % W;
+      c.beginPath();
+      c.moveTo(wx, wy);
+      c.lineTo(wx + 40 * Math.sign(wind), wy);
+      c.stroke();
+    }
+  }
 }
 
 function prop(k, x, y, z) {
   c.save();
   c.translate(x, y);
   c.scale(z, z);
-
   if (k == 'tree') {
     c.fillStyle = '#7a4a21';
     c.fillRect(-8, -70, 16, 70);
@@ -1753,29 +2405,20 @@ function prop(k, x, y, z) {
     c.fillStyle = '#ff6a2a';
     c.fillRect(-4, -118, 6, 60);
   }
-
   c.restore();
 }
 
-/* ---------- TERRAIN (player platforms) ---------- */
 function drawTerrain() {
   terrain.forEach(t => {
-    const x = t.x;
-    const w = t.w;
-    const baseY = t.baseY;
-    const topY = t.topY;
+    const x = t.x, w = t.w, baseY = t.baseY, topY = t.topY;
 
     if (t.type === 'hill') {
-      /* Grass hill — player stands on top */
       c.fillStyle = '#4a7a33';
       c.beginPath();
       c.moveTo(x - w / 2, baseY);
       c.quadraticCurveTo(x, topY - 30, x + w / 2, baseY);
-      c.lineTo(x + w / 2, baseY);
       c.closePath();
       c.fill();
-
-      /* Grass top */
       c.fillStyle = '#6bb84a';
       c.beginPath();
       c.moveTo(x - w / 2, baseY);
@@ -1783,15 +2426,11 @@ function drawTerrain() {
       c.lineTo(x + w / 2 - 40, baseY - 15);
       c.quadraticCurveTo(x, topY + 30, x - w / 2 + 40, baseY - 15);
       c.fill();
-
-      /* Grass tufts on top */
       c.fillStyle = '#3d7a28';
       for (let i = 0; i < 6; i++) {
         const gx = x - w / 3 + i * (w / 9);
         c.fillRect(gx, topY - 6, 3, 8);
       }
-
-      /* Peak highlight */
       c.fillStyle = 'rgba(255,255,255,0.15)';
       c.beginPath();
       c.ellipse(x, topY + 5, w / 3, 12, 0, 0, 7);
@@ -1810,7 +2449,6 @@ function drawTerrain() {
       c.quadraticCurveTo(x + w / 6, topY + 25, x + w / 2, baseY);
       c.fill();
     } else if (t.type === 'iceblock') {
-      /* Ice platform */
       c.fillStyle = 'rgba(140,210,255,0.85)';
       c.fillRect(x - w / 2, topY, w, baseY - topY);
       c.fillStyle = 'rgba(220,245,255,0.95)';
@@ -1820,7 +2458,6 @@ function drawTerrain() {
       c.lineTo(x + w / 2 - 20, topY - 14);
       c.lineTo(x + w / 2, topY);
       c.fill();
-      /* Cracks */
       c.strokeStyle = 'rgba(255,255,255,0.6)';
       c.lineWidth = 2;
       for (let i = 0; i < 4; i++) {
@@ -1830,7 +2467,6 @@ function drawTerrain() {
         c.lineTo(cx + 8, baseY);
         c.stroke();
       }
-      /* Sparkle */
       c.fillStyle = '#fff';
       for (let i = 0; i < 3; i++) {
         const sx = x - w / 3 + i * (w / 3);
@@ -1841,23 +2477,19 @@ function drawTerrain() {
       }
       c.globalAlpha = 1;
     } else if (t.type === 'pillar') {
-      /* Stone pillar */
       c.fillStyle = '#3a1e1e';
       c.fillRect(x - w / 2, topY, w, baseY - topY);
       c.fillStyle = '#5a2e2e';
       c.fillRect(x - w / 2, topY, w * 0.4, baseY - topY);
-      /* Lava cracks */
       c.fillStyle = '#ff6a2a';
       for (let i = 0; i < 3; i++) {
         c.fillRect(x - w / 2 + 4, topY + 20 + i * 40, w - 8, 3);
       }
-      /* Glow */
       c.fillStyle = 'rgba(255,120,40,0.25)';
       c.beginPath();
       c.ellipse(x, topY - 4, w / 2 + 10, 12, 0, 0, 7);
       c.fill();
     } else if (t.type === 'lavarock') {
-      /* Lava rock platform */
       c.fillStyle = '#4a2020';
       c.beginPath();
       c.ellipse(x, (topY + baseY) / 2, w / 2, (baseY - topY) / 2 + 10, 0, 0, 7);
@@ -1866,18 +2498,49 @@ function drawTerrain() {
       c.beginPath();
       c.ellipse(x, (topY + baseY) / 2 + 5, w / 2 - 10, (baseY - topY) / 2 - 4, 0, 0, 7);
       c.fill();
-      /* Glow */
       c.fillStyle = 'rgba(255,120,40,0.4)';
       c.beginPath();
       c.ellipse(x, topY - 2, w / 2, 14, 0, 0, 7);
       c.fill();
-    } else if (t.type === 'flat') {
-      /* No platform drawn — just ground */
     }
   });
 }
 
-/* ---------- OBSTACLE RENDERING ---------- */
+function drawPickups() {
+  pickups.forEach(p => {
+    if (p.collected) return;
+    const bob = Math.sin(T * 2 + p.bobOffset) * 6;
+    const y = p.y + bob;
+    c.save();
+    c.translate(p.x, y);
+
+    /* Glow */
+    c.fillStyle = p.type === 'health' ? 'rgba(125,255,168,0.3)' :
+                  p.type === 'double' ? 'rgba(255,209,102,0.3)' :
+                  'rgba(167,139,250,0.3)';
+    c.beginPath();
+    c.arc(0, 0, 26 + Math.sin(T * 4) * 4, 0, 7);
+    c.fill();
+
+    /* Core */
+    c.fillStyle = p.type === 'health' ? '#7dffa8' :
+                  p.type === 'double' ? '#ffd166' :
+                  '#a78bfa';
+    c.beginPath();
+    c.arc(0, 0, 16, 0, 7);
+    c.fill();
+
+    /* Icon */
+    c.fillStyle = '#0d081c';
+    c.font = '900 18px Trebuchet MS';
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.fillText(p.type === 'health' ? '❤' : p.type === 'double' ? '⚡' : '🎁', 0, 1);
+
+    c.restore();
+  });
+}
+
 function drawObstacles() {
   obstacles.forEach(o => {
     if (o.destroyed) {
@@ -2034,7 +2697,6 @@ function drawHead(ch, f) {
   c.beginPath();
   c.arc(0, 0, 22, 0, 7);
   c.fill();
-
   if (ch.k == 'ninja') {
     c.fillStyle = '#2b2b3d';
     c.beginPath();
@@ -2056,12 +2718,10 @@ function drawHead(ch, f) {
     c.lineTo(0, 44);
     c.fill();
   }
-
   c.fillStyle = '#111';
   c.beginPath();
   c.arc(f * 9, -2, 3, 0, 7);
   c.fill();
-
   if (ch.k == 'knight') {
     c.fillStyle = '#b9c4d6';
     c.beginPath();
@@ -2125,9 +2785,22 @@ function drawChar(p, i, aim) {
   }
 
   c.save();
-  c.translate(p.dx, p.floorY);  /* Use per-player floor */
+  c.translate(p.dx, p.floorY);
   c.rotate(-f * p.lean * .5 - (p.fin ? f * .45 : 0));
   if (p.fin) c.scale(1, .9);
+
+  /* Shield ring */
+  if (shieldActive[i]) {
+    c.strokeStyle = 'rgba(125,255,168,0.7)';
+    c.lineWidth = 3;
+    c.beginPath();
+    c.arc(0, -60, 55 + Math.sin(T * 5) * 3, 0, 7);
+    c.stroke();
+    c.fillStyle = 'rgba(125,255,168,0.1)';
+    c.beginPath();
+    c.arc(0, -60, 55, 0, 7);
+    c.fill();
+  }
 
   c.fillStyle = 'rgba(0,0,0,0.25)';
   c.beginPath();
@@ -2201,10 +2874,23 @@ function drawChar(p, i, aim) {
 }
 
 function projDraw(q) {
+  /* Trail */
+  if (q.trail && !reducedMotion) {
+    q.trail.forEach(tr => {
+      if (tr.a <= 0) return;
+      c.save();
+      c.globalAlpha = tr.a * 0.4;
+      c.fillStyle = q.k == 2 ? '#ffd166' : q.k == 1 ? '#dfe7f1' : '#fff';
+      c.beginPath();
+      c.arc(tr.x, tr.y, 4, 0, 7);
+      c.fill();
+      c.restore();
+    });
+  }
+
   c.save();
   c.translate(q.x, q.y);
   c.rotate(q.rot);
-
   if (q.k == 1) {
     c.fillStyle = '#7a4a21';
     c.fillRect(-4, -30, 8, 50);
@@ -2227,7 +2913,6 @@ function projDraw(q) {
     c.fillStyle = '#e63946';
     c.fillRect(-30, -5, 8, 10);
   }
-
   c.restore();
 }
 
@@ -2242,7 +2927,13 @@ function frame(ts) {
 
   if (!st || !$('game').classList.contains('on')) return;
 
-  if (sim) {
+  /* Hit-stop: freeze sim for a brief moment */
+  if (hitStop > 0) {
+    hitStop -= dt;
+    if (!reducedMotion) {
+      /* render at normal state, but don't step */
+    }
+  } else if (sim) {
     acc += dt;
     while (acc >= DT && sim) {
       stepSim();
@@ -2252,16 +2943,37 @@ function frame(ts) {
     acc = 0;
   }
 
+  /* Turn timer */
+  if (turnTimerActive && !sim && !st.over) {
+    turnTimer -= dt;
+    const pct = Math.max(0, turnTimer / turnTimerMax);
+    $('timerBar').style.width = (pct * 100) + '%';
+    if (pct < 0.3) $('timerBar').classList.add('low');
+    if (turnTimer <= 0) {
+      turnTimerActive = false;
+      /* Auto-fire weak shot */
+      if (st.turn == st.my) {
+        fire(st.my, 45, 40, 0, -1, null);
+        stopTurnTimer();
+      }
+    }
+  }
+
+  /* Ability cooldowns */
+  abilityCooldowns = abilityCooldowns.map(cd => Math.max(0, cd - dt));
+  if (st && st.turn == st.my) updateAbilityBtn();
+
+  /* Bot */
   if (st.mode == 'bot' && st.turn == 1 && !sim && !st.over && !botWait) {
     botWait = 1;
     setTimeout(botShot, 1200);
+    startTurnTimer();
   }
 
   P.forEach(p => {
     p.dx += (p.x - p.dx) * Math.min(1, 10 * dt);
     p.lean *= Math.pow(.02, dt);
     p.rec *= Math.pow(.001, dt);
-
     if (p.parts) {
       p.parts.forEach(q => {
         q.vy += G * dt;
@@ -2279,6 +2991,7 @@ function frame(ts) {
   });
 
   obstacles.forEach(o => { if (o.shake > 0) o.shake = Math.max(0, o.shake - dt * 4); });
+  if (shake > 0) shake = Math.max(0, shake - dt * 40);
 
   fx.forEach(f => {
     f.vy += 900 * dt;
@@ -2288,19 +3001,25 @@ function frame(ts) {
   });
   fx = fx.filter(f => f.l > 0);
 
-  tx.forEach(t => {
-    t.y -= 50 * dt;
-    t.l -= dt;
-  });
+  tx.forEach(t => { t.y -= 50 * dt; t.l -= dt; });
   tx = tx.filter(t => t.l > 0);
 
   stuck.forEach(s => s.l -= dt * .3);
   stuck = stuck.filter(s => s.l > 0);
 
+  /* ---------- RENDER ---------- */
   c.setTransform(1, 0, 0, 1, 0, 0);
   c.fillStyle = '#000';
   c.fillRect(0, 0, cv.width, cv.height);
-  c.setTransform(sc, 0, 0, sc, ox, oy);
+
+  /* Screen shake */
+  let shX = 0, shY = 0;
+  if (shake > 0 && !reducedMotion) {
+    shX = (Math.random() - .5) * shake;
+    shY = (Math.random() - .5) * shake;
+  }
+
+  c.setTransform(sc, 0, 0, sc, ox + shX, oy + shY);
 
   c.save();
   c.beginPath();
@@ -2318,14 +3037,13 @@ function frame(ts) {
     const p = P[st.my];
     const r = a.a * PI / 180;
     const s = a.pw / 100 * V * (wsel == 1 ? .8 : 1);
-
     let x = p.x, y = p.floorY - 70;
     let vx = p.f * Math.cos(r) * s, vy = -Math.sin(r) * s;
     pts = [];
-
     for (let i = 0; i < 16; i++) {
       for (let k = 0; k < 8; k++) {
-        vy += G * .008;
+        vy += G * gravityMod * .008;
+        vx += wind * 40 * .008;
         x += vx * .008;
         y += vy * .008;
       }
@@ -2333,12 +3051,9 @@ function frame(ts) {
     }
   }
 
-  /* Draw terrain (player platforms) FIRST so chars stand on them */
   drawTerrain();
-
-  /* Obstacles */
+  drawPickups();
   drawObstacles();
-
   P.forEach((p, i) => drawChar(p, i, i == st.my && drag ? aim : null));
 
   if (sim) sim.pr.forEach(projDraw);
@@ -2352,7 +3067,6 @@ function frame(ts) {
       c.fill();
     });
     c.globalAlpha = 1;
-
     const p = P[st.my];
     const a = aimOf();
     c.font = '900 34px Trebuchet MS';
@@ -2404,6 +3118,13 @@ function leave() {
   sim = null;
   obstacles = [];
   terrain = [];
+  pickups = [];
+  stopTurnTimer();
+  $('wind').classList.remove('show');
+  $('score').classList.remove('show');
+  $('ability').classList.remove('show');
+  $('replay').classList.remove('show');
+  $('killfeed').innerHTML = '';
   show('menu');
 }
 
@@ -2412,6 +3133,8 @@ $('eb').onclick = leave;
 
 $('bBot').onclick = () => {
   const n = nameOf();
+  roundScore = [0, 0];
+  currentRound = 1;
   startGame({
     mode: 'bot',
     my: 0,
@@ -2436,6 +3159,11 @@ function listen() {
     lastN = r.n;
     if (r.by === st.my) return;
 
+    if (r.wind !== undefined) {
+      wind = r.wind;
+      $('wind').textContent = wind === 0 ? '💨 Calm' : (wind > 0 ? '💨 → ' : '💨 ← ') + Math.abs(wind).toFixed(1);
+    }
+
     if (r.obs) {
       r.obs.forEach((o, i) => {
         if (obstacles[i]) {
@@ -2452,6 +3180,12 @@ function listen() {
     go();
   });
 
+  ref.child('emoji').on('value', s => {
+    const r = s.val();
+    if (!r || !r.e) return;
+    floatEmoji(r.e);
+  });
+
   ref.on('value', s => {
     const r = s.val();
     if (!r) {
@@ -2465,6 +3199,8 @@ function listen() {
     if (isHost && r.guest && !started) {
       started = true;
       msg();
+      roundScore = [0, 0];
+      currentRound = 1;
       startGame({ mode: 'net', my: 0, a: r.host, b: r.guest, sc: r.scene });
     }
   });
@@ -2474,7 +3210,6 @@ $('bHost').onclick = async () => {
   if (needDb()) return;
   const n = nameOf();
   const code = Array.from({ length: 4 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.random() * 24 | 0]).join('');
-
   try {
     isHost = true;
     ref = db.ref('rooms/' + code);
@@ -2498,25 +3233,73 @@ $('bJoin').onclick = async () => {
   const n = nameOf();
   const code = ($('jc').value || '').trim().toUpperCase();
   if (code.length != 4) return msg('Enter the 4-letter code');
-
   try {
     const r = db.ref('rooms/' + code);
     const s = await r.once('value');
     const d = s.val();
-
     if (!d) return msg('Room not found');
     if (d.guest || d.status != 'lobby') return msg('Room is full');
-
     await r.update({ guest: { name: n, ch: me.ch }, status: 'play' });
     ref = r;
     isHost = false;
     started = true;
     msg();
+    roundScore = [0, 0];
+    currentRound = 1;
     startGame({ mode: 'net', my: 1, a: d.host, b: { name: n, ch: me.ch }, sc: d.scene });
     listen();
   } catch (e) {
     msg('Join failed: ' + e.message);
   }
+};
+
+/* Quick Match: find first open room or create one */
+$('bQuick').onclick = async () => {
+  if (needDb()) return;
+  const n = nameOf();
+  try {
+    const snap = await db.ref('rooms').orderByChild('status').equalTo('lobby').limitToFirst(1).once('value');
+    const rooms = snap.val();
+    if (rooms) {
+      const code = Object.keys(rooms)[0];
+      const r = db.ref('rooms/' + code);
+      const d = rooms[code];
+      if (d && !d.guest) {
+        await r.update({ guest: { name: n, ch: me.ch }, status: 'play' });
+        ref = r;
+        isHost = false;
+        started = true;
+        msg();
+        roundScore = [0, 0];
+        currentRound = 1;
+        startGame({ mode: 'net', my: 1, a: d.host, b: { name: n, ch: me.ch }, sc: d.scene });
+        listen();
+        return;
+      }
+    }
+    /* No room found — create one */
+    msg('No open rooms — creating one...');
+    $('bHost').click();
+  } catch (e) {
+    msg('Quick match failed: ' + e.message);
+  }
+};
+
+/* Daily Challenge: track streak */
+$('bChallenge').onclick = () => {
+  const n = nameOf();
+  let streak = 0;
+  try { streak = parseInt(localStorage.getItem('aimit_streak') || '0'); } catch (e) { }
+  ban('DAILY · STREAK ' + streak);
+  roundScore = [0, 0];
+  currentRound = 1;
+  startGame({
+    mode: 'bot',
+    my: 0,
+    a: { name: n, ch: me.ch },
+    b: { name: 'Challenger', ch: (me.ch + 1 + (Math.random() * 3 | 0)) % 4 },
+    sc: pickScene()
+  });
 };
 
 /* ============================================================
@@ -2558,14 +3341,11 @@ $('aGo').onclick = async () => {
   const u = $('au').value.trim();
   const p = $('ap').value;
   e('');
-
   if (!auth) return e('Firebase failed to load.');
   if (!/^[a-zA-Z0-9_]{3,16}$/.test(u)) return e('Username: 3–16 letters, numbers or _');
   if (p.length < 6) return e('Password needs 6+ characters');
-
   $('aGo').disabled = true;
   const mail = u.toLowerCase() + '@aimit.local';
-
   try {
     if (signup) {
       pendingName = u;
@@ -2585,7 +3365,6 @@ $('aGo').onclick = async () => {
       : /permission/i.test(m) ? 'Database rules block this — update your rules'
       : m.replace('Firebase: ', ''));
   }
-
   $('aGo').disabled = false;
 };
 
@@ -2632,11 +3411,9 @@ instBtns.forEach(b => b.onclick = async () => {
     if (r.outcome == 'accepted') showInst(0);
     return;
   }
-
   $('itx').innerHTML = isIOS
     ? 'On iPhone/iPad:<br>tap <b>Share</b> &#11014;&#65039; then <b>Add to Home Screen</b>.<br><br><small>(tap to close)</small>'
     : 'Open your browser menu (&#8942;) and choose <b>Install app</b> / <b>Add to Home screen</b>.<br><br><small>(tap to close)</small>';
-
   $('ihelp').classList.add('on');
 });
 
