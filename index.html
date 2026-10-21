@@ -135,6 +135,236 @@
       display: flex;
     }
 
+    /* ========== SPLASH SCREEN ========== */
+    #splash {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 20%, #4a1f7a 0%, #0d081c 70%);
+      overflow: hidden;
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      transition: opacity 0.6s ease, visibility 0.6s;
+    }
+
+    #splash.fade {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Animated background layers */
+    .splash-bg {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .splash-stars {
+      position: absolute;
+      inset: 0;
+    }
+
+    .star {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle 3s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .splash-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,209,102,0.15) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulseGlow 4s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.6; }
+      50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+    }
+
+    /* Floating particles */
+    .particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ffd166;
+      box-shadow: 0 0 8px #ffd166;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-50px) scale(1.2); opacity: 0; }
+    }
+
+    /* Logo */
+    .splash-logo {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      animation: logoDrop 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes logoDrop {
+      0% { transform: translateY(-80px) scale(0.6); opacity: 0; }
+      60% { transform: translateY(10px) scale(1.05); opacity: 1; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .splash-logo h1 {
+      font-size: clamp(48px, 14vh, 110px);
+      letter-spacing: 0.14em;
+      color: #ffd166;
+      text-shadow: 0 4px 0 #8a4f10, 0 6px 20px rgba(255, 180, 60, 0.6), 0 0 60px rgba(255, 209, 102, 0.3);
+      line-height: 1;
+      animation: logoShine 3s ease-in-out infinite;
+    }
+
+    @keyframes logoShine {
+      0%, 100% { text-shadow: 0 4px 0 #8a4f10, 0 6px 20px rgba(255,180,60,0.6), 0 0 60px rgba(255,209,102,0.3); }
+      50% { text-shadow: 0 4px 0 #8a4f10, 0 6px 30px rgba(255,180,60,0.9), 0 0 90px rgba(255,209,102,0.6); }
+    }
+
+    .splash-logo .sub {
+      font-size: clamp(12px, 2.8vh, 22px);
+      letter-spacing: 0.5em;
+      color: #c4b5e8;
+      font-weight: 700;
+      margin-top: 8px;
+      animation: fadeSlideUp 0.8s 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes fadeSlideUp {
+      0% { transform: translateY(20px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Bow & arrow icon animation */
+    .splash-bow {
+      margin-top: 20px;
+      font-size: clamp(40px, 8vh, 70px);
+      animation: bowBounce 2s ease-in-out infinite;
+      position: relative;
+      z-index: 5;
+    }
+
+    @keyframes bowBounce {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-10px) rotate(5deg); }
+    }
+
+    /* Character showcase row */
+    .splash-chars {
+      display: flex;
+      gap: clamp(10px, 3vw, 30px);
+      margin-top: clamp(12px, 3vh, 30px);
+      position: relative;
+      z-index: 5;
+      animation: fadeSlideUp 0.9s 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .splash-chars .ch-fig {
+      animation: charFloat 3s ease-in-out infinite;
+    }
+
+    .splash-chars .ch-fig:nth-child(2) { animation-delay: 0.3s; }
+    .splash-chars .ch-fig:nth-child(3) { animation-delay: 0.6s; }
+    .splash-chars .ch-fig:nth-child(4) { animation-delay: 0.9s; }
+
+    @keyframes charFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Loading / tap to start */
+    .splash-start {
+      margin-top: clamp(16px, 4vh, 40px);
+      position: relative;
+      z-index: 5;
+      animation: fadeSlideUp 0.8s 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+      text-align: center;
+    }
+
+    .splash-start .pulse-btn {
+      font-size: clamp(16px, 3.4vh, 24px);
+      padding: 0.7em 2em;
+      background: linear-gradient(180deg, #ffd166 0%, #ff9f43 100%);
+      color: #3a1d00;
+      box-shadow: 0 4px 0 #b86a1d, 0 0 30px rgba(255, 209, 102, 0.4);
+      animation: btnPulse 2s ease-in-out infinite;
+      border-radius: 50px;
+      letter-spacing: 0.08em;
+    }
+
+    @keyframes btnPulse {
+      0%, 100% { box-shadow: 0 4px 0 #b86a1d, 0 0 20px rgba(255, 209, 102, 0.3); }
+      50% { box-shadow: 0 4px 0 #b86a1d, 0 0 45px rgba(255, 209, 102, 0.7); }
+    }
+
+    .splash-start .pulse-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #b86a1d, 0 0 15px rgba(255, 209, 102, 0.3);
+    }
+
+    /* Rotate hint */
+    .splash-rotate {
+      margin-top: 14px;
+      font-size: clamp(10px, 1.9vh, 14px);
+      color: #8b7ab8;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      animation: fadeSlideUp 0.8s 1.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .splash-rotate .rot-icon {
+      display: inline-block;
+      animation: rotateHint 3s ease-in-out infinite;
+      font-size: 1.2em;
+    }
+
+    @keyframes rotateHint {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(90deg); }
+      50% { transform: rotate(90deg); }
+      75% { transform: rotate(0deg); }
+    }
+
+    /* Splash figure styles (reused fig markup but larger) */
+    .splash-chars .fig {
+      transform: scale(1.1);
+      transform-origin: bottom center;
+    }
+
+    @media(max-height: 500px) {
+      .splash-chars .fig {
+        transform: scale(0.75);
+      }
+      .splash-bow {
+        margin-top: 8px;
+      }
+    }
+
     /* ========== AUTH SCREEN ========== */
     #auth {
       flex-direction: column;
@@ -552,7 +782,7 @@
       box-shadow: 0 1px 0 rgba(0,0,0,0.4);
     }
 
-    /* ========== BANNER (FIGHT! / HEADSHOT! etc) ========== */
+    /* ========== BANNER ========== */
     #ban {
       position: fixed;
       inset: 0;
@@ -616,7 +846,7 @@
       text-align: center;
     }
 
-    /* ========== ROTATE OVERLAY ========== */
+    /* ========== ROTATE OVERLAY (in-game only) ========== */
     #rot {
       display: none;
       position: fixed;
@@ -636,6 +866,10 @@
     @media(orientation: portrait) {
       #rot {
         display: flex;
+      }
+      /* Hide rotate overlay while splash is active */
+      #splash.on ~ #rot {
+        display: none !important;
       }
     }
 
@@ -727,16 +961,6 @@
       white-space: nowrap;
     }
 
-    /* ========== SCENE PREVIEW BADGE ========== */
-    .scene-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.8em;
-      color: #c4b5e8;
-      margin-left: 4px;
-    }
-
     /* ========== OBSTACLE LEGEND ========== */
     .obs-legend {
       font-size: clamp(9px, 1.9vh, 12px);
@@ -752,14 +976,38 @@
 </head>
 <body>
 
+<!-- ========== SPLASH SCREEN ========== -->
+<div id="splash" class="scr on">
+  <div class="splash-bg">
+    <div class="splash-stars" id="splashStars"></div>
+    <div class="splash-glow"></div>
+  </div>
+
+  <div class="splash-logo">
+    <h1>AIMIT</h1>
+    <div class="sub">ARCHER DUEL</div>
+    <div class="splash-bow">🏹</div>
+  </div>
+
+  <div class="splash-chars" id="splashChars"></div>
+
+  <div class="splash-start">
+    <button class="pulse-btn" id="splashBtn">TAP TO START</button>
+    <div class="splash-rotate">
+      <span class="rot-icon">📱</span>
+      Rotate screen for optimal experience
+    </div>
+  </div>
+</div>
+
 <!-- ========== INFO HELP OVERLAY ========== -->
 <div id="ihelp"><div id="itx"></div></div>
 
-<!-- ========== ROTATE PROMPT ========== -->
+<!-- ========== ROTATE PROMPT (in-game only) ========== -->
 <div id="rot">&#10227;<br>Rotate your phone to landscape</div>
 
 <!-- ========== AUTH SCREEN ========== -->
-<div id="auth" class="scr on">
+<div id="auth" class="scr">
   <h1>AIMIT<small>ARCHER DUEL</small></h1>
   <div id="at" style="font-weight:900;font-size:clamp(14px,3.4vh,20px);color:#ffd166;letter-spacing:.04em">Log in to play</div>
   <input id="au" maxlength="16" placeholder="Username" autocomplete="username" autocapitalize="off">
@@ -921,10 +1169,61 @@ const save = () => {
 };
 
 /* ============================================================
-   FIGURE / MENU BUILDING
+   SPLASH SCREEN SETUP
    ============================================================ */
+function buildSplash() {
+  /* Stars */
+  const starsBox = $('splashStars');
+  let starHTML = '';
+  for (let i = 0; i < 40; i++) {
+    const x = Math.random() * 100;
+    const y = Math.random() * 100;
+    const size = 1 + Math.random() * 3;
+    const delay = Math.random() * 3;
+    const dur = 2 + Math.random() * 3;
+    starHTML += `<div class="star" style="left:${x}%;top:${y}%;width:${size}px;height:${size}px;animation-delay:${delay}s;animation-duration:${dur}s"></div>`;
+  }
+  starsBox.innerHTML = starHTML;
+
+  /* Floating particles */
+  for (let i = 0; i < 15; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = (Math.random() * 100) + '%';
+    p.style.animationDuration = (6 + Math.random() * 8) + 's';
+    p.style.animationDelay = (Math.random() * 6) + 's';
+    p.style.opacity = 0.3 + Math.random() * 0.5;
+    p.style.width = p.style.height = (3 + Math.random() * 5) + 'px';
+    $('splash').querySelector('.splash-bg').appendChild(p);
+  }
+
+  /* Character showcase */
+  $('splashChars').innerHTML = CH.map(c => `<div class="ch-fig">${fig(c)}</div>`).join('');
+}
+
+/* Figure markup (reused) */
 const fig = c => `<div class="fig ${c.k}" style="--skin:${c.sk};--body:${c.bd};--leg:${c.lg}"><i class="lg"></i><i class="bd"></i><i class="hd"></i><i class="ht"></i></div>`;
 
+buildSplash();
+
+/* Splash → Auth/Menu transition */
+$('splashBtn').onclick = () => {
+  $('splash').classList.add('fade');
+  setTimeout(() => {
+    $('splash').classList.remove('on');
+    /* Route to auth or menu depending on firebase user */
+    if (auth) {
+      /* onAuthStateChanged will route automatically */
+      if (!user) show('auth');
+    } else {
+      show('auth');
+    }
+  }, 650);
+};
+
+/* ============================================================
+   MENU BUILDING
+   ============================================================ */
 function buildMenu() {
   $('chars').innerHTML = CH.map((c, i) =>
     `<div class="ch${i == me.ch ? ' on' : ''}" data-i="${i}">${fig(c)}${c.n}</div>`
@@ -934,7 +1233,6 @@ function buildMenu() {
     `<div class="chip${i == me.sc ? ' on' : ''}" data-i="${i}">${n}</div>`
   ).join('');
 
-  /* Update obstacle legend */
   const sel = me.sc === 4 ? null : SC[me.sc];
   $('obsLegend').textContent = sel ? sel.obsLabel : '🎲 Random arena — 4 unique battlefields';
 
@@ -1013,7 +1311,6 @@ function startGame(o) {
   sim = null; stuck = []; fx = []; tx = []; shotN = 0; lastN = 0;
   botErr = .4; botWait = 0; drag = null; started = true;
 
-  /* Build obstacles for this scene */
   obstacles = SC[o.sc].obs.map(o2 => ({
     type: o2.type,
     x: o2.x,
@@ -1111,7 +1408,7 @@ function aimOf() {
 }
 
 /* ============================================================
-   PHYSICS — DETERMINISTIC FIXED STEP
+   PHYSICS
    ============================================================ */
 const mkp = (x, y, vx, vy, k) => ({ x, y, vx, vy, k, rot: 0 });
 
@@ -1130,7 +1427,6 @@ function fire(by, a, pw, w, sp, rec) {
   hud();
 }
 
-/* Check if projectile hits an obstacle — returns obstacle index or -1 */
 function checkObstacle(q, r) {
   for (let i = 0; i < obstacles.length; i++) {
     const o = obstacles[i];
@@ -1152,7 +1448,6 @@ function stepSim() {
   const s = sim;
   const t = P[1 - s.by];
 
-  /* Splitter — spawn extra projectiles on first step */
   if (s.w == 2 && s.sp == s.step && s.pr.length) {
     const m = s.pr[0];
     [-.2, .2].forEach(d => {
@@ -1172,7 +1467,6 @@ function stepSim() {
     const r = q.k == 1 ? 26 : 6;
     let h = 0;
 
-    /* Obstacle collision (checked first so it blocks shots) */
     const oi = checkObstacle(q, r);
     if (oi >= 0) {
       const o = obstacles[oi];
@@ -1192,9 +1486,7 @@ function stepSim() {
       continue;
     }
 
-    /* Head hit */
     if (!t.dead && Math.hypot(q.x - t.x, q.y - (GY - 100)) < 22 + r) h = 2;
-    /* Body hit */
     else if (!t.dead && Math.abs(q.x - t.x) < 24 + r * .5 && q.y > GY - 80 - r * .3 && q.y < GY) h = 1;
 
     if (h) {
@@ -1306,7 +1598,7 @@ const burst = (x, y, col, n) => {
 const txt = (x, y, s, c2, z) => tx.push({ x, y, s, c: c2, z, l: 1.4 });
 
 /* ============================================================
-   BOT AI (obstacle-aware aiming)
+   BOT AI
    ============================================================ */
 function botShot() {
   botWait = 0;
@@ -1320,7 +1612,6 @@ function botShot() {
   pw *= 1 + (Math.random() - .5) * botErr;
   botErr = Math.max(.05, botErr * .72);
 
-  /* Slight aim adjustment if obstacle in the way */
   const blocker = obstacles.find(o => !o.destroyed && Math.abs(o.x - (P[0].x + P[1].x) / 2) < 100);
   const aimAdj = blocker ? (Math.random() - .5) * 8 : 0;
 
@@ -1343,7 +1634,6 @@ function scene() {
   c.fillStyle = g;
   c.fillRect(-500, -300, W + 1000, H + 800);
 
-  /* Snow particles */
   if (s.x == 'snow') {
     c.fillStyle = '#fff';
     for (let i = 0; i < 70; i++) {
@@ -1353,7 +1643,6 @@ function scene() {
     c.globalAlpha = 1;
   }
 
-  /* Sun / moon */
   c.fillStyle = s.orb[2];
   c.shadowColor = s.orb[2];
   c.shadowBlur = 60;
@@ -1362,7 +1651,6 @@ function scene() {
   c.fill();
   c.shadowBlur = 0;
 
-  /* Hills */
   s.hill.forEach((col, k) => {
     c.fillStyle = col;
     c.beginPath();
@@ -1374,7 +1662,6 @@ function scene() {
     c.fill();
   });
 
-  /* Clouds */
   if (s.x == 'clouds') {
     c.fillStyle = '#fff';
     for (let i = 0; i < 5; i++) {
@@ -1389,7 +1676,6 @@ function scene() {
     c.globalAlpha = 1;
   }
 
-  /* Embers */
   if (s.x == 'embers') {
     c.fillStyle = '#ffb347';
     for (let i = 0; i < 45; i++) {
@@ -1399,10 +1685,8 @@ function scene() {
     c.globalAlpha = 1;
   }
 
-  /* Props */
   [560, 800, 1040].forEach((x, i) => prop(s.pr, x + (i - 1) * 30, GY, .8 + hsh(i + 3) * .5));
 
-  /* Ground */
   g = c.createLinearGradient(0, GY, 0, H + 200);
   g.addColorStop(0, s.gr[0]);
   g.addColorStop(1, s.gr[1]);
@@ -1461,7 +1745,6 @@ function prop(k, x, y, z) {
 function drawObstacles() {
   obstacles.forEach(o => {
     if (o.destroyed) {
-      /* Rubble remains */
       c.save();
       c.translate(o.baseX, GY);
       c.fillStyle = 'rgba(80,60,40,0.5)';
@@ -1494,7 +1777,6 @@ function drawObstacles() {
       c.moveTo(-o.w / 2, 0);
       c.quadraticCurveTo(-o.w / 6, -o.h * .9, o.w / 2, 0);
       c.fill();
-      /* Grass tufts */
       c.fillStyle = '#3d7a28';
       for (let i = 0; i < 5; i++) {
         const gx = (i - 2) * (o.w / 6);
@@ -1598,7 +1880,6 @@ function drawObstacles() {
       c.fill();
     }
 
-    /* HP pips */
     if (o.hp < o.maxHp) {
       for (let i = 0; i < o.maxHp; i++) {
         c.fillStyle = i < o.hp ? '#7dffa8' : 'rgba(255,255,255,0.2)';
@@ -1712,24 +1993,20 @@ function drawChar(p, i, aim) {
   c.rotate(-f * p.lean * .5 - (p.fin ? f * .45 : 0));
   if (p.fin) c.scale(1, .9);
 
-  /* Shadow */
   c.fillStyle = 'rgba(0,0,0,0.25)';
   c.beginPath();
   c.ellipse(0, 0, 34, 8, 0, 0, 7);
   c.fill();
 
-  /* Legs */
   c.fillStyle = ch.lg;
   c.fillRect(-15, -30, 12, 30);
   c.fillRect(3, -30, 12, 30);
 
-  /* Body */
   c.fillStyle = ch.bd;
   c.beginPath();
   c.roundRect(-22, -78, 44, 50, 10);
   c.fill();
 
-  /* Arm & weapon */
   const a = (aim == null ? 30 : aim) * PI / 180;
   const ax = f * Math.cos(a), ay = -Math.sin(a);
   const rc = p.rec * 8;
@@ -1775,11 +2052,9 @@ function drawChar(p, i, aim) {
   }
   c.restore();
 
-  /* Head */
   c.translate(0, -100);
   drawHead(ch, f);
 
-  /* Stun stars */
   if (p.fin) {
     c.font = '28px sans-serif';
     c.textAlign = 'center';
@@ -1831,7 +2106,6 @@ function frame(ts) {
 
   if (!st || !$('game').classList.contains('on')) return;
 
-  /* Physics step */
   if (sim) {
     acc += dt;
     while (acc >= DT && sim) {
@@ -1842,13 +2116,11 @@ function frame(ts) {
     acc = 0;
   }
 
-  /* Bot turn trigger */
   if (st.mode == 'bot' && st.turn == 1 && !sim && !st.over && !botWait) {
     botWait = 1;
     setTimeout(botShot, 1200);
   }
 
-  /* Smooth position interpolation & particle updates */
   P.forEach(p => {
     p.dx += (p.x - p.dx) * Math.min(1, 10 * dt);
     p.lean *= Math.pow(.02, dt);
@@ -1870,7 +2142,6 @@ function frame(ts) {
     }
   });
 
-  /* Obstacle shake decay */
   obstacles.forEach(o => { if (o.shake > 0) o.shake = Math.max(0, o.shake - dt * 4); });
 
   fx.forEach(f => {
@@ -1890,7 +2161,6 @@ function frame(ts) {
   stuck.forEach(s => s.l -= dt * .3);
   stuck = stuck.filter(s => s.l > 0);
 
-  /* ---------- RENDER ---------- */
   c.setTransform(1, 0, 0, 1, 0, 0);
   c.fillStyle = '#000';
   c.fillRect(0, 0, cv.width, cv.height);
@@ -1904,7 +2174,6 @@ function frame(ts) {
   scene();
   stuck.forEach(projDraw);
 
-  /* Aim preview */
   let aim = null, pts = null;
 
   if (drag) {
@@ -1928,14 +2197,12 @@ function frame(ts) {
     }
   }
 
-  /* Draw obstacles behind characters so characters stand in front */
   drawObstacles();
 
   P.forEach((p, i) => drawChar(p, i, i == st.my && drag ? aim : null));
 
   if (sim) sim.pr.forEach(projDraw);
 
-  /* Dotted trajectory */
   if (pts) {
     c.fillStyle = '#fff';
     pts.forEach((q, i) => {
@@ -1946,7 +2213,6 @@ function frame(ts) {
     });
     c.globalAlpha = 1;
 
-    /* Angle & power text */
     const p = P[st.my];
     const a = aimOf();
     c.font = '900 34px Trebuchet MS';
@@ -1959,7 +2225,6 @@ function frame(ts) {
     c.fillText(t, p.dx, GY - 190);
   }
 
-  /* Particles */
   fx.forEach(f => {
     c.globalAlpha = Math.max(0, f.l);
     c.fillStyle = f.c;
@@ -1967,7 +2232,6 @@ function frame(ts) {
   });
   c.globalAlpha = 1;
 
-  /* Floating text */
   tx.forEach(t => {
     c.globalAlpha = Math.min(1, t.l);
     c.font = '900 ' + t.z + 'px Trebuchet MS';
@@ -2031,7 +2295,6 @@ function listen() {
     lastN = r.n;
     if (r.by === st.my) return;
 
-    /* Sync obstacle states from network */
     if (r.obs) {
       r.obs.forEach((o, i) => {
         if (obstacles[i]) {
@@ -2131,10 +2394,11 @@ if (auth) {
         if (d) { me.ch = d.ch | 0; me.sc = d.sc == null ? 4 : d.sc; }
       } catch (e) { }
       buildMenu();
-      show('menu');
+      /* Only route to menu if splash is already dismissed */
+      if (!$('splash').classList.contains('on')) show('menu');
     } else {
       if (st) leave();
-      show('auth');
+      if (!$('splash').classList.contains('on')) show('auth');
     }
   });
 } else {
