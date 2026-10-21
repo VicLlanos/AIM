@@ -670,7 +670,7 @@
       box-shadow: 0 12px 40px rgba(0,0,0,0.5);
     }
 
-    /* ========== SCROLLBAR (for menu on small screens) ========== */
+    /* ========== SCROLLBAR ========== */
     #menu::-webkit-scrollbar {
       width: 5px;
     }
@@ -684,7 +684,7 @@
       border-radius: 99px;
     }
 
-    /* ========== SAFE AREA / NOTCH SUPPORT ========== */
+    /* ========== SAFE AREA ========== */
     @supports(padding: max(0px)) {
       #hud {
         padding-top: max(0px, env(safe-area-inset-top));
@@ -693,7 +693,7 @@
       }
     }
 
-    /* ========== SMALL HEIGHT FIXES ========== */
+    /* ========== SMALL HEIGHT ========== */
     @media(max-height: 500px) {
       #menu {
         gap: 4px;
@@ -704,6 +704,49 @@
       .ch {
         padding: 4px 8px 2px;
       }
+    }
+
+    /* ========== OBSTACLE INFO PILL ========== */
+    #obsInfo {
+      position: fixed;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30, 18, 64, 0.75);
+      border: 2px solid rgba(255, 209, 102, 0.4);
+      border-radius: 99px;
+      padding: 4px 14px;
+      font-size: clamp(9px, 1.8vh, 12px);
+      font-weight: 800;
+      color: #ffd166;
+      letter-spacing: 0.05em;
+      pointer-events: none;
+      z-index: 4;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+      white-space: nowrap;
+    }
+
+    /* ========== SCENE PREVIEW BADGE ========== */
+    .scene-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.8em;
+      color: #c4b5e8;
+      margin-left: 4px;
+    }
+
+    /* ========== OBSTACLE LEGEND ========== */
+    .obs-legend {
+      font-size: clamp(9px, 1.9vh, 12px);
+      color: #8b7ab8;
+      text-align: center;
+      font-weight: 700;
+      line-height: 1.4;
+      max-width: 90vw;
+      padding: 2px 0;
+      letter-spacing: 0.02em;
     }
   </style>
 </head>
@@ -732,6 +775,7 @@
   <h1>AIMIT<small>ARCHER DUEL</small></h1>
   <div class="row" id="chars"></div>
   <div class="row" id="scenes"></div>
+  <div class="obs-legend" id="obsLegend"></div>
   <div class="row">
     <div id="hi" style="font-weight:900;color:#c4b5e8;font-size:clamp(12px,2.6vh,16px)"></div>
     <button id="bOut" style="padding:.35em .9em;font-size:clamp(11px,2.4vh,14px);background:linear-gradient(180deg,#6a4bb8,#4b3490);color:#fff;box-shadow:0 3px 0 #2a1a57">Log out</button>
@@ -768,6 +812,7 @@
     <h2 id="et"></h2>
     <button id="eb" style="font-size:clamp(16px,3.6vh,22px);padding:.7em 1.6em">Back to menu</button>
   </div>
+  <div id="obsInfo"></div>
 </div>
 
 <!-- ========== FIREBASE SDK ========== -->
@@ -790,12 +835,57 @@ const CH = [
   { n:'Mossbeard',  k:'wizard', sk:'#f3cfa6', bd:'#6c3fd1', lg:'#3b2a73' }
 ];
 
-/* Scene definitions */
+/* Scene definitions with obstacle layouts */
 const SC = [
-  { n:'Sunny Meadow', sky:['#58b8ff','#d6f3ff'], orb:[1240,130,'#fff3a0',70],  hill:['#8fd97c','#5fbf4a'], gr:['#5fbf4a','#3b7d2c'], x:'clouds',  pr:'tree'   },
-  { n:'Desert Dusk',  sky:['#6a2a8e','#ff9a5c'], orb:[420,430,'#ffd27a',115],  hill:['#d98a4a','#c26d34'], gr:['#e0a45c','#a8672b'], x:'',       pr:'cactus' },
-  { n:'Frost Night',  sky:['#0b1033','#38508f'], orb:[1150,140,'#f4f7ff',55],  hill:['#9fb4d8','#c9d8f2'], gr:['#eef5ff','#9db3d6'], x:'snow',   pr:'pine'   },
-  { n:'Ember Peak',   sky:['#2a0a12','#c8401f'], orb:[800,330,'#ff7b3a',140],  hill:['#4a2020','#2a1212'], gr:['#4a2a22','#1c0e0c'], x:'embers', pr:'spire'  }
+  {
+    n:'Sunny Meadow',
+    sky:['#58b8ff','#d6f3ff'], orb:[1240,130,'#fff3a0',70],
+    hill:['#8fd97c','#5fbf4a'], gr:['#5fbf4a','#3b7d2c'],
+    x:'clouds', pr:'tree',
+    obs: [
+      { type:'hill', x:640, w:180, h:110, hp:3, maxHp:3 },
+      { type:'hill', x:920, w:180, h:110, hp:3, maxHp:3 },
+      { type:'rock', x:800, w:60, h:55, hp:2, maxHp:2 }
+    ],
+    obsLabel: '⛰ 2 Hills · 1 Rock'
+  },
+  {
+    n:'Desert Dusk',
+    sky:['#6a2a8e','#ff9a5c'], orb:[420,430,'#ffd27a',115],
+    hill:['#d98a4a','#c26d34'], gr:['#e0a45c','#a8672b'],
+    x:'', pr:'cactus',
+    obs: [
+      { type:'cactus', x:560, w:40, h:100, hp:2, maxHp:2 },
+      { type:'cactus', x:1000, w:40, h:100, hp:2, maxHp:2 },
+      { type:'dune', x:780, w:220, h:70, hp:4, maxHp:4 }
+    ],
+    obsLabel: '🌵 2 Cacti · 1 Dune'
+  },
+  {
+    n:'Frost Night',
+    sky:['#0b1033','#38508f'], orb:[1150,140,'#f4f7ff',55],
+    hill:['#9fb4d8','#c9d8f2'], gr:['#eef5ff','#9db3d6'],
+    x:'snow', pr:'pine',
+    obs: [
+      { type:'icewall', x:700, w:140, h:140, hp:3, maxHp:3 },
+      { type:'icewall', x:860, w:140, h:140, hp:3, maxHp:3 },
+      { type:'snowdrift', x:800, w:160, h:50, hp:2, maxHp:2 }
+    ],
+    obsLabel: '🧊 2 Ice Walls · 1 Snowdrift'
+  },
+  {
+    n:'Ember Peak',
+    sky:['#2a0a12','#c8401f'], orb:[800,330,'#ff7b3a',140],
+    hill:['#4a2020','#2a1212'], gr:['#4a2a22','#1c0e0c'],
+    x:'embers', pr:'spire',
+    obs: [
+      { type:'pillar', x:600, w:50, h:180, hp:2, maxHp:2 },
+      { type:'pillar', x:1000, w:50, h:180, hp:2, maxHp:2 },
+      { type:'lavarock', x:800, w:90, h:60, hp:3, maxHp:3 },
+      { type:'pillar', x:800, w:40, h:100, hp:1, maxHp:1 }
+    ],
+    obsLabel: '🔥 3 Pillars · 1 Lava Rock'
+  }
 ];
 
 /* Firebase & auth */
@@ -844,6 +934,10 @@ function buildMenu() {
     `<div class="chip${i == me.sc ? ' on' : ''}" data-i="${i}">${n}</div>`
   ).join('');
 
+  /* Update obstacle legend */
+  const sel = me.sc === 4 ? null : SC[me.sc];
+  $('obsLegend').textContent = sel ? sel.obsLabel : '🎲 Random arena — 4 unique battlefields';
+
   $('chars').onclick = e => {
     const t = e.target.closest('.ch');
     if (t) { me.ch = +t.dataset.i; save(); buildMenu(); }
@@ -878,6 +972,7 @@ const cv = $('cv');
 const c = cv.getContext('2d');
 
 let st = null, P = [], sim = null, stuck = [], fx = [], tx = [];
+let obstacles = [];
 let shotN = 0, lastN = 0, botErr = .4, botWait = 0, drag = null, wsel = 0;
 let sc = 1, ox = 0, oy = 0, dpr = 1, acc = 0, last = 0, T = 0;
 
@@ -918,9 +1013,23 @@ function startGame(o) {
   sim = null; stuck = []; fx = []; tx = []; shotN = 0; lastN = 0;
   botErr = .4; botWait = 0; drag = null; started = true;
 
+  /* Build obstacles for this scene */
+  obstacles = SC[o.sc].obs.map(o2 => ({
+    type: o2.type,
+    x: o2.x,
+    baseX: o2.x,
+    w: o2.w,
+    h: o2.h,
+    hp: o2.hp,
+    maxHp: o2.maxHp,
+    shake: 0,
+    destroyed: false
+  }));
+
   $('n0').textContent = P[0].name;
   $('n1').textContent = P[1].name;
   $('end').classList.remove('on');
+  $('obsInfo').textContent = SC[o.sc].obsLabel;
   show('game');
   resize();
   hud();
@@ -950,7 +1059,7 @@ function hud() {
     ? ''
     : (fin ? 'FINISH HIM! ' : '') +
       (mine
-        ? (st.mode == 'bot' ? 'Your turn — drag back & release' : 'Your turn — drag back & release')
+        ? 'Your turn — drag back & release'
         : (st.mode == 'bot' ? 'Bot is aiming...' : P[st.turn].name + ' is aiming...'));
 
   document.querySelectorAll('#wp button').forEach(b => {
@@ -1021,6 +1130,24 @@ function fire(by, a, pw, w, sp, rec) {
   hud();
 }
 
+/* Check if projectile hits an obstacle — returns obstacle index or -1 */
+function checkObstacle(q, r) {
+  for (let i = 0; i < obstacles.length; i++) {
+    const o = obstacles[i];
+    if (o.destroyed) continue;
+
+    const left = o.x - o.w / 2;
+    const right = o.x + o.w / 2;
+    const top = GY - o.h;
+    const bottom = GY;
+
+    if (q.x + r > left && q.x - r < right && q.y + r > top && q.y - r < bottom) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 function stepSim() {
   const s = sim;
   const t = P[1 - s.by];
@@ -1044,6 +1171,26 @@ function stepSim() {
 
     const r = q.k == 1 ? 26 : 6;
     let h = 0;
+
+    /* Obstacle collision (checked first so it blocks shots) */
+    const oi = checkObstacle(q, r);
+    if (oi >= 0) {
+      const o = obstacles[oi];
+      o.hp--;
+      o.shake = 1;
+      burst(q.x, q.y, o.type === 'icewall' ? '#9fdcff' : '#c9a46a', 10);
+      txt(o.x, GY - o.h - 20, 'CRASH!', '#ff8fab', 24);
+
+      if (o.hp <= 0) {
+        o.destroyed = true;
+        o.shake = 1.5;
+        burst(o.x, GY - o.h / 2, '#ffd166', 20);
+        txt(o.x, GY - o.h / 2, 'DESTROYED!', '#ffd166', 28);
+      }
+
+      s.pr.splice(i, 1);
+      continue;
+    }
 
     /* Head hit */
     if (!t.dead && Math.hypot(q.x - t.x, q.y - (GY - 100)) < 22 + r) h = 2;
@@ -1120,7 +1267,8 @@ function endShot() {
     ref.child('shot').set({
       n: ++shotN, by: s.by, a: s.a, pw: s.pw, w: s.w, sp: s.sp,
       hp: P.map(p => p.hp), x: P.map(p => p.x), fin: P.map(p => p.fin),
-      nx, over: st.over ? 1 : 0
+      nx, over: st.over ? 1 : 0,
+      obs: obstacles.map(o => ({ hp: o.hp, destroyed: o.destroyed ? 1 : 0 }))
     });
   }
 
@@ -1158,7 +1306,7 @@ const burst = (x, y, col, n) => {
 const txt = (x, y, s, c2, z) => tx.push({ x, y, s, c: c2, z, l: 1.4 });
 
 /* ============================================================
-   BOT AI
+   BOT AI (obstacle-aware aiming)
    ============================================================ */
 function botShot() {
   botWait = 0;
@@ -1172,7 +1320,11 @@ function botShot() {
   pw *= 1 + (Math.random() - .5) * botErr;
   botErr = Math.max(.05, botErr * .72);
 
-  fire(1, a * 180 / PI + (Math.random() - .5) * botErr * 14, clamp(pw, 15, 100), w, -1, null);
+  /* Slight aim adjustment if obstacle in the way */
+  const blocker = obstacles.find(o => !o.destroyed && Math.abs(o.x - (P[0].x + P[1].x) / 2) < 100);
+  const aimAdj = blocker ? (Math.random() - .5) * 8 : 0;
+
+  fire(1, a * 180 / PI + aimAdj + (Math.random() - .5) * botErr * 14, clamp(pw, 15, 100), w, -1, null);
 }
 
 /* ============================================================
@@ -1303,6 +1455,161 @@ function prop(k, x, y, z) {
   }
 
   c.restore();
+}
+
+/* ---------- OBSTACLE RENDERING ---------- */
+function drawObstacles() {
+  obstacles.forEach(o => {
+    if (o.destroyed) {
+      /* Rubble remains */
+      c.save();
+      c.translate(o.baseX, GY);
+      c.fillStyle = 'rgba(80,60,40,0.5)';
+      const n = Math.floor(o.w / 18);
+      for (let i = 0; i < n; i++) {
+        const rx = (i - n / 2) * 18 + (hsh(i) - .5) * 10;
+        const ry = -6 - hsh(i + 5) * 12;
+        c.beginPath();
+        c.ellipse(rx, ry, 10 + hsh(i + 2) * 6, 5 + hsh(i + 3) * 4, 0, 0, 7);
+        c.fill();
+      }
+      c.restore();
+      return;
+    }
+
+    const shakeX = o.shake > 0 ? Math.sin(T * 60) * o.shake * 6 : 0;
+    const shakeY = o.shake > 0 ? Math.cos(T * 55) * o.shake * 3 : 0;
+
+    c.save();
+    c.translate(o.baseX + shakeX, GY + shakeY);
+
+    if (o.type === 'hill') {
+      c.fillStyle = '#5f9e46';
+      c.beginPath();
+      c.moveTo(-o.w / 2, 0);
+      c.quadraticCurveTo(0, -o.h * 1.3, o.w / 2, 0);
+      c.fill();
+      c.fillStyle = '#7fc45e';
+      c.beginPath();
+      c.moveTo(-o.w / 2, 0);
+      c.quadraticCurveTo(-o.w / 6, -o.h * .9, o.w / 2, 0);
+      c.fill();
+      /* Grass tufts */
+      c.fillStyle = '#3d7a28';
+      for (let i = 0; i < 5; i++) {
+        const gx = (i - 2) * (o.w / 6);
+        c.fillRect(gx, -8, 3, 8);
+      }
+    } else if (o.type === 'rock') {
+      c.fillStyle = '#6b6b7a';
+      c.beginPath();
+      c.moveTo(-o.w / 2, 0);
+      c.lineTo(-o.w / 2 + 6, -o.h * .7);
+      c.lineTo(-o.w / 6, -o.h);
+      c.lineTo(o.w / 3, -o.h * .85);
+      c.lineTo(o.w / 2, -o.h * .3);
+      c.lineTo(o.w / 2 - 4, 0);
+      c.fill();
+      c.fillStyle = '#8a8a9a';
+      c.beginPath();
+      c.moveTo(-o.w / 2 + 6, -o.h * .7);
+      c.lineTo(-o.w / 6, -o.h);
+      c.lineTo(o.w / 3, -o.h * .85);
+      c.lineTo(0, -o.h * .6);
+      c.fill();
+    } else if (o.type === 'cactus') {
+      c.fillStyle = '#3f8f4a';
+      c.fillRect(-o.w / 2, -o.h, o.w, o.h);
+      c.fillRect(-o.w * 1.3, -o.h * .7, o.w * .9, o.w * .3);
+      c.fillRect(-o.w * 1.3, -o.h * .9, o.w * .3, o.h * .4);
+      c.fillRect(o.w * .5, -o.h * .55, o.w * .9, o.w * .3);
+      c.fillRect(o.w * .9, -o.h * .75, o.w * .3, o.h * .35);
+      c.fillStyle = '#2e6b38';
+      c.fillRect(-o.w / 2 + 2, -o.h * .6, 3, 3);
+      c.fillRect(o.w / 4, -o.h * .3, 3, 3);
+    } else if (o.type === 'dune') {
+      c.fillStyle = '#c98a4a';
+      c.beginPath();
+      c.moveTo(-o.w / 2, 0);
+      c.quadraticCurveTo(-o.w / 4, -o.h * 1.1, 0, -o.h);
+      c.quadraticCurveTo(o.w / 4, -o.h * .8, o.w / 2, 0);
+      c.fill();
+      c.fillStyle = '#e0a55a';
+      c.beginPath();
+      c.moveTo(-o.w / 2, 0);
+      c.quadraticCurveTo(-o.w / 6, -o.h * .6, o.w / 2, 0);
+      c.fill();
+    } else if (o.type === 'icewall') {
+      c.fillStyle = 'rgba(180,230,255,0.85)';
+      c.fillRect(-o.w / 2, -o.h, o.w, o.h);
+      c.fillStyle = 'rgba(220,245,255,0.9)';
+      c.beginPath();
+      c.moveTo(-o.w / 2, -o.h);
+      c.lineTo(-o.w / 6, -o.h - 15);
+      c.lineTo(o.w / 3, -o.h);
+      c.fill();
+      c.strokeStyle = 'rgba(255,255,255,0.6)';
+      c.lineWidth = 2;
+      for (let i = 0; i < 4; i++) {
+        c.beginPath();
+        c.moveTo(-o.w / 2 + 10 + i * 30, -o.h);
+        c.lineTo(-o.w / 2 + 20 + i * 30, 0);
+        c.stroke();
+      }
+      c.fillStyle = 'rgba(255,255,255,0.8)';
+      c.fillRect(-o.w / 2, -o.h, 4, o.h);
+    } else if (o.type === 'snowdrift') {
+      c.fillStyle = '#eaf2ff';
+      c.beginPath();
+      c.moveTo(-o.w / 2, 0);
+      c.quadraticCurveTo(0, -o.h * 1.3, o.w / 2, 0);
+      c.fill();
+      c.fillStyle = '#ffffff';
+      c.beginPath();
+      c.moveTo(-o.w / 2, 0);
+      c.quadraticCurveTo(-o.w / 4, -o.h * .7, 0, -o.h * .5);
+      c.quadraticCurveTo(o.w / 4, -o.h * .4, o.w / 2, 0);
+      c.fill();
+    } else if (o.type === 'pillar') {
+      c.fillStyle = '#3a1e1e';
+      c.fillRect(-o.w / 2, -o.h, o.w, o.h);
+      c.fillStyle = '#5a2e2e';
+      c.fillRect(-o.w / 2, -o.h, o.w * .4, o.h);
+      c.fillStyle = '#ff6a2a';
+      c.fillRect(-o.w / 2 + 4, -o.h * .5, o.w - 8, 4);
+      c.fillStyle = '#ffb347';
+      c.fillRect(-o.w / 2 + 4, -o.h * .3, o.w - 8, 2);
+    } else if (o.type === 'lavarock') {
+      c.fillStyle = '#4a2020';
+      c.beginPath();
+      c.ellipse(0, -o.h * .4, o.w / 2, o.h * .6, 0, 0, 7);
+      c.fill();
+      c.fillStyle = '#ff6a2a';
+      c.beginPath();
+      c.ellipse(0, -o.h * .4, o.w / 2.5, o.h * .35, 0, 0, 7);
+      c.fill();
+      c.fillStyle = '#ffd166';
+      c.beginPath();
+      c.ellipse(-8, -o.h * .45, o.w / 6, o.h * .15, 0, 0, 7);
+      c.fill();
+      c.fillStyle = 'rgba(255,100,40,0.3)';
+      c.beginPath();
+      c.ellipse(0, -o.h * .3, o.w * .7, o.h * .3, 0, 0, 7);
+      c.fill();
+    }
+
+    /* HP pips */
+    if (o.hp < o.maxHp) {
+      for (let i = 0; i < o.maxHp; i++) {
+        c.fillStyle = i < o.hp ? '#7dffa8' : 'rgba(255,255,255,0.2)';
+        c.beginPath();
+        c.arc(-o.w / 2 + 8 + i * 12, -o.h - 12, 4, 0, 7);
+        c.fill();
+      }
+    }
+
+    c.restore();
+  });
 }
 
 function drawHead(ch, f) {
@@ -1563,6 +1870,9 @@ function frame(ts) {
     }
   });
 
+  /* Obstacle shake decay */
+  obstacles.forEach(o => { if (o.shake > 0) o.shake = Math.max(0, o.shake - dt * 4); });
+
   fx.forEach(f => {
     f.vy += 900 * dt;
     f.x += f.vx * dt;
@@ -1617,6 +1927,9 @@ function frame(ts) {
       pts.push([x, y]);
     }
   }
+
+  /* Draw obstacles behind characters so characters stand in front */
+  drawObstacles();
 
   P.forEach((p, i) => drawChar(p, i, i == st.my && drag ? aim : null));
 
@@ -1685,6 +1998,7 @@ function leave() {
   started = false;
   st = null;
   sim = null;
+  obstacles = [];
   show('menu');
 }
 
@@ -1716,6 +2030,16 @@ function listen() {
     if (!r || !st || r.n <= lastN) return;
     lastN = r.n;
     if (r.by === st.my) return;
+
+    /* Sync obstacle states from network */
+    if (r.obs) {
+      r.obs.forEach((o, i) => {
+        if (obstacles[i]) {
+          obstacles[i].hp = o.hp;
+          obstacles[i].destroyed = !!o.destroyed;
+        }
+      });
+    }
 
     const go = () => {
       if (sim) return setTimeout(go, 100);
