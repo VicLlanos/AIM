@@ -145,6 +145,77 @@
       display: flex;
     }
 
+    /* ========== LOADING SCREEN ========== */
+    #load {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      background: radial-gradient(circle at 30% 20%, #3d1f6e 0%, #0d081c 70%);
+      z-index: 100;
+      transition: opacity 0.5s ease;
+    }
+
+    #load.fade {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #load h1 {
+      font-size: clamp(32px, 9vh, 60px);
+      letter-spacing: 0.14em;
+      color: #ffd166;
+      text-shadow: 0 3px 0 #8a4f10, 0 5px 14px rgba(255, 180, 60, 0.4);
+      line-height: 1.1;
+      text-align: center;
+      animation: loadPulse 1.6s ease-in-out infinite;
+    }
+
+    #load h1 small {
+      display: block;
+      font-size: 0.32em;
+      color: #c4b5e8;
+      letter-spacing: 0.35em;
+      margin-top: 4px;
+      font-weight: 700;
+    }
+
+    @keyframes loadPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.03); opacity: 0.92; }
+    }
+
+    .load-bar {
+      width: min(220px, 55vw);
+      height: 10px;
+      background: rgba(30, 18, 64, 0.8);
+      border: 2px solid #6a4bb8;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .load-bar i {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ffd166, #ff9f43);
+      border-radius: 99px;
+      transition: width 0.25s ease;
+      box-shadow: 0 0 12px rgba(255, 209, 102, 0.5);
+    }
+
+    #loadTip {
+      font-weight: 700;
+      font-size: clamp(12px, 2.4vh, 15px);
+      color: #a78bfa;
+      text-align: center;
+      max-width: 80vw;
+      line-height: 1.4;
+      min-height: 2.2em;
+      opacity: 0.9;
+    }
+
     /* ========== AUTH SCREEN ========== */
     #auth {
       flex-direction: column;
@@ -843,6 +914,13 @@
 </head>
 <body>
 
+<!-- ========== LOADING SCREEN ========== -->
+<div id="load" class="scr on">
+  <h1>AIMIT<small>ARCHER DUEL</small></h1>
+  <div class="load-bar"><i id="loadFill"></i></div>
+  <div id="loadTip">Loading the arena...</div>
+</div>
+
 <!-- ========== INFO HELP OVERLAY ========== -->
 <div id="ihelp"><div id="itx"></div></div>
 
@@ -850,7 +928,7 @@
 <div id="rot">&#10227;<br>Rotate your phone to landscape</div>
 
 <!-- ========== AUTH SCREEN ========== -->
-<div id="auth" class="scr on">
+<div id="auth" class="scr">
   <h1>AIMIT<small>ARCHER DUEL</small></h1>
   <div id="at" style="font-weight:900;font-size:clamp(14px,3.4vh,20px);color:#ffd166;letter-spacing:.04em">Log in to play</div>
   <input id="au" maxlength="16" placeholder="Username" autocomplete="username" autocapitalize="off">
@@ -944,7 +1022,10 @@ const SC = [
       { type:'hill', x:920, w:180, h:110, hp:3, maxHp:3 },
       { type:'rock', x:800, w:60, h:55, hp:2, maxHp:2 }
     ],
-    obsLabel: '⛰ 2 Hills · 1 Rock'
+    obsLabel: '⛰ 2 Hills · 1 Rock',
+    /* Preferred spawn offsets so players often stand on elevated terrain */
+    spawnL: [200, 280, 340],
+    spawnR: [1260, 1320, 1400]
   },
   {
     n:'Desert Dusk',
@@ -956,7 +1037,9 @@ const SC = [
       { type:'cactus', x:1000, w:40, h:100, hp:2, maxHp:2 },
       { type:'dune', x:780, w:220, h:70, hp:4, maxHp:4 }
     ],
-    obsLabel: '🌵 2 Cacti · 1 Dune'
+    obsLabel: '🌵 2 Cacti · 1 Dune',
+    spawnL: [180, 260, 320],
+    spawnR: [1280, 1340, 1420]
   },
   {
     n:'Frost Night',
@@ -968,7 +1051,9 @@ const SC = [
       { type:'icewall', x:860, w:140, h:140, hp:3, maxHp:3 },
       { type:'snowdrift', x:800, w:160, h:50, hp:2, maxHp:2 }
     ],
-    obsLabel: '🧊 2 Ice Walls · 1 Snowdrift'
+    obsLabel: '🧊 2 Ice Walls · 1 Snowdrift',
+    spawnL: [200, 280, 360],
+    spawnR: [1240, 1320, 1400]
   },
   {
     n:'Ember Peak',
@@ -981,7 +1066,9 @@ const SC = [
       { type:'lavarock', x:800, w:90, h:60, hp:3, maxHp:3 },
       { type:'pillar', x:800, w:40, h:100, hp:1, maxHp:1 }
     ],
-    obsLabel: '🔥 3 Pillars · 1 Lava Rock'
+    obsLabel: '🔥 3 Pillars · 1 Lava Rock',
+    spawnL: [180, 250, 320],
+    spawnR: [1280, 1350, 1420]
   }
 ];
 
@@ -1036,6 +1123,49 @@ function updateStatsBar() {
 }
 
 /* ============================================================
+   LOADING SCREEN
+   ============================================================ */
+const LOAD_TIPS = [
+  'Tip: Stand on hills for a height advantage!',
+  'Tip: Headshots deal much more damage.',
+  'Tip: Destroy cover to open new angles.',
+  'Tip: Axe is strongest against obstacles.',
+  'Tip: Splitter shines when the path is blocked.',
+  'Tip: Finish Him — one more hit ends it.',
+  'Tip: Drag further back for more power.'
+];
+
+(function runLoader() {
+  const fill = $('loadFill');
+  const tip = $('loadTip');
+  let p = 0;
+  tip.textContent = LOAD_TIPS[Math.random() * LOAD_TIPS.length | 0];
+
+  const iv = setInterval(() => {
+    p += 8 + Math.random() * 14;
+    if (p >= 100) {
+      p = 100;
+      clearInterval(iv);
+      fill.style.width = '100%';
+      tip.textContent = 'Ready!';
+      setTimeout(() => {
+        const loadEl = $('load');
+        loadEl.classList.add('fade');
+        setTimeout(() => {
+          loadEl.classList.remove('on');
+          /* Auth or menu will be shown by onAuthStateChanged */
+          if (!auth || !auth.currentUser) show('auth');
+        }, 480);
+      }, 320);
+    } else {
+      fill.style.width = p + '%';
+      if (p > 35 && p < 45) tip.textContent = LOAD_TIPS[Math.random() * LOAD_TIPS.length | 0];
+      if (p > 70 && p < 80) tip.textContent = LOAD_TIPS[Math.random() * LOAD_TIPS.length | 0];
+    }
+  }, 90);
+})();
+
+/* ============================================================
    FIGURE / MENU BUILDING
    ============================================================ */
 const fig = c => `<div class="fig ${c.k}" style="--skin:${c.sk};--body:${c.bd};--leg:${c.lg}"><i class="lg"></i><i class="bd"></i><i class="hd"></i><i class="ht"></i></div>`;
@@ -1049,7 +1179,6 @@ function buildMenu() {
     `<div class="chip${i == me.sc ? ' on' : ''}" data-i="${i}">${n}</div>`
   ).join('');
 
-  /* Update obstacle legend */
   const sel = me.sc === 4 ? null : SC[me.sc];
   $('obsLegend').textContent = sel ? sel.obsLabel : '🎲 Random arena — 4 unique battlefields';
 
@@ -1083,6 +1212,58 @@ function fsGo() {
 $('fs').onclick = fsGo;
 
 /* ============================================================
+   TERRAIN HEIGHT SYSTEM
+   Characters stand on hills / elevated obstacles
+   ============================================================ */
+function proceduralHillY(x, sceneIdx) {
+  /* Matches the visual hills drawn in scene() */
+  const k0 = GY - 90 - Math.sin(x * .004 * 1.3) * 45;
+  const k1 = GY - 90 - 55 - Math.sin(x * .004 * 2.3 + 2) * 80;
+  return Math.min(k0, k1);
+}
+
+function obstacleTopAt(x, obsList) {
+  let best = GY; /* lower Y = higher elevation */
+  for (const o of obsList) {
+    if (o.destroyed) continue;
+    const half = o.w / 2;
+    if (x >= o.x - half - 8 && x <= o.x + half + 8) {
+      /* Approximate surface of obstacle */
+      let top = GY - o.h;
+      if (o.type === 'hill' || o.type === 'dune' || o.type === 'snowdrift') {
+        /* Curved tops — peak near center */
+        const t = Math.abs(x - o.x) / half;
+        top = GY - o.h * (1 - t * t * 0.85);
+      }
+      if (top < best) best = top;
+    }
+  }
+  return best;
+}
+
+function groundYAt(x, sceneIdx, obsList) {
+  const hillY = proceduralHillY(x, sceneIdx);
+  const obsY = obstacleTopAt(x, obsList || []);
+  /* Stand on the highest solid surface (lowest Y value) */
+  return Math.min(GY, hillY, obsY);
+}
+
+function pickSpawnX(side, sceneIdx) {
+  const scn = SC[sceneIdx];
+  const options = side === 0 ? (scn.spawnL || [220]) : (scn.spawnR || [W - 220]);
+  /* Prefer a position that gives some elevation */
+  let bestX = options[0];
+  let bestH = 0;
+  for (const x of options) {
+    const gy = groundYAt(x, sceneIdx, scn.obs.map(o => ({ ...o, destroyed: false })));
+    const elev = GY - gy;
+    if (elev > bestH) { bestH = elev; bestX = x; }
+  }
+  /* Small random jitter so matches feel less identical */
+  return bestX + (Math.random() - 0.5) * 30;
+}
+
+/* ============================================================
    GAME STATE
    ============================================================ */
 const cv = $('cv');
@@ -1093,7 +1274,6 @@ let obstacles = [];
 let shotN = 0, lastN = 0, botErr = .4, botWait = 0, drag = null, wsel = 0;
 let sc = 1, ox = 0, oy = 0, dpr = 1, acc = 0, last = 0, T = 0;
 
-/* Match stats for summary */
 let matchStats = {
   headshots: 0,
   damage: 0,
@@ -1102,7 +1282,6 @@ let matchStats = {
   shotsHit: 0
 };
 
-/* Last game options for rematch */
 let lastGameOpts = null;
 
 function resize() {
@@ -1124,14 +1303,33 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
    ============================================================ */
 function startGame(o) {
   lastGameOpts = o;
+  const scn = SC[o.sc];
+
+  /* Build obstacles first so we can compute standing heights */
+  obstacles = scn.obs.map(o2 => ({
+    type: o2.type,
+    x: o2.x,
+    baseX: o2.x,
+    w: o2.w,
+    h: o2.h,
+    hp: o2.hp,
+    maxHp: o2.maxHp,
+    shake: 0,
+    destroyed: false
+  }));
+
   const mk = (d, i) => {
-    const baseHp = 100 + (d.ch === 0 ? 15 : 0); /* Knight passive */
+    const baseHp = 100 + (d.ch === 0 ? 15 : 0);
+    const sx = pickSpawnX(i, o.sc);
+    const gy = groundYAt(sx, o.sc, obstacles);
     return {
       name: d.name,
       ch: d.ch,
       f: i ? -1 : 1,
-      x: i ? W - 220 : 220,
-      dx: i ? W - 220 : 220,
+      x: sx,
+      dx: sx,
+      gy: gy,          /* ground Y they currently stand on */
+      baseGy: gy,      /* initial standing height */
       hp: baseHp,
       maxHp: baseHp,
       fin: 0,
@@ -1149,23 +1347,10 @@ function startGame(o) {
 
   matchStats = { headshots: 0, damage: 0, obstaclesDestroyed: 0, shotsFired: 0, shotsHit: 0 };
 
-  /* Build obstacles for this scene */
-  obstacles = SC[o.sc].obs.map(o2 => ({
-    type: o2.type,
-    x: o2.x,
-    baseX: o2.x,
-    w: o2.w,
-    h: o2.h,
-    hp: o2.hp,
-    maxHp: o2.maxHp,
-    shake: 0,
-    destroyed: false
-  }));
-
   $('n0').textContent = P[0].name;
   $('n1').textContent = P[1].name;
   $('end').classList.remove('on');
-  $('obsInfo').textContent = SC[o.sc].obsLabel;
+  $('obsInfo').textContent = scn.obsLabel;
   show('game');
   resize();
   hud();
@@ -1257,22 +1442,23 @@ const mkp = (x, y, vx, vy, k) => ({ x, y, vx, vy, k, rot: 0 });
 function fire(by, a, pw, w, sp, rec) {
   const p = P[by];
   const r = a * PI / 180;
-  /* Ninja passive: +8% projectile speed */
   const speedMul = (p.ch === 2 ? 1.08 : 1) * (w == 1 ? .8 : 1);
   const s = pw / 100 * V * speedMul;
+
+  /* Launch from character standing height */
+  const launchY = p.gy - 70;
 
   sim = {
     by, w, sp, step: 0,
     fin: P[1 - by].fin,
     rec, a, pw,
-    pr: [mkp(p.x, GY - 70, p.f * Math.cos(r) * s, -Math.sin(r) * s, w)]
+    pr: [mkp(p.x, launchY, p.f * Math.cos(r) * s, -Math.sin(r) * s, w)]
   };
   p.rec = 1;
   if (by === st.my) matchStats.shotsFired++;
   hud();
 }
 
-/* Check if projectile hits an obstacle — returns obstacle index or -1 */
 function checkObstacle(q, r) {
   for (let i = 0; i < obstacles.length; i++) {
     const o = obstacles[i];
@@ -1294,8 +1480,6 @@ function stepSim() {
   const s = sim;
   const t = P[1 - s.by];
 
-  /* Splitter — spawn extra projectiles on first step */
-  /* Wizard passive: +1 extra bolt (3 instead of 2) */
   if (s.w == 2 && s.sp == s.step && s.pr.length) {
     const m = s.pr[0];
     const shooter = P[s.by];
@@ -1317,7 +1501,6 @@ function stepSim() {
     const r = q.k == 1 ? 26 : 6;
     let h = 0;
 
-    /* Obstacle collision (checked first so it blocks shots) */
     const oi = checkObstacle(q, r);
     if (oi >= 0) {
       const o = obstacles[oi];
@@ -1332,16 +1515,26 @@ function stepSim() {
         burst(o.x, GY - o.h / 2, '#ffd166', 20);
         txt(o.x, GY - o.h / 2, 'DESTROYED!', '#ffd166', 28);
         if (s.by === st.my) matchStats.obstaclesDestroyed++;
+
+        /* If a player was standing on this obstacle, drop them */
+        P.forEach(p => {
+          if (!p.dead && Math.abs(p.x - o.x) < o.w / 2 + 20) {
+            p.gy = groundYAt(p.x, st.sc, obstacles);
+          }
+        });
       }
 
       s.pr.splice(i, 1);
       continue;
     }
 
-    /* Head hit */
-    if (!t.dead && Math.hypot(q.x - t.x, q.y - (GY - 100)) < 22 + r) h = 2;
-    /* Body hit */
-    else if (!t.dead && Math.abs(q.x - t.x) < 24 + r * .5 && q.y > GY - 80 - r * .3 && q.y < GY) h = 1;
+    /* Hit detection uses the target's standing height */
+    const headY = t.gy - 100;
+    const bodyTop = t.gy - 80;
+    const bodyBot = t.gy;
+
+    if (!t.dead && Math.hypot(q.x - t.x, q.y - headY) < 22 + r) h = 2;
+    else if (!t.dead && Math.abs(q.x - t.x) < 24 + r * .5 && q.y > bodyTop - r * .3 && q.y < bodyBot) h = 1;
 
     if (h) {
       hit(s, q, t, h == 2);
@@ -1360,8 +1553,6 @@ function stepSim() {
 
 function hit(s, q, t, head) {
   let dmg = [[18, 45], [30, 65], [12, 30]][s.w][head ? 1 : 0];
-
-  /* Pirate passive: Axe +25% damage */
   if (s.w === 1 && P[s.by].ch === 1) dmg = Math.round(dmg * 1.25);
 
   const f = P[s.by].f;
@@ -1381,13 +1572,15 @@ function hit(s, q, t, head) {
     t.hp = 0;
     t.dead = 1;
     ragdoll(t, f);
-    txt(t.x, GY - 140, 'FATALITY!', '#ff3b5c', 46);
+    txt(t.x, t.gy - 140, 'FATALITY!', '#ff3b5c', 46);
     ban('FATALITY!');
   } else {
     t.hp = Math.max(0, t.hp - dmg);
     t.x = clamp(t.x + f * (25 + dmg * 1.4), 80, W - 80);
+    /* Recalculate standing height after knockback */
+    t.gy = groundYAt(t.x, st.sc, obstacles);
     t.lean = 1;
-    txt(t.x, GY - 150, (head ? 'HEADSHOT -' : '-') + dmg, head ? '#ffd166' : '#fff', head ? 40 : 30);
+    txt(t.x, t.gy - 150, (head ? 'HEADSHOT -' : '-') + dmg, head ? '#ffd166' : '#fff', head ? 40 : 30);
     if (head) ban('HEADSHOT!');
     if (t.hp <= 0) t.fin = 1;
   }
@@ -1419,6 +1612,7 @@ function endShot() {
       p.hp = r.hp[i];
       p.x = r.x[i];
       p.fin = r.fin[i] ? 1 : 0;
+      p.gy = groundYAt(p.x, st.sc, obstacles);
     });
     nx = r.nx;
     if (r.over) { st.over = 1; st.win = r.by; }
@@ -1435,7 +1629,6 @@ function endShot() {
   hud();
 
   if (st.over) {
-    /* Update progression */
     if (st.win === st.my) {
       me.wins++;
       me.streak++;
@@ -1456,7 +1649,6 @@ function endShot() {
         `Damage dealt <b>${matchStats.damage}</b><br>` +
         `Obstacles destroyed <b>${matchStats.obstaclesDestroyed}</b><br>` +
         `Accuracy <b>${acc}%</b>`;
-      /* Rematch only makes sense for bot mode or when we still have the room */
       $('ebRematch').style.display = (st.mode === 'bot') ? 'inline-block' : 'none';
       $('end').classList.add('on');
     }, 2200);
@@ -1467,7 +1659,7 @@ function ragdoll(t, f) {
   t.parts = [100, 55, 15, 15, 60, 60].map((y, i) => ({
     k: i,
     x: t.dx,
-    y: GY - y,
+    y: t.gy - y,
     vx: f * (200 + Math.random() * 500) + (Math.random() - .5) * 200,
     vy: -400 - Math.random() * 500,
     r: 0,
@@ -1486,7 +1678,7 @@ const burst = (x, y, col, n) => {
 const txt = (x, y, s, c2, z) => tx.push({ x, y, s, c: c2, z, l: 1.4 });
 
 /* ============================================================
-   BOT AI (obstacle-aware aiming)
+   BOT AI
    ============================================================ */
 function botShot() {
   botWait = 0;
@@ -1497,10 +1689,12 @@ function botShot() {
   const a = .5 + Math.random() * .35;
 
   let pw = Math.sqrt(d * G / Math.sin(2 * a)) / (V * (w == 1 ? .8 : 1)) * 100;
+  /* Compensate a little for height difference */
+  const heightDiff = (P[0].gy - P[1].gy) / 80;
+  pw *= 1 + heightDiff * 0.08;
   pw *= 1 + (Math.random() - .5) * botErr;
   botErr = Math.max(.05, botErr * .72);
 
-  /* Slight aim adjustment if obstacle in the way */
   const blocker = obstacles.find(o => !o.destroyed && Math.abs(o.x - (P[0].x + P[1].x) / 2) < 100);
   const aimAdj = blocker ? (Math.random() - .5) * 8 : 0;
 
@@ -1523,7 +1717,6 @@ function scene() {
   c.fillStyle = g;
   c.fillRect(-500, -300, W + 1000, H + 800);
 
-  /* Snow particles */
   if (s.x == 'snow') {
     c.fillStyle = '#fff';
     for (let i = 0; i < 70; i++) {
@@ -1533,7 +1726,6 @@ function scene() {
     c.globalAlpha = 1;
   }
 
-  /* Sun / moon */
   c.fillStyle = s.orb[2];
   c.shadowColor = s.orb[2];
   c.shadowBlur = 60;
@@ -1542,7 +1734,6 @@ function scene() {
   c.fill();
   c.shadowBlur = 0;
 
-  /* Hills */
   s.hill.forEach((col, k) => {
     c.fillStyle = col;
     c.beginPath();
@@ -1554,7 +1745,6 @@ function scene() {
     c.fill();
   });
 
-  /* Clouds */
   if (s.x == 'clouds') {
     c.fillStyle = '#fff';
     for (let i = 0; i < 5; i++) {
@@ -1569,7 +1759,6 @@ function scene() {
     c.globalAlpha = 1;
   }
 
-  /* Embers */
   if (s.x == 'embers') {
     c.fillStyle = '#ffb347';
     for (let i = 0; i < 45; i++) {
@@ -1579,10 +1768,8 @@ function scene() {
     c.globalAlpha = 1;
   }
 
-  /* Props */
   [560, 800, 1040].forEach((x, i) => prop(s.pr, x + (i - 1) * 30, GY, .8 + hsh(i + 3) * .5));
 
-  /* Ground */
   g = c.createLinearGradient(0, GY, 0, H + 200);
   g.addColorStop(0, s.gr[0]);
   g.addColorStop(1, s.gr[1]);
@@ -1637,11 +1824,9 @@ function prop(k, x, y, z) {
   c.restore();
 }
 
-/* ---------- OBSTACLE RENDERING ---------- */
 function drawObstacles() {
   obstacles.forEach(o => {
     if (o.destroyed) {
-      /* Rubble remains */
       c.save();
       c.translate(o.baseX, GY);
       c.fillStyle = 'rgba(80,60,40,0.5)';
@@ -1674,7 +1859,6 @@ function drawObstacles() {
       c.moveTo(-o.w / 2, 0);
       c.quadraticCurveTo(-o.w / 6, -o.h * .9, o.w / 2, 0);
       c.fill();
-      /* Grass tufts */
       c.fillStyle = '#3d7a28';
       for (let i = 0; i < 5; i++) {
         const gx = (i - 2) * (o.w / 6);
@@ -1778,7 +1962,6 @@ function drawObstacles() {
       c.fill();
     }
 
-    /* HP pips */
     if (o.hp < o.maxHp) {
       for (let i = 0; i < o.maxHp; i++) {
         c.fillStyle = i < o.hp ? '#7dffa8' : 'rgba(255,255,255,0.2)';
@@ -1887,8 +2070,9 @@ function drawChar(p, i, aim) {
     return;
   }
 
+  /* Stand on terrain height (p.gy) */
   c.save();
-  c.translate(p.dx, GY);
+  c.translate(p.dx, p.gy);
   c.rotate(-f * p.lean * .5 - (p.fin ? f * .45 : 0));
   if (p.fin) c.scale(1, .9);
 
@@ -1959,7 +2143,6 @@ function drawChar(p, i, aim) {
   c.translate(0, -100);
   drawHead(ch, f);
 
-  /* Stun stars */
   if (p.fin) {
     c.font = '28px sans-serif';
     c.textAlign = 'center';
@@ -2011,7 +2194,6 @@ function frame(ts) {
 
   if (!st || !$('game').classList.contains('on')) return;
 
-  /* Physics step */
   if (sim) {
     acc += dt;
     while (acc >= DT && sim) {
@@ -2022,13 +2204,11 @@ function frame(ts) {
     acc = 0;
   }
 
-  /* Bot turn trigger */
   if (st.mode == 'bot' && st.turn == 1 && !sim && !st.over && !botWait) {
     botWait = 1;
     setTimeout(botShot, 1200);
   }
 
-  /* Smooth position interpolation & particle updates */
   P.forEach(p => {
     p.dx += (p.x - p.dx) * Math.min(1, 10 * dt);
     p.lean *= Math.pow(.02, dt);
@@ -2050,7 +2230,6 @@ function frame(ts) {
     }
   });
 
-  /* Obstacle shake decay */
   obstacles.forEach(o => { if (o.shake > 0) o.shake = Math.max(0, o.shake - dt * 4); });
 
   fx.forEach(f => {
@@ -2084,7 +2263,6 @@ function frame(ts) {
   scene();
   stuck.forEach(projDraw);
 
-  /* Aim preview */
   let aim = null, pts = null, aimPw = 0;
 
   if (drag) {
@@ -2096,7 +2274,7 @@ function frame(ts) {
     const speedMul = (p.ch === 2 ? 1.08 : 1) * (wsel == 1 ? .8 : 1);
     const s = a.pw / 100 * V * speedMul;
 
-    let x = p.x, y = GY - 70;
+    let x = p.x, y = p.gy - 70;
     let vx = p.f * Math.cos(r) * s, vy = -Math.sin(r) * s;
     pts = [];
 
@@ -2110,14 +2288,12 @@ function frame(ts) {
     }
   }
 
-  /* Draw obstacles behind characters so characters stand in front */
   drawObstacles();
 
   P.forEach((p, i) => drawChar(p, i, i == st.my && drag ? aim : null));
 
   if (sim) sim.pr.forEach(projDraw);
 
-  /* Dotted trajectory — color shifts with power */
   if (pts) {
     const powerCol = aimPw < 35 ? '#7dffa8' : aimPw < 70 ? '#ffd166' : '#ff8fab';
     pts.forEach((q, i) => {
@@ -2129,7 +2305,6 @@ function frame(ts) {
     });
     c.globalAlpha = 1;
 
-    /* Angle & power text + power bar */
     const p = P[st.my];
     const a = aimOf();
     c.font = '900 34px Trebuchet MS';
@@ -2137,15 +2312,14 @@ function frame(ts) {
     c.lineWidth = 5;
     c.strokeStyle = '#0008';
     const t = Math.round(a.a) + '\u00b0  ' + Math.round(a.pw) + '%';
-    c.strokeText(t, p.dx, GY - 190);
+    c.strokeText(t, p.dx, p.gy - 190);
     c.fillStyle = '#fff';
-    c.fillText(t, p.dx, GY - 190);
+    c.fillText(t, p.dx, p.gy - 190);
 
-    /* Power bar under the text */
     const barW = 120;
     const barH = 10;
     const barX = p.dx - barW / 2;
-    const barY = GY - 165;
+    const barY = p.gy - 165;
     c.fillStyle = 'rgba(0,0,0,0.45)';
     c.beginPath();
     c.roundRect(barX, barY, barW, barH, 5);
@@ -2159,7 +2333,6 @@ function frame(ts) {
     c.stroke();
   }
 
-  /* Particles */
   fx.forEach(f => {
     c.globalAlpha = Math.max(0, f.l);
     c.fillStyle = f.c;
@@ -2167,7 +2340,6 @@ function frame(ts) {
   });
   c.globalAlpha = 1;
 
-  /* Floating text */
   tx.forEach(t => {
     c.globalAlpha = Math.min(1, t.l);
     c.font = '900 ' + t.z + 'px Trebuchet MS';
@@ -2224,15 +2396,15 @@ $('bBot').onclick = () => {
   });
 };
 
-/* How to Play */
 $('bHelp').onclick = () => {
   $('itx').innerHTML = `
     <h3>HOW TO PLAY</h3>
     <ul>
       <li><b>Aim:</b> Drag back from your archer and release. Angle + distance = power.</li>
+      <li><b>Height matters:</b> Characters can stand on hills and elevated terrain for better angles.</li>
       <li><b>Headshots</b> deal much more damage. Aim high!</li>
       <li><b>Finish Him:</b> When an opponent is low, one more hit finishes them. Survive the finishing shot and you get a small HP recovery.</li>
-      <li><b>Obstacles</b> block shots and can be destroyed. Use cover or clear a path.</li>
+      <li><b>Obstacles</b> block shots and can be destroyed. Destroying the ground under someone can drop them!</li>
       <li><b>Weapons:</b>
         <br>Arrow — fast & precise
         <br>Axe — slower, higher damage, strong vs cover
@@ -2260,7 +2432,6 @@ function listen() {
     lastN = r.n;
     if (r.by === st.my) return;
 
-    /* Sync obstacle states from network */
     if (r.obs) {
       r.obs.forEach((o, i) => {
         if (obstacles[i]) {
@@ -2268,6 +2439,8 @@ function listen() {
           obstacles[i].destroyed = !!o.destroyed;
         }
       });
+      /* Refresh standing heights after obstacle changes */
+      P.forEach(p => { if (!p.dead) p.gy = groundYAt(p.x, st.sc, obstacles); });
     }
 
     const go = () => {
@@ -2352,6 +2525,9 @@ let signup = 0, pendingName = '';
 if (auth) {
   auth.onAuthStateChanged(async u => {
     user = u;
+    /* Don't show screens while loader is still visible */
+    if ($('load').classList.contains('on')) return;
+
     if (u) {
       me.name = u.displayName || pendingName || 'Player';
       $('hi').textContent = 'Hi, ' + me.name + '!';
