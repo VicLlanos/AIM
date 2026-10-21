@@ -954,7 +954,6 @@
       letter-spacing: 0.02em;
     }
 
-    /* ========== NEW: WIND INDICATOR ========== */
     #wind {
       position: fixed;
       top: max(8px, env(safe-area-inset-top));
@@ -980,7 +979,6 @@
       display: block;
     }
 
-    /* ========== NEW: TURN TIMER ========== */
     #timer {
       position: fixed;
       bottom: max(60px, calc(env(safe-area-inset-bottom) + 50px));
@@ -1019,7 +1017,6 @@
       50% { opacity: 0.5; }
     }
 
-    /* ========== NEW: ABILITY BUTTON ========== */
     #ability {
       position: fixed;
       bottom: max(52px, calc(env(safe-area-inset-bottom) + 42px));
@@ -1062,7 +1059,6 @@
       pointer-events: none;
     }
 
-    /* ========== NEW: REPLAY BUTTON ========== */
     #replay {
       position: fixed;
       bottom: max(60px, calc(env(safe-area-inset-bottom) + 50px));
@@ -1084,7 +1080,6 @@
       display: block;
     }
 
-    /* ========== NEW: KILL FEED ========== */
     #killfeed {
       position: fixed;
       top: max(8px, env(safe-area-inset-top));
@@ -1127,7 +1122,6 @@
       to { transform: translateX(30px); opacity: 0; }
     }
 
-    /* ========== NEW: EMOJIS ========== */
     #emojis {
       position: fixed;
       bottom: max(60px, calc(env(safe-area-inset-bottom) + 50px));
@@ -1161,7 +1155,6 @@
       transform: translateY(2px) scale(0.9);
     }
 
-    /* ========== NEW: COMBO BANNER ========== */
     #combo {
       position: fixed;
       top: 30%;
@@ -1190,7 +1183,6 @@
       100% { transform: translate(-50%, -50%) scale(1.3) rotate(0deg); opacity: 0; }
     }
 
-    /* ========== NEW: EMOJI FLOAT (in-game reaction) ========== */
     .emoji-float {
       position: fixed;
       font-size: 42px;
@@ -1205,7 +1197,6 @@
       100% { transform: translateY(-180px) scale(1); opacity: 0; }
     }
 
-    /* ========== NEW: ROUND SCORE ========== */
     #score {
       position: fixed;
       top: max(52px, calc(env(safe-area-inset-top) + 44px));
@@ -1232,12 +1223,6 @@
       padding: 2px 12px;
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
-    }
-
-    /* ========== NEW: POWER-UP PICKUP ANIMATION ========== */
-    @keyframes pickupPulse {
-      0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
-      50% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); }
     }
   </style>
 </head>
@@ -1525,26 +1510,43 @@ const isReturning = (() => {
   return false;
 })();
 
-$('splashBtn').onclick = () => {
+/* Splash button handler */
+function handleSplashDismiss() {
+  if (!$('splash').classList.contains('on')) return;
+  
   $('splash').classList.add('fade');
+  
   setTimeout(() => {
     $('splash').classList.remove('on');
-    if (auth) {
-      if (!user) show('auth');
-    } else {
-      show('auth');
+    if (!auth || !user) {
+      /* Fallback: route to auth if no user, otherwise menu */
+      if (user) {
+        show('menu');
+      } else {
+        show('auth');
+      }
     }
   }, isReturning ? 200 : 650);
-};
+}
 
+$('splashBtn').onclick = handleSplashDismiss;
+
+/* Auto-advance splash after 1.5s for returning players */
 if (isReturning) {
-  /* Auto-advance after 1.5s */
   setTimeout(() => {
     if ($('splash').classList.contains('on')) {
-      $('splashBtn').click();
+      handleSplashDismiss();
     }
   }, 1500);
 }
+
+/* Safety fallback: force route to auth if splash is dismissed but nothing else shows */
+setTimeout(() => {
+  if (!$('splash').classList.contains('on') && !$('auth').classList.contains('on') && !$('menu').classList.contains('on')) {
+    if (user) show('menu');
+    else show('auth');
+  }
+}, 2000);
 
 /* ============================================================
    MENU BUILDING
@@ -1791,11 +1793,9 @@ $('ability').onclick = () => {
     txt(p.x, p.floorY - 130, 'SHIELD!', '#7dffa8', 28);
     abilityCooldowns[st.my] = 3;
   } else if (ch.ability === 'grape') {
-    /* Fire 3 small projectiles quickly — use multi-shot */
     abilityCooldowns[st.my] = 3;
     const a = 45, pw = 65;
     fire(st.my, a, pw, 0, -1, null);
-    setTimeout(() => { if (st && st.turn == st.my && sim) {} }, 50);
     ban('GRAPE SHOT!');
   } else if (ch.ability === 'teleport') {
     const dx = (st.my === 0 ? 1 : -1) * 80;
@@ -1964,14 +1964,12 @@ function stepSim() {
   for (let i = s.pr.length - 1; i >= 0; i--) {
     const q = s.pr[i];
 
-    /* Wind applies horizontal acceleration */
     q.vx += wind * 40 * DT;
     q.vy += G * gravityMod * DT;
     q.x += q.vx * DT;
     q.y += q.vy * DT;
     q.rot = q.k == 1 ? q.rot + 14 * DT : Math.atan2(q.vy, q.vx);
 
-    /* Trail */
     if (!reducedMotion) {
       q.trail.push({ x: q.x, y: q.y, a: 1 });
       if (q.trail.length > 6) q.trail.shift();
@@ -1981,7 +1979,6 @@ function stepSim() {
     const r = q.k == 1 ? 26 : 6;
     let h = 0;
 
-    /* Pickups first */
     const pi = checkPickup(q);
     if (pi >= 0) {
       const pk = pickups[pi];
@@ -2026,12 +2023,10 @@ function stepSim() {
       continue;
     }
 
-    /* Body / head hit */
     if (!t.dead && Math.hypot(q.x - t.x, q.y - (t.floorY - 100)) < 22 + r) h = 2;
     else if (!t.dead && Math.abs(q.x - t.x) < 24 + r * .5 && q.y > t.floorY - 80 - r * .3 && q.y < t.floorY) h = 1;
 
     if (h) {
-      /* Shield blocks */
       if (shieldActive[1 - s.by]) {
         shieldActive[1 - s.by] = false;
         burst(t.x, t.floorY - 100, '#7dffa8', 24);
@@ -2059,14 +2054,11 @@ function hit(s, q, t, head) {
   let dmg = [[18, 45], [30, 65], [12, 30]][s.w][head ? 1 : 0];
   const f = P[s.by].f;
 
-  /* Power meter bonus (if drag released cleanly) */
-  /* Double damage pickup */
   if (P[s.by].doubleNext) {
     dmg *= 2;
     P[s.by].doubleNext = false;
   }
 
-  /* Combo bonus */
   if (lastShooter === s.by && !t.fin) {
     comboCount++;
     if (comboCount >= 2) {
@@ -2079,7 +2071,6 @@ function hit(s, q, t, head) {
 
   burst(q.x, q.y, head ? '#ffd166' : '#ff5d8f', head ? 22 : 12);
 
-  /* Screen shake & hit-stop */
   if (!reducedMotion) {
     shake = Math.min(18, shake + (head ? 14 : 8));
     hitStop = 0.08;
@@ -2128,7 +2119,6 @@ function endShot() {
 
   const r = s.rec;
 
-  /* Save replay snapshot */
   if (!replaying) {
     replayData = {
       by: s.by, a: s.a, pw: s.pw, w: s.w,
@@ -2160,7 +2150,6 @@ function endShot() {
   updateAbilityBtn();
   stopTurnTimer();
 
-  /* Handle round/match end */
   if (st.over) {
     roundScore[s.by]++;
     updateScore();
@@ -2169,7 +2158,6 @@ function endShot() {
         $('et').textContent = st.win == st.my ? 'VICTORY!' : 'DEFEATED';
         $('end').classList.add('on');
       } else {
-        /* Start next round */
         currentRound++;
         const sceneIdx = st.sc;
         const a = { name: P[0].name, ch: P[0].ch };
@@ -2181,7 +2169,6 @@ function endShot() {
       }
     }, 2200);
   } else {
-    /* Next turn — restart timer if it's my turn */
     if (st.turn == st.my) startTurnTimer();
   }
 }
@@ -2215,7 +2202,6 @@ const txt = (x, y, s, c2, z) => tx.push({ x, y, s, c: c2, z, l: 1.4 });
 $('replay').onclick = () => {
   if (!replayData || !st || replaying) return;
   replaying = true;
-  /* Reset to pre-shot state */
   const r = replayData;
   P.forEach((p, i) => {
     p.hp = r.snap[i].hp;
@@ -2260,7 +2246,6 @@ function botShot() {
   let v = denom > 0 ? Math.sqrt(G * gravityMod * dx * dx / denom) : speed;
   let pw = clamp(v / speed * 100, 15, 100);
 
-  /* Compensate for wind */
   pw += wind * 8 * (Math.random() > 0.5 ? 1 : -1);
 
   pw *= 1 + (Math.random() - .5) * botErr;
@@ -2348,7 +2333,6 @@ function scene() {
   c.fillStyle = g;
   c.fillRect(-500, GY, W + 1000, H);
 
-  /* Wind streaks */
   if (wind !== 0 && !reducedMotion) {
     c.strokeStyle = 'rgba(255,255,255,0.15)';
     c.lineWidth = 2;
@@ -2514,7 +2498,6 @@ function drawPickups() {
     c.save();
     c.translate(p.x, y);
 
-    /* Glow */
     c.fillStyle = p.type === 'health' ? 'rgba(125,255,168,0.3)' :
                   p.type === 'double' ? 'rgba(255,209,102,0.3)' :
                   'rgba(167,139,250,0.3)';
@@ -2522,7 +2505,6 @@ function drawPickups() {
     c.arc(0, 0, 26 + Math.sin(T * 4) * 4, 0, 7);
     c.fill();
 
-    /* Core */
     c.fillStyle = p.type === 'health' ? '#7dffa8' :
                   p.type === 'double' ? '#ffd166' :
                   '#a78bfa';
@@ -2530,7 +2512,6 @@ function drawPickups() {
     c.arc(0, 0, 16, 0, 7);
     c.fill();
 
-    /* Icon */
     c.fillStyle = '#0d081c';
     c.font = '900 18px Trebuchet MS';
     c.textAlign = 'center';
@@ -2789,7 +2770,6 @@ function drawChar(p, i, aim) {
   c.rotate(-f * p.lean * .5 - (p.fin ? f * .45 : 0));
   if (p.fin) c.scale(1, .9);
 
-  /* Shield ring */
   if (shieldActive[i]) {
     c.strokeStyle = 'rgba(125,255,168,0.7)';
     c.lineWidth = 3;
@@ -2874,7 +2854,6 @@ function drawChar(p, i, aim) {
 }
 
 function projDraw(q) {
-  /* Trail */
   if (q.trail && !reducedMotion) {
     q.trail.forEach(tr => {
       if (tr.a <= 0) return;
@@ -2927,12 +2906,8 @@ function frame(ts) {
 
   if (!st || !$('game').classList.contains('on')) return;
 
-  /* Hit-stop: freeze sim for a brief moment */
   if (hitStop > 0) {
     hitStop -= dt;
-    if (!reducedMotion) {
-      /* render at normal state, but don't step */
-    }
   } else if (sim) {
     acc += dt;
     while (acc >= DT && sim) {
@@ -2943,7 +2918,6 @@ function frame(ts) {
     acc = 0;
   }
 
-  /* Turn timer */
   if (turnTimerActive && !sim && !st.over) {
     turnTimer -= dt;
     const pct = Math.max(0, turnTimer / turnTimerMax);
@@ -2951,7 +2925,6 @@ function frame(ts) {
     if (pct < 0.3) $('timerBar').classList.add('low');
     if (turnTimer <= 0) {
       turnTimerActive = false;
-      /* Auto-fire weak shot */
       if (st.turn == st.my) {
         fire(st.my, 45, 40, 0, -1, null);
         stopTurnTimer();
@@ -2959,11 +2932,9 @@ function frame(ts) {
     }
   }
 
-  /* Ability cooldowns */
   abilityCooldowns = abilityCooldowns.map(cd => Math.max(0, cd - dt));
   if (st && st.turn == st.my) updateAbilityBtn();
 
-  /* Bot */
   if (st.mode == 'bot' && st.turn == 1 && !sim && !st.over && !botWait) {
     botWait = 1;
     setTimeout(botShot, 1200);
@@ -3007,12 +2978,10 @@ function frame(ts) {
   stuck.forEach(s => s.l -= dt * .3);
   stuck = stuck.filter(s => s.l > 0);
 
-  /* ---------- RENDER ---------- */
   c.setTransform(1, 0, 0, 1, 0, 0);
   c.fillStyle = '#000';
   c.fillRect(0, 0, cv.width, cv.height);
 
-  /* Screen shake */
   let shX = 0, shY = 0;
   if (shake > 0 && !reducedMotion) {
     shX = (Math.random() - .5) * shake;
@@ -3253,7 +3222,6 @@ $('bJoin').onclick = async () => {
   }
 };
 
-/* Quick Match: find first open room or create one */
 $('bQuick').onclick = async () => {
   if (needDb()) return;
   const n = nameOf();
@@ -3277,7 +3245,6 @@ $('bQuick').onclick = async () => {
         return;
       }
     }
-    /* No room found — create one */
     msg('No open rooms — creating one...');
     $('bHost').click();
   } catch (e) {
@@ -3285,7 +3252,6 @@ $('bQuick').onclick = async () => {
   }
 };
 
-/* Daily Challenge: track streak */
 $('bChallenge').onclick = () => {
   const n = nameOf();
   let streak = 0;
@@ -3318,9 +3284,11 @@ if (auth) {
         if (d) { me.ch = d.ch | 0; me.sc = d.sc == null ? 4 : d.sc; }
       } catch (e) { }
       buildMenu();
+      /* Only route to menu if splash is dismissed */
       if (!$('splash').classList.contains('on')) show('menu');
     } else {
       if (st) leave();
+      /* Only route to auth if splash is dismissed */
       if (!$('splash').classList.contains('on')) show('auth');
     }
   });
