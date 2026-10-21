@@ -794,7 +794,13 @@
       color: #ffd166;
     }
 
-    @media(orientation: portrait) {
+    /* Only force rotate on real phones/tablets in portrait — not desktop browsers */
+    @media (orientation: portrait) and (max-width: 1024px) and (hover: none) {
+      #rot {
+        display: flex;
+      }
+    }
+    @media (orientation: portrait) and (max-width: 700px) {
       #rot {
         display: flex;
       }
@@ -1370,6 +1376,47 @@ const LOAD_TIPS = [
   'Tip: Drag further back for more power.'
 ];
 
+/* Unified entry after loader + auth are both ready (fixes blank screen race) */
+let loadDone = false;
+let authChecked = false;
+
+async function enterApp() {
+  if (!loadDone) return;
+  const loadEl = $('load');
+  if (loadEl) {
+    loadEl.classList.remove('on');
+    loadEl.classList.remove('fade');
+  }
+
+  /* Firebase missing or failed → still show login (with error message already set) */
+  if (!auth) {
+    show('auth');
+    return;
+  }
+
+  /* Wait until first onAuthStateChanged has fired */
+  if (!authChecked) return;
+
+  if (user) {
+    me.name = user.displayName || pendingName || me.name || 'Player';
+    if ($('hi')) $('hi').textContent = 'Hi, ' + me.name + '!';
+    try {
+      if (db) {
+        const d = (await db.ref('users/' + user.uid).once('value')).val();
+        if (d) {
+          me.ch = d.ch | 0;
+          me.sc = d.sc == null ? 4 : d.sc;
+        }
+      }
+    } catch (e) { /* offline / rules */ }
+    buildMenu();
+    show('menu');
+  } else {
+    if (st) leave();
+    show('auth');
+  }
+}
+
 (function runLoader() {
   const fill = $('loadFill');
   const tip = $('loadTip');
@@ -1387,8 +1434,8 @@ const LOAD_TIPS = [
         const loadEl = $('load');
         loadEl.classList.add('fade');
         setTimeout(() => {
-          loadEl.classList.remove('on');
-          if (!auth || !auth.currentUser) show('auth');
+          loadDone = true;
+          enterApp();
         }, 480);
       }, 320);
     } else {
@@ -3007,26 +3054,15 @@ $('bJoin').onclick = async () => {
 let signup = 0, pendingName = '';
 
 if (auth) {
-  auth.onAuthStateChanged(async u => {
+  auth.onAuthStateChanged(u => {
     user = u;
-    if ($('load').classList.contains('on')) return;
-
-    if (u) {
-      me.name = u.displayName || pendingName || 'Player';
-      $('hi').textContent = 'Hi, ' + me.name + '!';
-      try {
-        const d = (await db.ref('users/' + u.uid).once('value')).val();
-        if (d) { me.ch = d.ch | 0; me.sc = d.sc == null ? 4 : d.sc; }
-      } catch (e) { }
-      buildMenu();
-      show('menu');
-    } else {
-      if (st) leave();
-      show('auth');
-    }
+    authChecked = true;
+    enterApp();
   });
 } else {
-  $('aerr').textContent = 'Firebase failed to load — check your connection.';
+  authChecked = true;
+  if ($('aerr')) $('aerr').textContent = 'Firebase failed to load — check your connection.';
+  /* enterApp will run when loader finishes and show auth */
 }
 
 $('aSw').onclick = () => {
