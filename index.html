@@ -1036,6 +1036,101 @@
     #gearStrip b {
       color: #7dffa8;
     }
+
+    /* Menu sections — cleaner hierarchy */
+    .menu-sec {
+      width: min(520px, 94vw);
+      background: rgba(30, 18, 64, 0.45);
+      border: 2px solid rgba(75, 52, 144, 0.6);
+      border-radius: 16px;
+      padding: 10px 12px;
+      margin: 2px 0;
+    }
+    .menu-sec .sec-label {
+      font-size: clamp(10px, 2vh, 12px);
+      font-weight: 800;
+      color: #8b7ab8;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .menu-play {
+      width: min(320px, 80vw);
+      font-size: clamp(16px, 3.4vh, 22px) !important;
+      padding: 0.75em 1.6em !important;
+      margin-top: 4px;
+    }
+    .menu-subrow {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .menu-subrow button {
+      font-size: clamp(11px, 2.3vh, 14px) !important;
+      padding: 0.45em 0.95em !important;
+    }
+    .menu-mp {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .menu-footer {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      font-size: clamp(11px, 2.3vh, 14px);
+      color: #c4b5e8;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+    .menu-footer button {
+      font-size: clamp(10px, 2.1vh, 13px) !important;
+      padding: 0.3em 0.75em !important;
+    }
+
+    /* In-game action bar (move + special) */
+    #actBar {
+      position: fixed;
+      bottom: max(58px, calc(env(safe-area-inset-bottom) + 48px));
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 5;
+      align-items: center;
+    }
+    #actBar button {
+      font-size: clamp(11px, 2.4vh, 14px);
+      padding: 0.45em 0.85em;
+      background: rgba(30, 18, 64, 0.88);
+      color: #e0d4ff;
+      border: 3px solid #6a4bb8;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.35);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    #actBar button:disabled {
+      opacity: 0.35;
+    }
+    #actBar button.special-on {
+      border-color: #ffd166;
+      color: #ffd166;
+      box-shadow: 0 0 14px rgba(255, 209, 102, 0.35);
+    }
+    #movesLeft {
+      font-weight: 900;
+      font-size: clamp(10px, 2vh, 12px);
+      color: #a78bfa;
+      min-width: 3.5em;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -1068,27 +1163,42 @@
 <!-- ========== MAIN MENU ========== -->
 <div id="menu" class="scr">
   <h1>AIMIT<small>ARCHER DUEL</small></h1>
-  <div class="row" id="chars"></div>
-  <div class="row" id="scenes"></div>
-  <div class="obs-legend" id="obsLegend" style="font-size:clamp(9px,1.9vh,12px);color:#8b7ab8;text-align:center;font-weight:700;line-height:1.4;max-width:90vw;padding:2px 0;letter-spacing:.02em"></div>
+
+  <div class="menu-sec">
+    <div class="sec-label">Fighter</div>
+    <div class="row" id="chars"></div>
+  </div>
+
+  <div class="menu-sec">
+    <div class="sec-label">Arena</div>
+    <div class="row" id="scenes"></div>
+    <div class="obs-legend" id="obsLegend" style="font-size:clamp(9px,1.9vh,12px);color:#8b7ab8;text-align:center;font-weight:700;line-height:1.4;max-width:90vw;padding:4px 0 0;letter-spacing:.02em"></div>
+  </div>
+
+  <button id="bBot" class="menu-play" style="background:linear-gradient(180deg,#7dffa8,#1fc86b);color:#04321a;box-shadow:0 4px 0 #0f8a48">▶  Fight vs Bot</button>
+
+  <div class="menu-subrow">
+    <button id="bShop" class="secondary">🛒 Shop</button>
+    <button id="bHelp" class="secondary">How to Play</button>
+  </div>
+
+  <div class="menu-sec" style="margin-top:6px">
+    <div class="sec-label">Multiplayer</div>
+    <div class="menu-mp">
+      <button id="bHost">Create room</button>
+      <input id="jc" maxlength="4" placeholder="CODE" style="width:5.5em;text-transform:uppercase;text-align:center;font-size:0.95em">
+      <button id="bJoin">Join</button>
+    </div>
+  </div>
+
   <div id="statsBar"></div>
-  <div id="coinsBadge">🪙 0</div>
+  <div class="menu-footer">
+    <span id="coinsBadge">🪙 0</span>
+    <span id="hi"></span>
+    <button id="bOut" class="secondary">Log out</button>
+  </div>
   <div id="gearStrip"></div>
-  <div class="row">
-    <div id="hi" style="font-weight:900;color:#c4b5e8;font-size:clamp(12px,2.6vh,16px)"></div>
-    <button id="bOut" style="padding:.35em .9em;font-size:clamp(11px,2.4vh,14px);background:linear-gradient(180deg,#6a4bb8,#4b3490);color:#fff;box-shadow:0 3px 0 #2a1a57">Log out</button>
-  </div>
-  <div class="row">
-    <button id="bBot" style="background:linear-gradient(180deg,#7dffa8,#1fc86b);color:#04321a;box-shadow:0 4px 0 #0f8a48">Practice vs Bot</button>
-    <button id="bShop" class="secondary" style="padding:.55em 1em">🛒 Shop</button>
-    <button id="bHelp" class="secondary" style="padding:.55em 1em">How to Play</button>
-  </div>
-  <div class="row">
-    <button id="bHost">Create room</button>
-    <input id="jc" maxlength="4" placeholder="CODE" style="width:6em;text-transform:uppercase;text-align:center;font-size:1em">
-    <button id="bJoin">Join</button>
-  </div>
-  <button class="inst" style="display:none">&#128242; Install app</button>
+  <button class="inst" style="display:none">📱 Install app</button>
   <div id="msg"></div>
 </div>
 
@@ -1114,6 +1224,12 @@
     <span id="roundLabel">Round 1/3</span>
     <span class="score" id="matchScore">0 – 0</span>
     <span class="wind" id="windLabel">🌬 —</span>
+  </div>
+  <div id="actBar">
+    <button id="bMoveL" title="Sidestep left">◀</button>
+    <span id="movesLeft">3</span>
+    <button id="bMoveR" title="Sidestep right">▶</button>
+    <button id="bSpecial" title="Character special (once per round)">⚡ Special</button>
   </div>
   <div id="wp">
     <button data-w="0" title="Fast & precise. Good for headshots.">🏹 Arrow</button>
@@ -1148,12 +1264,16 @@
 const $ = id => document.getElementById(id);
 const W = 1600, H = 800, GY = 700, G = 1500, V = 1500, DT = 1/120, PI = Math.PI;
 
-/* Character definitions + mild passives */
+/* Character definitions + passives + specials */
 const CH = [
-  { n:'Sir Clank',  k:'knight', sk:'#f1c27d', bd:'#4a6fa5', lg:'#33415c', passive:'+15 Max HP' },
-  { n:'Peg Salty',  k:'pirate', sk:'#e0ac69', bd:'#c0392b', lg:'#2d2d2d', passive:'Axe +25% dmg' },
-  { n:'Mochi',      k:'ninja',  sk:'#f6d7b0', bd:'#2b2b3d', lg:'#1a1a28', passive:'+8% projectile speed' },
-  { n:'Mossbeard',  k:'wizard', sk:'#f3cfa6', bd:'#6c3fd1', lg:'#3b2a73', passive:'Splitter +1 bolt' }
+  { n:'Sir Clank',  k:'knight', sk:'#f1c27d', bd:'#4a6fa5', lg:'#33415c',
+    passive:'+15 Max HP', special:'Iron Guard', specialDesc:'Block 40% dmg this turn' },
+  { n:'Peg Salty',  k:'pirate', sk:'#e0ac69', bd:'#c0392b', lg:'#2d2d2d',
+    passive:'Axe +25% dmg', special:'Heavy Swing', specialDesc:'Next shot +40% damage' },
+  { n:'Mochi',      k:'ninja',  sk:'#f6d7b0', bd:'#2b2b3d', lg:'#1a1a28',
+    passive:'+8% projectile speed', special:'Shadow Step', specialDesc:'+2 free moves now' },
+  { n:'Mossbeard',  k:'wizard', sk:'#f3cfa6', bd:'#6c3fd1', lg:'#3b2a73',
+    passive:'Splitter +1 bolt', special:'Gale Flip', specialDesc:'Reverse wind this turn' }
 ];
 
 /* Scene definitions with obstacle layouts (base) */
@@ -1563,11 +1683,16 @@ let lastGameOpts = null;
 let match = {
   round: 1,
   maxRounds: 3,
-  score: [0, 0],   // [player0 wins, player1 wins]
+  score: [0, 0],
   wind: { dir: 1, str: 0 },
-  activeGear: null,  // snapshot of gearEffects at match start
+  activeGear: null,
   usedHeal: false,
-  usedBlock: false
+  usedBlock: false,
+  movesLeft: 3,
+  specialUsed: [false, false],
+  buffs: [{}, {}],  // per-player temporary buffs
+  statuses: [{}, {}], // poison/burn etc
+  combo: 0
 };
 
 function resize() {
@@ -1689,7 +1814,13 @@ function startRound(o) {
   sim = null; stuck = []; fx = []; tx = []; shotN = 0; lastN = 0;
   botErr = .4; botWait = 0; drag = null; started = true;
 
-  matchStats = { headshots: 0, damage: 0, obstaclesDestroyed: 0, shotsFired: 0, shotsHit: 0, coinsEarned: 0 };
+  match.movesLeft = 3;
+  match.specialUsed = [false, false];
+  match.buffs = [{}, {}];
+  match.statuses = [{}, {}];
+  match.combo = 0;
+
+  matchStats = { headshots: 0, damage: 0, obstaclesDestroyed: 0, shotsFired: 0, shotsHit: 0, coinsEarned: 0, perfects: 0, specials: 0 };
 
   $('n0').textContent = P[0].name;
   $('n1').textContent = P[1].name;
@@ -1723,23 +1854,92 @@ function hud() {
 
   const mine = st.turn == st.my;
   const fin = P[1 - st.turn].fin;
+  const ch = CH[P[st.my].ch];
 
-  $('turn').textContent = st.over
-    ? ''
-    : (fin ? 'FINISH HIM! ' : '') +
-      (mine
-        ? 'Your turn — drag back & release'
-        : (st.mode == 'bot' ? 'Bot is aiming...' : P[st.turn].name + ' is aiming...'));
+  let turnTxt = '';
+  if (!st.over) {
+    if (fin) turnTxt = 'FINISH HIM! ';
+    if (mine) {
+      turnTxt += 'Your turn — move, special, then aim';
+      if (match.combo >= 2) turnTxt += ` · COMBO x${match.combo}`;
+    } else {
+      turnTxt += (st.mode == 'bot' ? 'Bot is thinking...' : P[st.turn].name + ' is aiming...');
+    }
+  }
+  $('turn').textContent = turnTxt;
 
   document.querySelectorAll('#wp button').forEach(b => {
     b.classList.toggle('on', +b.dataset.w == wsel);
     b.disabled = !mine || !!sim || !!st.over;
   });
+
+  /* Action bar */
+  const canAct = mine && !sim && !st.over;
+  const ml = $('movesLeft');
+  if (ml) ml.textContent = match.movesLeft;
+  const bL = $('bMoveL'), bR = $('bMoveR'), bS = $('bSpecial');
+  if (bL) bL.disabled = !canAct || match.movesLeft <= 0;
+  if (bR) bR.disabled = !canAct || match.movesLeft <= 0;
+  if (bS) {
+    bS.disabled = !canAct || match.specialUsed[st.my];
+    bS.textContent = match.specialUsed[st.my] ? '⚡ Used' : '⚡ ' + (ch ? ch.special : 'Special');
+    bS.classList.toggle('special-on', canAct && !match.specialUsed[st.my]);
+    bS.title = ch ? ch.specialDesc : '';
+  }
 }
 
 document.querySelectorAll('#wp button').forEach(b => {
   b.onclick = () => { wsel = +b.dataset.w; hud(); };
 });
+
+/* Sidestep between shots */
+function tryMove(dir) {
+  if (!st || st.over || sim || st.turn !== st.my || match.movesLeft <= 0) return;
+  const p = P[st.my];
+  const step = 55 * dir;
+  const nx = clamp(p.x + step, 80, W - 80);
+  if (Math.abs(nx - p.x) < 1) return;
+  p.x = nx;
+  p.gy = groundYAt(p.x, st.sc, obstacles);
+  match.movesLeft--;
+  hud();
+}
+$('bMoveL').onclick = () => tryMove(-1);
+$('bMoveR').onclick = () => tryMove(1);
+
+/* Character special — once per round */
+$('bSpecial').onclick = () => {
+  if (!st || st.over || sim || st.turn !== st.my || match.specialUsed[st.my]) return;
+  const p = P[st.my];
+  const ch = CH[p.ch];
+  match.specialUsed[st.my] = true;
+  matchStats.specials = (matchStats.specials || 0) + 1;
+
+  if (p.ch === 0) {
+    /* Iron Guard */
+    match.buffs[st.my].guard = 0.4;
+    ban('IRON GUARD!');
+    txt(p.x, p.gy - 160, 'GUARD +40%', '#7dffa8', 32);
+  } else if (p.ch === 1) {
+    /* Heavy Swing */
+    match.buffs[st.my].heavy = 1.4;
+    ban('HEAVY SWING!');
+    txt(p.x, p.gy - 160, 'DMG +40%', '#ff8fab', 32);
+  } else if (p.ch === 2) {
+    /* Shadow Step */
+    match.movesLeft += 2;
+    ban('SHADOW STEP!');
+    txt(p.x, p.gy - 160, '+2 MOVES', '#ffd166', 32);
+  } else if (p.ch === 3) {
+    /* Gale Flip */
+    match.wind.dir *= -1;
+    updateMatchBar();
+    ban('GALE FLIP!');
+    txt(p.x, p.gy - 160, 'WIND REVERSED', '#a78bfa', 30);
+  }
+  burst(p.x, p.gy - 60, '#ffd166', 16);
+  hud();
+};
 
 /* ============================================================
    INPUT (aiming)
@@ -1789,7 +1989,11 @@ function fire(by, a, pw, w, sp, rec) {
   const r = a * PI / 180;
   const gear = match.activeGear || { speedMul: 1 };
   const isLocal = p.isLocal;
-  const speedMul = (p.ch === 2 ? 1.08 : 1) * (w == 1 ? .8 : 1) * (isLocal ? (gear.speedMul || 1) : 1);
+  let speedMul = (p.ch === 2 ? 1.08 : 1) * (w == 1 ? .8 : 1) * (isLocal ? (gear.speedMul || 1) : 1);
+  if (match.buffs[by] && match.buffs[by].slow) {
+    speedMul *= match.buffs[by].slow;
+    match.buffs[by].slow = 0;
+  }
   const s = pw / 100 * V * speedMul;
 
   const launchY = p.gy - 70;
@@ -1909,15 +2113,36 @@ function hit(s, q, t, head) {
   let dmg = [[18, 45], [30, 65], [12, 30]][s.w][head ? 1 : 0];
   if (s.w === 1 && P[s.by].ch === 1) dmg = Math.round(dmg * 1.25);
 
-  /* Attacker gear damage boost */
+  /* Perfect power band (48–55%) */
+  const perfect = s.pw >= 48 && s.pw <= 55;
+  if (perfect) {
+    dmg = Math.round(dmg * 1.2);
+    if (s.by === st.my) matchStats.perfects = (matchStats.perfects || 0) + 1;
+  }
+
+  /* Combo bonus for local player */
+  if (s.by === st.my && match.combo >= 2) {
+    dmg = Math.round(dmg * (1 + 0.08 * Math.min(match.combo, 5)));
+  }
+
+  /* Attacker gear + special buffs */
   if (P[s.by].isLocal && match.activeGear) {
     dmg = Math.round(dmg * (match.activeGear.dmgMul || 1));
   }
+  if (match.buffs[s.by] && match.buffs[s.by].heavy) {
+    dmg = Math.round(dmg * match.buffs[s.by].heavy);
+    match.buffs[s.by].heavy = 0;
+  }
 
-  /* Defender gear damage reduction */
+  /* Defender gear + Iron Guard */
   if (t.isLocal && match.activeGear) {
     if (head) dmg = Math.round(dmg * (match.activeGear.headDmgMul || 1));
     else dmg = Math.round(dmg * (match.activeGear.bodyDmgMul || 1));
+  }
+  if (match.buffs[1 - s.by] && match.buffs[1 - s.by].guard) {
+    dmg = Math.round(dmg * (1 - match.buffs[1 - s.by].guard));
+    match.buffs[1 - s.by].guard = 0;
+    txt(t.x, t.gy - 120, 'GUARDED!', '#7dffa8', 28);
   }
 
   /* Barrier crystal — block first hit */
@@ -1934,18 +2159,42 @@ function hit(s, q, t, head) {
     return;
   }
 
+  /* Environmental status near obstacles */
+  const near = obstacles.find(o => !o.destroyed && Math.abs(o.x - t.x) < o.w / 2 + 40);
+  if (near) {
+    if (near.type === 'cactus') {
+      match.statuses[1 - s.by] = { poison: 3, tick: 4 };
+      txt(t.x, t.gy - 110, 'POISONED!', '#7dffa8', 24);
+    } else if (near.type === 'lavarock' || near.type === 'pillar') {
+      match.statuses[1 - s.by] = { burn: 2, tick: 6 };
+      txt(t.x, t.gy - 110, 'BURNING!', '#ff6a2a', 24);
+    } else if (near.type === 'icewall' || near.type === 'snowdrift') {
+      match.statuses[s.by] = { chill: 1 };
+      /* next shot of attacker is slower if they stood near ice - apply to target instead as slow next move */
+      match.buffs[1 - s.by].slow = 0.85;
+    }
+  }
+
   const f = P[s.by].f;
 
   burst(q.x, q.y, head ? '#ffd166' : '#ff5d8f', head ? 22 : 12);
+  if (perfect) {
+    burst(q.x, q.y, '#fff', 10);
+    ban('PERFECT!');
+  }
 
   if (s.by === st.my) {
     matchStats.damage += dmg;
     matchStats.shotsHit++;
     matchStats.coinsEarned += head ? 12 : 5;
+    if (perfect) matchStats.coinsEarned += 8;
     if (head) {
       matchStats.headshots++;
       me.totalHS++;
     }
+    match.combo++;
+  } else {
+    match.combo = 0;
   }
 
   if (t.fin) {
@@ -1959,11 +2208,13 @@ function hit(s, q, t, head) {
     t.x = clamp(t.x + f * (25 + dmg * 1.4), 80, W - 80);
     t.gy = groundYAt(t.x, st.sc, obstacles);
     t.lean = 1;
-    txt(t.x, t.gy - 150, (head ? 'HEADSHOT -' : '-') + dmg, head ? '#ffd166' : '#fff', head ? 40 : 30);
-    if (head) ban('HEADSHOT!');
+    let label = (head ? 'HEADSHOT -' : '-') + dmg;
+    if (perfect) label = 'PERFECT ' + label;
+    if (match.combo >= 2 && s.by === st.my) label = 'x' + match.combo + ' ' + label;
+    txt(t.x, t.gy - 150, label, head || perfect ? '#ffd166' : '#fff', head ? 40 : 30);
+    if (head && !perfect) ban('HEADSHOT!');
     if (t.hp <= 0) t.fin = 1;
 
-    /* Auto heal potion when very low */
     if (t.isLocal && t.hp > 0 && t.hp <= 25 && match.activeGear && match.activeGear.healOnce && !match.usedHeal) {
       match.usedHeal = true;
       if ((me.consumables.potion || 0) > 0) {
@@ -2017,6 +2268,28 @@ function endShot() {
   }
 
   st.turn = nx;
+
+  /* Refresh moves for the player who is about to act */
+  match.movesLeft = 3;
+
+  /* Tick status effects on both */
+  P.forEach((p, i) => {
+    const stt = match.statuses[i];
+    if (!stt || p.dead) return;
+    if (stt.poison && stt.poison > 0) {
+      p.hp = Math.max(1, p.hp - (stt.tick || 4));
+      txt(p.x, p.gy - 130, 'POISON -' + (stt.tick || 4), '#7dffa8', 22);
+      stt.poison--;
+      if (stt.poison <= 0) match.statuses[i] = {};
+    }
+    if (stt.burn && stt.burn > 0) {
+      p.hp = Math.max(1, p.hp - (stt.tick || 6));
+      txt(p.x, p.gy - 130, 'BURN -' + (stt.tick || 6), '#ff6a2a', 22);
+      stt.burn--;
+      if (stt.burn <= 0) match.statuses[i] = {};
+    }
+  });
+
   hud();
 
   if (st.over) {
@@ -2056,10 +2329,9 @@ function endShot() {
         const acc = matchStats.shotsFired ? Math.round((matchStats.shotsHit / matchStats.shotsFired) * 100) : 0;
         $('endStats').innerHTML =
           `Match score <b>${match.score[0]} – ${match.score[1]}</b><br>` +
-          `Headshots <b>${matchStats.headshots}</b><br>` +
-          `Damage dealt <b>${matchStats.damage}</b><br>` +
-          `Obstacles destroyed <b>${matchStats.obstaclesDestroyed}</b><br>` +
-          `Accuracy <b>${acc}%</b><br>` +
+          `Headshots <b>${matchStats.headshots}</b> · Perfects <b>${matchStats.perfects || 0}</b><br>` +
+          `Damage <b>${matchStats.damage}</b> · Specials <b>${matchStats.specials || 0}</b><br>` +
+          `Cover destroyed <b>${matchStats.obstaclesDestroyed}</b> · Acc <b>${acc}%</b><br>` +
           `Coins earned <b>+${matchStats.coinsEarned}</b>`;
         $('ebNext').style.display = 'none';
         $('ebRematch').style.display = (st.mode === 'bot') ? 'inline-block' : 'none';
@@ -2108,20 +2380,51 @@ function botShot() {
   botWait = 0;
   if (!st || st.over || sim || st.turn != 1 || st.mode != 'bot') return;
 
-  const d = Math.abs(P[1].x - P[0].x);
-  const w = Math.random() < .25 ? 1 : (Math.random() < .2 ? 2 : 0);
-  const a = .5 + Math.random() * .35;
+  const bot = P[1];
+  const meP = P[0];
 
+  /* Sometimes reposition */
+  if (Math.random() < 0.45) {
+    const preferAway = obstacles.some(o => !o.destroyed && Math.abs(o.x - bot.x) < 80);
+    const dir = preferAway ? (bot.x > meP.x ? 1 : -1) : (Math.random() < 0.5 ? -1 : 1);
+    const steps = 1 + (Math.random() * 2 | 0);
+    for (let i = 0; i < steps && match.movesLeft > 0; i++) {
+      const nx = clamp(bot.x + dir * 55, 80, W - 80);
+      if (Math.abs(nx - bot.x) < 1) break;
+      bot.x = nx;
+      bot.gy = groundYAt(bot.x, st.sc, obstacles);
+      match.movesLeft--;
+    }
+  }
+
+  /* Sometimes use special */
+  if (!match.specialUsed[1] && Math.random() < 0.35) {
+    match.specialUsed[1] = true;
+    if (bot.ch === 0) match.buffs[1].guard = 0.4;
+    else if (bot.ch === 1) match.buffs[1].heavy = 1.4;
+    else if (bot.ch === 2) match.movesLeft += 2;
+    else if (bot.ch === 3) { match.wind.dir *= -1; updateMatchBar(); }
+  }
+
+  const d = Math.abs(bot.x - meP.x);
+  /* Pick weapon based on distance / cover */
+  const blocker = obstacles.find(o => !o.destroyed && Math.abs(o.x - (meP.x + bot.x) / 2) < 120);
+  let w = 0;
+  if (blocker && Math.random() < 0.55) w = 1;
+  else if (d > 700 && Math.random() < 0.3) w = 2;
+  else if (Math.random() < 0.2) w = 1;
+
+  const a = .48 + Math.random() * .38;
   let pw = Math.sqrt(d * G / Math.sin(2 * a)) / (V * (w == 1 ? .8 : 1)) * 100;
-  const heightDiff = (P[0].gy - P[1].gy) / 80;
+  const heightDiff = (meP.gy - bot.gy) / 80;
   pw *= 1 + heightDiff * 0.08;
-  /* Crude wind compensation */
   const windComp = -match.wind.dir * match.wind.str * 18;
   pw *= 1 + (Math.random() - .5) * botErr;
   botErr = Math.max(.05, botErr * .72);
 
-  const blocker = obstacles.find(o => !o.destroyed && Math.abs(o.x - (P[0].x + P[1].x) / 2) < 100);
-  const aimAdj = blocker ? (Math.random() - .5) * 8 : 0;
+  const aimAdj = blocker ? (Math.random() - .5) * 10 : 0;
+  /* Slight preference for perfect band when accurate */
+  if (botErr < 0.15 && Math.random() < 0.4) pw = 50 + (Math.random() - 0.5) * 6;
 
   fire(1, a * 180 / PI + aimAdj + windComp + (Math.random() - .5) * botErr * 14, clamp(pw, 15, 100), w, -1, null);
 }
@@ -2854,16 +3157,15 @@ $('bHelp').onclick = () => {
   $('itx').innerHTML = `
     <h3>HOW TO PLAY</h3>
     <ul>
-      <li><b>Best of 3:</b> First to win 2 rounds wins the match. Each round gets harder.</li>
-      <li><b>Wind:</b> Grows stronger every round. Watch the indicator and compensate your aim. Wind Boots help!</li>
-      <li><b>Aim:</b> Drag back from your archer and release. Angle + distance = power. Trajectory preview includes wind.</li>
-      <li><b>Height matters:</b> Stand on hills and elevated terrain for better angles.</li>
-      <li><b>Headshots</b> deal much more damage. Aim high!</li>
-      <li><b>Finish Him:</b> When an opponent is low, one more hit finishes the round. Survive and get a small HP recovery.</li>
-      <li><b>Obstacles</b> block shots and can be destroyed. Later rounds add more cover.</li>
-      <li><b>Weapons:</b><br>Arrow — fast & precise<br>Axe — slower, higher damage, strong vs cover<br>Splitter — breaks into multiple projectiles</li>
-      <li><b>Shop:</b> Earn coins from hits, headshots, destroys and wins. Buy gear that reduces damage, resists wind, boosts speed/damage, or consumables (Heal Potion, Barrier Crystal).</li>
-      <li>Create or join a 4-letter room code for multiplayer (single round currently).</li>
+      <li><b>Best of 3:</b> First to 2 round wins takes the match. Wind & cover grow each round.</li>
+      <li><b>Move:</b> Use ◀ ▶ before aiming (3 steps per turn). Reposition for height or clear angles.</li>
+      <li><b>Special:</b> Once per round — unique to your fighter (Guard, Heavy Swing, Shadow Step, Gale Flip).</li>
+      <li><b>Aim:</b> Drag back & release. Power 48–55% is a <b>Perfect</b> (+20% dmg). Trajectory shows wind.</li>
+      <li><b>Combo:</b> Hit several shots in a row for bonus damage.</li>
+      <li><b>Environment:</b> Near cacti → poison · lava → burn · ice → chill. Destroy cover to open lines.</li>
+      <li><b>Weapons:</b> Arrow (precise) · Axe (vs cover) · Splitter (multi-bolt)</li>
+      <li><b>Shop:</b> Spend coins on armor, wind boots, damage gear, heal potions & barrier crystals.</li>
+      <li><b>Finish Him:</b> Low HP = one more hit ends the round. Survive the finisher for a small recovery.</li>
     </ul>
     <div class="close-hint">(tap anywhere to close)</div>
   `;
