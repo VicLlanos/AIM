@@ -108,6 +108,16 @@
       box-shadow: 0 1px 0 #2a1a57, 0 2px 8px rgba(0,0,0,0.3);
     }
 
+    button.danger {
+      background: linear-gradient(180deg, #ff6b8a 0%, #e63946 100%);
+      color: #fff;
+      box-shadow: 0 4px 0 #9b1b2a, 0 6px 16px rgba(0,0,0,0.35);
+    }
+
+    button.danger:active {
+      box-shadow: 0 1px 0 #9b1b2a, 0 2px 8px rgba(0,0,0,0.3);
+    }
+
     input {
       font: inherit;
       font-weight: 800;
@@ -526,11 +536,12 @@
       gap: 10px;
       pointer-events: none;
       align-items: flex-start;
+      z-index: 5;
     }
 
     .hp {
       flex: 1;
-      max-width: 34%;
+      max-width: 30%;
       font-weight: 900;
       font-size: clamp(11px, 2.5vh, 16px);
       text-shadow: 0 2px 0 rgba(0,0,0,0.6);
@@ -566,14 +577,47 @@
     }
 
     #turn {
-      flex: 1;
+      flex: 1.2;
       text-align: center;
       font-weight: 900;
-      font-size: clamp(12px, 3vh, 20px);
+      font-size: clamp(11px, 2.6vh, 17px);
       text-shadow: 0 2px 0 rgba(0,0,0,0.6);
       transition: opacity 0.3s;
       letter-spacing: 0.02em;
       line-height: 1.3;
+    }
+
+    /* Round + wind strip */
+    #matchBar {
+      position: fixed;
+      top: max(52px, calc(env(safe-area-inset-top) + 44px));
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(13, 8, 28, 0.78);
+      border: 2px solid rgba(106, 75, 184, 0.7);
+      border-radius: 99px;
+      padding: 4px 14px;
+      font-weight: 900;
+      font-size: clamp(11px, 2.2vh, 14px);
+      z-index: 5;
+      pointer-events: none;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+
+    #matchBar .score {
+      color: #ffd166;
+    }
+
+    #matchBar .wind {
+      color: #7dffa8;
+      min-width: 5.5em;
+      text-align: center;
     }
 
     /* ========== WEAPON PICKER ========== */
@@ -673,7 +717,7 @@
       100% { opacity: 0; transform: scale(1.25); }
     }
 
-    /* ========== END SCREEN ========== */
+    /* ========== END / INTERMISSION SCREEN ========== */
     #end {
       position: fixed;
       inset: 0;
@@ -700,7 +744,7 @@
     }
 
     #end h2 {
-      font-size: clamp(32px, 12vh, 72px);
+      font-size: clamp(28px, 10vh, 64px);
       color: #ffd166;
       text-shadow: 0 5px 0 #7a1f00, 0 8px 24px rgba(0,0,0,0.6);
       letter-spacing: 0.06em;
@@ -780,7 +824,7 @@
       border: 3px solid #ffd166;
       border-radius: 20px;
       padding: 24px;
-      max-width: 420px;
+      max-width: 440px;
       max-height: 85vh;
       overflow-y: auto;
       text-align: left;
@@ -814,16 +858,88 @@
       font-size: 0.9em;
     }
 
+    /* ========== SHOP SCREEN ========== */
+    #shop {
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      overflow-y: auto;
+      padding: max(12px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+      background: radial-gradient(circle at 30% 10%, #3d1f6e 0%, #0d081c 65%);
+    }
+
+    #shop .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      width: min(640px, 96vw);
+      max-width: 100%;
+    }
+
+    .shop-card {
+      background: linear-gradient(180deg, #2a1a57 0%, #1e1240 100%);
+      border: 3px solid #4b3490;
+      border-radius: 14px;
+      padding: 12px 10px;
+      text-align: center;
+      font-weight: 800;
+      font-size: clamp(12px, 2.3vh, 14px);
+      transition: border-color 0.18s, transform 0.18s;
+      position: relative;
+    }
+
+    .shop-card.owned {
+      border-color: #7dffa8;
+    }
+
+    .shop-card.equipped {
+      border-color: #ffd166;
+      box-shadow: 0 0 14px rgba(255, 209, 102, 0.3);
+    }
+
+    .shop-card .icon {
+      font-size: 1.8em;
+      margin-bottom: 4px;
+    }
+
+    .shop-card .price {
+      color: #ffd166;
+      font-size: 0.95em;
+      margin-top: 4px;
+    }
+
+    .shop-card .desc {
+      font-size: 0.78em;
+      color: #a78bfa;
+      font-weight: 700;
+      margin-top: 3px;
+      line-height: 1.25;
+    }
+
+    .shop-card button {
+      margin-top: 8px;
+      font-size: 0.85em;
+      padding: 0.4em 0.9em;
+    }
+
+    #shopCoins {
+      font-weight: 900;
+      font-size: clamp(16px, 3.2vh, 22px);
+      color: #ffd166;
+      text-shadow: 0 2px 0 #8a4f10;
+      letter-spacing: 0.04em;
+    }
+
     /* ========== SCROLLBAR ========== */
-    #menu::-webkit-scrollbar {
+    #menu::-webkit-scrollbar, #shop::-webkit-scrollbar {
       width: 5px;
     }
 
-    #menu::-webkit-scrollbar-track {
+    #menu::-webkit-scrollbar-track, #shop::-webkit-scrollbar-track {
       background: transparent;
     }
 
-    #menu::-webkit-scrollbar-thumb {
+    #menu::-webkit-scrollbar-thumb, #shop::-webkit-scrollbar-thumb {
       background: #6a4bb8;
       border-radius: 99px;
     }
@@ -853,7 +969,7 @@
     /* ========== OBSTACLE INFO PILL ========== */
     #obsInfo {
       position: fixed;
-      bottom: max(12px, env(safe-area-inset-bottom));
+      bottom: max(58px, calc(env(safe-area-inset-bottom) + 48px));
       left: 50%;
       transform: translateX(-50%);
       background: rgba(30, 18, 64, 0.75);
@@ -866,31 +982,9 @@
       letter-spacing: 0.05em;
       pointer-events: none;
       z-index: 4;
-      opacity: 0.8;
+      opacity: 0.85;
       transition: opacity 0.3s;
       white-space: nowrap;
-    }
-
-    /* ========== SCENE PREVIEW BADGE ========== */
-    .scene-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.8em;
-      color: #c4b5e8;
-      margin-left: 4px;
-    }
-
-    /* ========== OBSTACLE LEGEND ========== */
-    .obs-legend {
-      font-size: clamp(9px, 1.9vh, 12px);
-      color: #8b7ab8;
-      text-align: center;
-      font-weight: 700;
-      line-height: 1.4;
-      max-width: 90vw;
-      padding: 2px 0;
-      letter-spacing: 0.02em;
     }
 
     /* ========== STATS BAR ========== */
@@ -909,6 +1003,32 @@
 
     #statsBar b {
       color: #ffd166;
+    }
+
+    /* Coins badge on menu */
+    #coinsBadge {
+      font-weight: 900;
+      font-size: clamp(13px, 2.8vh, 17px);
+      color: #ffd166;
+      background: rgba(30, 18, 64, 0.7);
+      border: 2px solid #6a4bb8;
+      border-radius: 99px;
+      padding: 4px 12px;
+      letter-spacing: 0.03em;
+    }
+
+    /* Equipped gear strip */
+    #gearStrip {
+      font-size: clamp(10px, 2vh, 13px);
+      color: #a78bfa;
+      font-weight: 700;
+      text-align: center;
+      max-width: 94vw;
+      line-height: 1.35;
+    }
+
+    #gearStrip b {
+      color: #7dffa8;
     }
   </style>
 </head>
@@ -944,14 +1064,17 @@
   <h1>AIMIT<small>ARCHER DUEL</small></h1>
   <div class="row" id="chars"></div>
   <div class="row" id="scenes"></div>
-  <div class="obs-legend" id="obsLegend"></div>
+  <div class="obs-legend" id="obsLegend" style="font-size:clamp(9px,1.9vh,12px);color:#8b7ab8;text-align:center;font-weight:700;line-height:1.4;max-width:90vw;padding:2px 0;letter-spacing:.02em"></div>
   <div id="statsBar"></div>
+  <div id="coinsBadge">🪙 0</div>
+  <div id="gearStrip"></div>
   <div class="row">
     <div id="hi" style="font-weight:900;color:#c4b5e8;font-size:clamp(12px,2.6vh,16px)"></div>
     <button id="bOut" style="padding:.35em .9em;font-size:clamp(11px,2.4vh,14px);background:linear-gradient(180deg,#6a4bb8,#4b3490);color:#fff;box-shadow:0 3px 0 #2a1a57">Log out</button>
   </div>
   <div class="row">
     <button id="bBot" style="background:linear-gradient(180deg,#7dffa8,#1fc86b);color:#04321a;box-shadow:0 4px 0 #0f8a48">Practice vs Bot</button>
+    <button id="bShop" class="secondary" style="padding:.55em 1em">🛒 Shop</button>
     <button id="bHelp" class="secondary" style="padding:.55em 1em">How to Play</button>
   </div>
   <div class="row">
@@ -963,6 +1086,16 @@
   <div id="msg"></div>
 </div>
 
+<!-- ========== SHOP SCREEN ========== -->
+<div id="shop" class="scr">
+  <h1>SHOP<small>GEAR & TOOLS</small></h1>
+  <div id="shopCoins">🪙 0</div>
+  <div class="shop-grid" id="shopGrid"></div>
+  <div class="row" style="margin-top:8px">
+    <button id="bShopBack" class="secondary">Back to menu</button>
+  </div>
+</div>
+
 <!-- ========== GAME SCREEN ========== -->
 <div id="game" class="scr">
   <canvas id="cv"></canvas>
@@ -971,19 +1104,26 @@
     <div id="turn"></div>
     <div class="hp r"><b id="n1"></b><div><i id="h1"></i></div></div>
   </div>
-  <div id="wp">
-    <button data-w="0" title="Fast & precise. Good for headshots.">&#127993; Arrow</button>
-    <button data-w="1" title="Slower, higher damage, strong vs obstacles.">&#129683; Axe</button>
-    <button data-w="2" title="Splits mid-flight into multiple projectiles.">&#10024; Splitter</button>
+  <div id="matchBar">
+    <span id="roundLabel">Round 1/3</span>
+    <span class="score" id="matchScore">0 – 0</span>
+    <span class="wind" id="windLabel">🌬 —</span>
   </div>
-  <button class="ib" id="xit">&#10005;</button>
-  <button class="ib" id="fs">&#9974;</button>
+  <div id="wp">
+    <button data-w="0" title="Fast & precise. Good for headshots.">🏹 Arrow</button>
+    <button data-w="1" title="Slower, higher damage, strong vs obstacles.">🪓 Axe</button>
+    <button data-w="2" title="Splits mid-flight into multiple projectiles.">✨ Splitter</button>
+  </div>
+  <button class="ib" id="xit">✕</button>
+  <button class="ib" id="fs">⛶</button>
   <div id="ban"></div>
   <div id="end">
     <h2 id="et"></h2>
     <div id="endStats"></div>
     <div id="endBtns">
+      <button id="ebNext" style="font-size:clamp(15px,3.2vh,20px);padding:.65em 1.4em;display:none">Next Round</button>
       <button id="ebRematch" style="font-size:clamp(15px,3.2vh,20px);padding:.65em 1.4em">Rematch</button>
+      <button id="ebShop" class="secondary" style="font-size:clamp(14px,2.8vh,17px);padding:.55em 1.1em;display:none">🛒 Shop</button>
       <button id="eb" class="secondary" style="font-size:clamp(15px,3.2vh,20px);padding:.65em 1.4em">Back to menu</button>
     </div>
   </div>
@@ -1010,7 +1150,7 @@ const CH = [
   { n:'Mossbeard',  k:'wizard', sk:'#f3cfa6', bd:'#6c3fd1', lg:'#3b2a73', passive:'Splitter +1 bolt' }
 ];
 
-/* Scene definitions with obstacle layouts */
+/* Scene definitions with obstacle layouts (base) */
 const SC = [
   {
     n:'Sunny Meadow',
@@ -1023,7 +1163,6 @@ const SC = [
       { type:'rock', x:800, w:60, h:55, hp:2, maxHp:2 }
     ],
     obsLabel: '⛰ 2 Hills · 1 Rock',
-    /* Preferred spawn offsets so players often stand on elevated terrain */
     spawnL: [200, 280, 340],
     spawnR: [1260, 1320, 1400]
   },
@@ -1072,6 +1211,50 @@ const SC = [
   }
 ];
 
+/* Extra obstacles that get layered on harder rounds */
+const EXTRA_OBS = {
+  0: [ // Meadow extras
+    { type:'rock', x:480, w:50, h:48, hp:2, maxHp:2 },
+    { type:'rock', x:1120, w:50, h:48, hp:2, maxHp:2 },
+    { type:'hill', x:800, w:120, h:80, hp:2, maxHp:2 }
+  ],
+  1: [ // Desert
+    { type:'cactus', x:420, w:36, h:90, hp:2, maxHp:2 },
+    { type:'cactus', x:1140, w:36, h:90, hp:2, maxHp:2 },
+    { type:'dune', x:700, w:140, h:55, hp:3, maxHp:3 }
+  ],
+  2: [ // Frost
+    { type:'icewall', x:520, w:100, h:110, hp:2, maxHp:2 },
+    { type:'icewall', x:1040, w:100, h:110, hp:2, maxHp:2 },
+    { type:'snowdrift', x:800, w:200, h:45, hp:2, maxHp:2 }
+  ],
+  3: [ // Ember
+    { type:'pillar', x:480, w:40, h:140, hp:2, maxHp:2 },
+    { type:'pillar', x:1120, w:40, h:140, hp:2, maxHp:2 },
+    { type:'lavarock', x:700, w:70, h:50, hp:2, maxHp:2 }
+  ]
+};
+
+/* Shop items — equippable gear that alters combat */
+const SHOP_ITEMS = [
+  { id:'helmet', name:'Iron Helmet', icon:'🪖', price:120, desc:'−25% headshot damage taken', type:'equip',
+    effect:{ headDmgMul:0.75 } },
+  { id:'armor', name:'Chain Armor', icon:'🛡️', price:180, desc:'−20% body damage taken', type:'equip',
+    effect:{ bodyDmgMul:0.8 } },
+  { id:'boots', name:'Wind Boots', icon:'👢', price:150, desc:'−35% wind influence on you', type:'equip',
+    effect:{ windRes:0.35 } },
+  { id:'scope', name:'Eagle Scope', icon:'🔭', price:200, desc:'+12% projectile speed', type:'equip',
+    effect:{ speedMul:1.12 } },
+  { id:'quiver', name:'Heavy Quiver', icon:'🎒', price:160, desc:'+10 Max HP', type:'equip',
+    effect:{ extraHp:10 } },
+  { id:'greaves', name:'Spike Greaves', icon:'🦵', price:140, desc:'+15% damage dealt', type:'equip',
+    effect:{ dmgMul:1.15 } },
+  { id:'potion', name:'Heal Potion', icon:'🧪', price:80, desc:'Restore 40 HP once (auto on low HP)', type:'consumable',
+    effect:{ healOnce:40 } },
+  { id:'shield', name:'Barrier Crystal', icon:'💠', price:100, desc:'Block first hit of a round', type:'consumable',
+    effect:{ blockFirst:1 } }
+];
+
 /* Firebase & auth */
 let db = null, ref = null, isHost = false, started = false, user = null, auth = null;
 
@@ -1101,7 +1284,11 @@ const me = {
   losses: pref.losses | 0,
   streak: pref.streak | 0,
   bestStreak: pref.bestStreak | 0,
-  totalHS: pref.totalHS | 0
+  totalHS: pref.totalHS | 0,
+  coins: pref.coins | 0,
+  owned: pref.owned || [],
+  equipped: pref.equipped || [],
+  consumables: pref.consumables || {}
 };
 
 const save = () => {
@@ -1110,7 +1297,11 @@ const save = () => {
       name: me.name, ch: me.ch, sc: me.sc,
       wins: me.wins, losses: me.losses,
       streak: me.streak, bestStreak: me.bestStreak,
-      totalHS: me.totalHS
+      totalHS: me.totalHS,
+      coins: me.coins,
+      owned: me.owned,
+      equipped: me.equipped,
+      consumables: me.consumables
     }));
   } catch (e) { }
   if (db && user) db.ref('users/' + user.uid).update({ ch: me.ch, sc: me.sc }).catch(() => { });
@@ -1120,18 +1311,62 @@ function updateStatsBar() {
   const el = $('statsBar');
   if (!el) return;
   el.innerHTML = `Wins <b>${me.wins}</b> · Losses <b>${me.losses}</b> · Streak <b>${me.streak}</b> · Best <b>${me.bestStreak}</b> · Headshots <b>${me.totalHS}</b>`;
+  const cb = $('coinsBadge');
+  if (cb) cb.textContent = '🪙 ' + me.coins;
+  const sc = $('shopCoins');
+  if (sc) sc.textContent = '🪙 ' + me.coins;
+  updateGearStrip();
+}
+
+function updateGearStrip() {
+  const el = $('gearStrip');
+  if (!el) return;
+  const eq = me.equipped.map(id => {
+    const it = SHOP_ITEMS.find(x => x.id === id);
+    return it ? it.icon + ' ' + it.name : id;
+  });
+  const cons = Object.entries(me.consumables || {}).filter(([,n]) => n > 0).map(([id,n]) => {
+    const it = SHOP_ITEMS.find(x => x.id === id);
+    return it ? `${it.icon}×${n}` : id;
+  });
+  if (!eq.length && !cons.length) {
+    el.innerHTML = 'No gear equipped — visit the <b>Shop</b>';
+  } else {
+    el.innerHTML = (eq.length ? 'Equipped: <b>' + eq.join(' · ') + '</b>' : '') +
+      (cons.length ? (eq.length ? '<br>' : '') + 'Consumables: <b>' + cons.join(' · ') + '</b>' : '');
+  }
+}
+
+/* Get combined gear effects for the local player */
+function gearEffects() {
+  const e = { headDmgMul:1, bodyDmgMul:1, windRes:0, speedMul:1, extraHp:0, dmgMul:1, healOnce:0, blockFirst:0 };
+  me.equipped.forEach(id => {
+    const it = SHOP_ITEMS.find(x => x.id === id);
+    if (!it || !it.effect) return;
+    Object.keys(it.effect).forEach(k => {
+      if (k.endsWith('Mul')) e[k] *= it.effect[k];
+      else e[k] += it.effect[k];
+    });
+  });
+  /* Consumables available this match */
+  if ((me.consumables.potion || 0) > 0) e.healOnce = 40;
+  if ((me.consumables.shield || 0) > 0) e.blockFirst = 1;
+  return e;
 }
 
 /* ============================================================
    LOADING SCREEN
    ============================================================ */
 const LOAD_TIPS = [
-  'Tip: Stand on hills for a height advantage!',
-  'Tip: Headshots deal much more damage.',
+  'Tip: Best of 3 rounds — first to 2 wins takes the match!',
+  'Tip: Wind grows stronger each round. Watch the indicator!',
+  'Tip: Buy gear in the Shop to reduce damage and fight wind.',
+  'Tip: Headshots deal much more damage. Aim high!',
   'Tip: Destroy cover to open new angles.',
   'Tip: Axe is strongest against obstacles.',
   'Tip: Splitter shines when the path is blocked.',
-  'Tip: Finish Him — one more hit ends it.',
+  'Tip: Finish Him — one more hit ends the round.',
+  'Tip: Stand on hills for a height advantage!',
   'Tip: Drag further back for more power.'
 ];
 
@@ -1153,7 +1388,6 @@ const LOAD_TIPS = [
         loadEl.classList.add('fade');
         setTimeout(() => {
           loadEl.classList.remove('on');
-          /* Auth or menu will be shown by onAuthStateChanged */
           if (!auth || !auth.currentUser) show('auth');
         }, 480);
       }, 320);
@@ -1213,25 +1447,21 @@ $('fs').onclick = fsGo;
 
 /* ============================================================
    TERRAIN HEIGHT SYSTEM
-   Characters stand on hills / elevated obstacles
    ============================================================ */
 function proceduralHillY(x, sceneIdx) {
-  /* Matches the visual hills drawn in scene() */
   const k0 = GY - 90 - Math.sin(x * .004 * 1.3) * 45;
   const k1 = GY - 90 - 55 - Math.sin(x * .004 * 2.3 + 2) * 80;
   return Math.min(k0, k1);
 }
 
 function obstacleTopAt(x, obsList) {
-  let best = GY; /* lower Y = higher elevation */
+  let best = GY;
   for (const o of obsList) {
     if (o.destroyed) continue;
     const half = o.w / 2;
     if (x >= o.x - half - 8 && x <= o.x + half + 8) {
-      /* Approximate surface of obstacle */
       let top = GY - o.h;
       if (o.type === 'hill' || o.type === 'dune' || o.type === 'snowdrift') {
-        /* Curved tops — peak near center */
         const t = Math.abs(x - o.x) / half;
         top = GY - o.h * (1 - t * t * 0.85);
       }
@@ -1244,14 +1474,12 @@ function obstacleTopAt(x, obsList) {
 function groundYAt(x, sceneIdx, obsList) {
   const hillY = proceduralHillY(x, sceneIdx);
   const obsY = obstacleTopAt(x, obsList || []);
-  /* Stand on the highest solid surface (lowest Y value) */
   return Math.min(GY, hillY, obsY);
 }
 
 function pickSpawnX(side, sceneIdx) {
   const scn = SC[sceneIdx];
   const options = side === 0 ? (scn.spawnL || [220]) : (scn.spawnR || [W - 220]);
-  /* Prefer a position that gives some elevation */
   let bestX = options[0];
   let bestH = 0;
   for (const x of options) {
@@ -1259,7 +1487,6 @@ function pickSpawnX(side, sceneIdx) {
     const elev = GY - gy;
     if (elev > bestH) { bestH = elev; bestX = x; }
   }
-  /* Small random jitter so matches feel less identical */
   return bestX + (Math.random() - 0.5) * 30;
 }
 
@@ -1279,10 +1506,22 @@ let matchStats = {
   damage: 0,
   obstaclesDestroyed: 0,
   shotsFired: 0,
-  shotsHit: 0
+  shotsHit: 0,
+  coinsEarned: 0
 };
 
 let lastGameOpts = null;
+
+/* Best-of-3 match state */
+let match = {
+  round: 1,
+  maxRounds: 3,
+  score: [0, 0],   // [player0 wins, player1 wins]
+  wind: { dir: 1, str: 0 },
+  activeGear: null,  // snapshot of gearEffects at match start
+  usedHeal: false,
+  usedBlock: false
+};
 
 function resize() {
   dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -1298,28 +1537,84 @@ const X = e => (e.clientX * dpr - ox) / sc;
 const Y = e => (e.clientY * dpr - oy) / sc;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-/* ============================================================
-   START GAME
-   ============================================================ */
-function startGame(o) {
-  lastGameOpts = o;
-  const scn = SC[o.sc];
+/* Wind strength by round (Bowmasters-style escalation) */
+function windForRound(round) {
+  /* round 1: light, 2: medium, 3: strong */
+  const base = [0.18, 0.42, 0.72][Math.min(2, round - 1)];
+  const jitter = (Math.random() - 0.5) * 0.12;
+  const str = Math.max(0.05, base + jitter);
+  const dir = Math.random() < 0.5 ? -1 : 1;
+  return { dir, str };
+}
 
-  /* Build obstacles first so we can compute standing heights */
-  obstacles = scn.obs.map(o2 => ({
-    type: o2.type,
-    x: o2.x,
-    baseX: o2.x,
-    w: o2.w,
-    h: o2.h,
-    hp: o2.hp,
-    maxHp: o2.maxHp,
-    shake: 0,
-    destroyed: false
+function windLabel() {
+  const w = match.wind;
+  if (w.str < 0.12) return '🌬 Calm';
+  const arrows = w.dir < 0 ? '←' : '→';
+  const strength = w.str < 0.3 ? 'Light' : w.str < 0.55 ? 'Medium' : 'Strong';
+  return `🌬 ${arrows} ${strength}`;
+}
+
+function updateMatchBar() {
+  const rl = $('roundLabel');
+  const ms = $('matchScore');
+  const wl = $('windLabel');
+  if (rl) rl.textContent = `Round ${match.round}/${match.maxRounds}`;
+  if (ms) ms.textContent = `${match.score[0]} – ${match.score[1]}`;
+  if (wl) wl.textContent = windLabel();
+}
+
+/* Build obstacles for current round — denser on later rounds */
+function buildObstacles(sceneIdx, round) {
+  const scn = SC[sceneIdx];
+  const base = scn.obs.map(o2 => ({
+    type: o2.type, x: o2.x, baseX: o2.x, w: o2.w, h: o2.h,
+    hp: o2.hp, maxHp: o2.maxHp, shake: 0, destroyed: false
   }));
+  if (round >= 2) {
+    const extras = (EXTRA_OBS[sceneIdx] || []).slice(0, round === 2 ? 2 : 3);
+    extras.forEach(o2 => {
+      base.push({
+        type: o2.type, x: o2.x, baseX: o2.x, w: o2.w, h: o2.h,
+        hp: o2.hp + (round === 3 ? 1 : 0),
+        maxHp: o2.maxHp + (round === 3 ? 1 : 0),
+        shake: 0, destroyed: false
+      });
+    });
+  }
+  /* Slight HP bump on round 3 for base obstacles */
+  if (round === 3) {
+    base.forEach(o => {
+      if (o.hp < 4) { o.hp++; o.maxHp++; }
+    });
+  }
+  return base;
+}
+
+/* ============================================================
+   START GAME / MATCH / ROUND
+   ============================================================ */
+function startMatch(o) {
+  lastGameOpts = o;
+  match.round = 1;
+  match.score = [0, 0];
+  match.activeGear = gearEffects();
+  match.usedHeal = false;
+  match.usedBlock = false;
+  startRound(o);
+}
+
+function startRound(o) {
+  const scn = SC[o.sc];
+  match.wind = windForRound(match.round);
+  obstacles = buildObstacles(o.sc, match.round);
+
+  const gear = match.activeGear || gearEffects();
 
   const mk = (d, i) => {
-    const baseHp = 100 + (d.ch === 0 ? 15 : 0);
+    const isLocal = (o.mode === 'bot' && i === 0) || (o.mode === 'net' && i === o.my);
+    let baseHp = 100 + (d.ch === 0 ? 15 : 0);
+    if (isLocal) baseHp += gear.extraHp || 0;
     const sx = pickSpawnX(i, o.sc);
     const gy = groundYAt(sx, o.sc, obstacles);
     return {
@@ -1328,15 +1623,17 @@ function startGame(o) {
       f: i ? -1 : 1,
       x: sx,
       dx: sx,
-      gy: gy,          /* ground Y they currently stand on */
-      baseGy: gy,      /* initial standing height */
+      gy: gy,
+      baseGy: gy,
       hp: baseHp,
       maxHp: baseHp,
       fin: 0,
       dead: 0,
       lean: 0,
       rec: 0,
-      parts: null
+      parts: null,
+      isLocal,
+      blocked: isLocal && gear.blockFirst && !match.usedBlock
     };
   };
 
@@ -1345,16 +1642,17 @@ function startGame(o) {
   sim = null; stuck = []; fx = []; tx = []; shotN = 0; lastN = 0;
   botErr = .4; botWait = 0; drag = null; started = true;
 
-  matchStats = { headshots: 0, damage: 0, obstaclesDestroyed: 0, shotsFired: 0, shotsHit: 0 };
+  matchStats = { headshots: 0, damage: 0, obstaclesDestroyed: 0, shotsFired: 0, shotsHit: 0, coinsEarned: 0 };
 
   $('n0').textContent = P[0].name;
   $('n1').textContent = P[1].name;
   $('end').classList.remove('on');
-  $('obsInfo').textContent = scn.obsLabel;
+  $('obsInfo').textContent = scn.obsLabel + (match.round > 1 ? `  ·  Round ${match.round}` : '');
+  updateMatchBar();
   show('game');
   resize();
   hud();
-  ban('FIGHT!');
+  ban(match.round === 1 ? 'FIGHT!' : `ROUND ${match.round}!`);
   fsGo();
 }
 
@@ -1435,17 +1733,18 @@ function aimOf() {
 }
 
 /* ============================================================
-   PHYSICS — DETERMINISTIC FIXED STEP
+   PHYSICS — DETERMINISTIC FIXED STEP + WIND
    ============================================================ */
 const mkp = (x, y, vx, vy, k) => ({ x, y, vx, vy, k, rot: 0 });
 
 function fire(by, a, pw, w, sp, rec) {
   const p = P[by];
   const r = a * PI / 180;
-  const speedMul = (p.ch === 2 ? 1.08 : 1) * (w == 1 ? .8 : 1);
+  const gear = match.activeGear || { speedMul: 1 };
+  const isLocal = p.isLocal;
+  const speedMul = (p.ch === 2 ? 1.08 : 1) * (w == 1 ? .8 : 1) * (isLocal ? (gear.speedMul || 1) : 1);
   const s = pw / 100 * V * speedMul;
 
-  /* Launch from character standing height */
   const launchY = p.gy - 70;
 
   sim = {
@@ -1479,6 +1778,7 @@ function checkObstacle(q, r) {
 function stepSim() {
   const s = sim;
   const t = P[1 - s.by];
+  const windForce = match.wind.dir * match.wind.str * 420; // horizontal accel
 
   if (s.w == 2 && s.sp == s.step && s.pr.length) {
     const m = s.pr[0];
@@ -1493,6 +1793,12 @@ function stepSim() {
 
   for (let i = s.pr.length - 1; i >= 0; i--) {
     const q = s.pr[i];
+    /* Wind influence — reduced by Wind Boots for local player's own shots */
+    let wf = windForce;
+    if (s.by === st.my && match.activeGear) {
+      wf *= (1 - (match.activeGear.windRes || 0));
+    }
+    q.vx += wf * DT;
     q.vy += G * DT;
     q.x += q.vx * DT;
     q.y += q.vy * DT;
@@ -1514,9 +1820,11 @@ function stepSim() {
         o.shake = 1.5;
         burst(o.x, GY - o.h / 2, '#ffd166', 20);
         txt(o.x, GY - o.h / 2, 'DESTROYED!', '#ffd166', 28);
-        if (s.by === st.my) matchStats.obstaclesDestroyed++;
+        if (s.by === st.my) {
+          matchStats.obstaclesDestroyed++;
+          matchStats.coinsEarned += 8;
+        }
 
-        /* If a player was standing on this obstacle, drop them */
         P.forEach(p => {
           if (!p.dead && Math.abs(p.x - o.x) < o.w / 2 + 20) {
             p.gy = groundYAt(p.x, st.sc, obstacles);
@@ -1528,7 +1836,6 @@ function stepSim() {
       continue;
     }
 
-    /* Hit detection uses the target's standing height */
     const headY = t.gy - 100;
     const bodyTop = t.gy - 80;
     const bodyBot = t.gy;
@@ -1555,6 +1862,31 @@ function hit(s, q, t, head) {
   let dmg = [[18, 45], [30, 65], [12, 30]][s.w][head ? 1 : 0];
   if (s.w === 1 && P[s.by].ch === 1) dmg = Math.round(dmg * 1.25);
 
+  /* Attacker gear damage boost */
+  if (P[s.by].isLocal && match.activeGear) {
+    dmg = Math.round(dmg * (match.activeGear.dmgMul || 1));
+  }
+
+  /* Defender gear damage reduction */
+  if (t.isLocal && match.activeGear) {
+    if (head) dmg = Math.round(dmg * (match.activeGear.headDmgMul || 1));
+    else dmg = Math.round(dmg * (match.activeGear.bodyDmgMul || 1));
+  }
+
+  /* Barrier crystal — block first hit */
+  if (t.blocked && !match.usedBlock) {
+    match.usedBlock = true;
+    t.blocked = false;
+    if ((me.consumables.shield || 0) > 0) {
+      me.consumables.shield--;
+      save();
+    }
+    burst(q.x, q.y, '#7dffa8', 18);
+    txt(t.x, t.gy - 140, 'BLOCKED!', '#7dffa8', 36);
+    ban('BLOCKED!');
+    return;
+  }
+
   const f = P[s.by].f;
 
   burst(q.x, q.y, head ? '#ffd166' : '#ff5d8f', head ? 22 : 12);
@@ -1562,6 +1894,7 @@ function hit(s, q, t, head) {
   if (s.by === st.my) {
     matchStats.damage += dmg;
     matchStats.shotsHit++;
+    matchStats.coinsEarned += head ? 12 : 5;
     if (head) {
       matchStats.headshots++;
       me.totalHS++;
@@ -1577,12 +1910,23 @@ function hit(s, q, t, head) {
   } else {
     t.hp = Math.max(0, t.hp - dmg);
     t.x = clamp(t.x + f * (25 + dmg * 1.4), 80, W - 80);
-    /* Recalculate standing height after knockback */
     t.gy = groundYAt(t.x, st.sc, obstacles);
     t.lean = 1;
     txt(t.x, t.gy - 150, (head ? 'HEADSHOT -' : '-') + dmg, head ? '#ffd166' : '#fff', head ? 40 : 30);
     if (head) ban('HEADSHOT!');
     if (t.hp <= 0) t.fin = 1;
+
+    /* Auto heal potion when very low */
+    if (t.isLocal && t.hp > 0 && t.hp <= 25 && match.activeGear && match.activeGear.healOnce && !match.usedHeal) {
+      match.usedHeal = true;
+      if ((me.consumables.potion || 0) > 0) {
+        me.consumables.potion--;
+        save();
+      }
+      t.hp = Math.min(t.maxHp, t.hp + 40);
+      burst(t.x, t.gy - 60, '#7dffa8', 16);
+      txt(t.x, t.gy - 160, '+40 HP', '#7dffa8', 32);
+    }
   }
 }
 
@@ -1629,27 +1973,60 @@ function endShot() {
   hud();
 
   if (st.over) {
-    if (st.win === st.my) {
-      me.wins++;
-      me.streak++;
-      if (me.streak > me.bestStreak) me.bestStreak = me.streak;
+    /* Round finished */
+    match.score[st.win]++;
+    updateMatchBar();
+
+    const localWonRound = st.win === st.my;
+    const coinsThisRound = matchStats.coinsEarned + (localWonRound ? 25 : 8);
+    me.coins += coinsThisRound;
+    matchStats.coinsEarned = coinsThisRound;
+
+    const matchOver = match.score[0] >= 2 || match.score[1] >= 2 || match.round >= match.maxRounds;
+
+    if (matchOver) {
+      if (st.win === st.my) {
+        me.wins++;
+        me.streak++;
+        if (me.streak > me.bestStreak) me.bestStreak = me.streak;
+        me.coins += 40; // match win bonus
+        matchStats.coinsEarned += 40;
+      } else {
+        me.losses++;
+        me.streak = 0;
+      }
+      save();
+      updateStatsBar();
     } else {
-      me.losses++;
-      me.streak = 0;
+      save();
+      updateStatsBar();
     }
-    save();
-    updateStatsBar();
 
     setTimeout(() => {
       const won = st.win == st.my;
-      $('et').textContent = won ? 'VICTORY!' : 'DEFEATED';
-      const acc = matchStats.shotsFired ? Math.round((matchStats.shotsHit / matchStats.shotsFired) * 100) : 0;
-      $('endStats').innerHTML =
-        `Headshots <b>${matchStats.headshots}</b><br>` +
-        `Damage dealt <b>${matchStats.damage}</b><br>` +
-        `Obstacles destroyed <b>${matchStats.obstaclesDestroyed}</b><br>` +
-        `Accuracy <b>${acc}%</b>`;
-      $('ebRematch').style.display = (st.mode === 'bot') ? 'inline-block' : 'none';
+      if (matchOver) {
+        $('et').textContent = won ? 'VICTORY!' : 'DEFEATED';
+        const acc = matchStats.shotsFired ? Math.round((matchStats.shotsHit / matchStats.shotsFired) * 100) : 0;
+        $('endStats').innerHTML =
+          `Match score <b>${match.score[0]} – ${match.score[1]}</b><br>` +
+          `Headshots <b>${matchStats.headshots}</b><br>` +
+          `Damage dealt <b>${matchStats.damage}</b><br>` +
+          `Obstacles destroyed <b>${matchStats.obstaclesDestroyed}</b><br>` +
+          `Accuracy <b>${acc}%</b><br>` +
+          `Coins earned <b>+${matchStats.coinsEarned}</b>`;
+        $('ebNext').style.display = 'none';
+        $('ebRematch').style.display = (st.mode === 'bot') ? 'inline-block' : 'none';
+        $('ebShop').style.display = 'inline-block';
+      } else {
+        $('et').textContent = won ? 'ROUND WON!' : 'ROUND LOST';
+        $('endStats').innerHTML =
+          `Score <b>${match.score[0]} – ${match.score[1]}</b><br>` +
+          `Next: Round <b>${match.round + 1}</b> — stronger wind & more cover<br>` +
+          `Coins earned <b>+${matchStats.coinsEarned}</b>`;
+        $('ebNext').style.display = 'inline-block';
+        $('ebRematch').style.display = 'none';
+        $('ebShop').style.display = 'none';
+      }
       $('end').classList.add('on');
     }, 2200);
   }
@@ -1678,7 +2055,7 @@ const burst = (x, y, col, n) => {
 const txt = (x, y, s, c2, z) => tx.push({ x, y, s, c: c2, z, l: 1.4 });
 
 /* ============================================================
-   BOT AI
+   BOT AI (accounts for wind)
    ============================================================ */
 function botShot() {
   botWait = 0;
@@ -1689,16 +2066,17 @@ function botShot() {
   const a = .5 + Math.random() * .35;
 
   let pw = Math.sqrt(d * G / Math.sin(2 * a)) / (V * (w == 1 ? .8 : 1)) * 100;
-  /* Compensate a little for height difference */
   const heightDiff = (P[0].gy - P[1].gy) / 80;
   pw *= 1 + heightDiff * 0.08;
+  /* Crude wind compensation */
+  const windComp = -match.wind.dir * match.wind.str * 18;
   pw *= 1 + (Math.random() - .5) * botErr;
   botErr = Math.max(.05, botErr * .72);
 
   const blocker = obstacles.find(o => !o.destroyed && Math.abs(o.x - (P[0].x + P[1].x) / 2) < 100);
   const aimAdj = blocker ? (Math.random() - .5) * 8 : 0;
 
-  fire(1, a * 180 / PI + aimAdj + (Math.random() - .5) * botErr * 14, clamp(pw, 15, 100), w, -1, null);
+  fire(1, a * 180 / PI + aimAdj + windComp + (Math.random() - .5) * botErr * 14, clamp(pw, 15, 100), w, -1, null);
 }
 
 /* ============================================================
@@ -1764,6 +2142,18 @@ function scene() {
     for (let i = 0; i < 45; i++) {
       c.globalAlpha = .8;
       c.fillRect(hsh(i) * W + Math.sin(T + i) * 20, (H - ((T * 50 + hsh(i + 7) * H) % H)), 3, 3);
+    }
+    c.globalAlpha = 1;
+  }
+
+  /* Wind particles */
+  if (match.wind.str > 0.1) {
+    c.fillStyle = 'rgba(255,255,255,0.35)';
+    for (let i = 0; i < 28; i++) {
+      const baseX = (hsh(i + 40) * W + T * match.wind.dir * (40 + match.wind.str * 120) * 60) % (W + 200) - 100;
+      const y = 80 + hsh(i + 70) * (GY - 120);
+      c.globalAlpha = 0.15 + match.wind.str * 0.4;
+      c.fillRect(baseX, y, 18 + match.wind.str * 20, 1.5);
     }
     c.globalAlpha = 1;
   }
@@ -2070,30 +2460,25 @@ function drawChar(p, i, aim) {
     return;
   }
 
-  /* Stand on terrain height (p.gy) */
   c.save();
   c.translate(p.dx, p.gy);
   c.rotate(-f * p.lean * .5 - (p.fin ? f * .45 : 0));
   if (p.fin) c.scale(1, .9);
 
-  /* Shadow */
   c.fillStyle = 'rgba(0,0,0,0.25)';
   c.beginPath();
   c.ellipse(0, 0, 34, 8, 0, 0, 7);
   c.fill();
 
-  /* Legs */
   c.fillStyle = ch.lg;
   c.fillRect(-15, -30, 12, 30);
   c.fillRect(3, -30, 12, 30);
 
-  /* Body */
   c.fillStyle = ch.bd;
   c.beginPath();
   c.roundRect(-22, -78, 44, 50, 10);
   c.fill();
 
-  /* Arm & weapon */
   const a = (aim == null ? 30 : aim) * PI / 180;
   const ax = f * Math.cos(a), ay = -Math.sin(a);
   const rc = p.rec * 8;
@@ -2139,14 +2524,22 @@ function drawChar(p, i, aim) {
   }
   c.restore();
 
-  /* Head */
   c.translate(0, -100);
   drawHead(ch, f);
 
   if (p.fin) {
     c.font = '28px sans-serif';
     c.textAlign = 'center';
-    c.fillText('\u{1F4AB}', 0, -34 + Math.sin(T * 8) * 4);
+    c.fillText('💫', 0, -34 + Math.sin(T * 8) * 4);
+  }
+
+  /* Barrier indicator */
+  if (p.blocked) {
+    c.strokeStyle = 'rgba(125,255,168,0.7)';
+    c.lineWidth = 3;
+    c.beginPath();
+    c.arc(0, 20, 48, 0, 7);
+    c.stroke();
   }
 
   c.restore();
@@ -2249,7 +2642,6 @@ function frame(ts) {
   stuck.forEach(s => s.l -= dt * .3);
   stuck = stuck.filter(s => s.l > 0);
 
-  /* ---------- RENDER ---------- */
   c.setTransform(1, 0, 0, 1, 0, 0);
   c.fillStyle = '#000';
   c.fillRect(0, 0, cv.width, cv.height);
@@ -2271,8 +2663,10 @@ function frame(ts) {
     aimPw = a.pw;
     const p = P[st.my];
     const r = a.a * PI / 180;
-    const speedMul = (p.ch === 2 ? 1.08 : 1) * (wsel == 1 ? .8 : 1);
+    const gear = match.activeGear || { speedMul: 1 };
+    const speedMul = (p.ch === 2 ? 1.08 : 1) * (wsel == 1 ? .8 : 1) * (gear.speedMul || 1);
     const s = a.pw / 100 * V * speedMul;
+    const windForce = match.wind.dir * match.wind.str * 420 * (1 - (gear.windRes || 0));
 
     let x = p.x, y = p.gy - 70;
     let vx = p.f * Math.cos(r) * s, vy = -Math.sin(r) * s;
@@ -2280,6 +2674,7 @@ function frame(ts) {
 
     for (let i = 0; i < 16; i++) {
       for (let k = 0; k < 8; k++) {
+        vx += windForce * 0.008;
         vy += G * .008;
         x += vx * .008;
         y += vy * .008;
@@ -2311,7 +2706,7 @@ function frame(ts) {
     c.textAlign = 'center';
     c.lineWidth = 5;
     c.strokeStyle = '#0008';
-    const t = Math.round(a.a) + '\u00b0  ' + Math.round(a.pw) + '%';
+    const t = Math.round(a.a) + '°  ' + Math.round(a.pw) + '%';
     c.strokeText(t, p.dx, p.gy - 190);
     c.fillStyle = '#fff';
     c.fillText(t, p.dx, p.gy - 190);
@@ -2381,13 +2776,25 @@ $('eb').onclick = leave;
 $('ebRematch').onclick = () => {
   if (lastGameOpts && lastGameOpts.mode === 'bot') {
     $('end').classList.remove('on');
-    startGame(lastGameOpts);
+    startMatch(lastGameOpts);
   }
+};
+
+$('ebNext').onclick = () => {
+  if (!lastGameOpts) return;
+  match.round++;
+  $('end').classList.remove('on');
+  startRound(lastGameOpts);
+};
+
+$('ebShop').onclick = () => {
+  leave();
+  openShop();
 };
 
 $('bBot').onclick = () => {
   const n = nameOf();
-  startGame({
+  startMatch({
     mode: 'bot',
     my: 0,
     a: { name: n, ch: me.ch },
@@ -2400,22 +2807,89 @@ $('bHelp').onclick = () => {
   $('itx').innerHTML = `
     <h3>HOW TO PLAY</h3>
     <ul>
-      <li><b>Aim:</b> Drag back from your archer and release. Angle + distance = power.</li>
-      <li><b>Height matters:</b> Characters can stand on hills and elevated terrain for better angles.</li>
+      <li><b>Best of 3:</b> First to win 2 rounds wins the match. Each round gets harder.</li>
+      <li><b>Wind:</b> Grows stronger every round. Watch the indicator and compensate your aim. Wind Boots help!</li>
+      <li><b>Aim:</b> Drag back from your archer and release. Angle + distance = power. Trajectory preview includes wind.</li>
+      <li><b>Height matters:</b> Stand on hills and elevated terrain for better angles.</li>
       <li><b>Headshots</b> deal much more damage. Aim high!</li>
-      <li><b>Finish Him:</b> When an opponent is low, one more hit finishes them. Survive the finishing shot and you get a small HP recovery.</li>
-      <li><b>Obstacles</b> block shots and can be destroyed. Destroying the ground under someone can drop them!</li>
-      <li><b>Weapons:</b>
-        <br>Arrow — fast & precise
-        <br>Axe — slower, higher damage, strong vs cover
-        <br>Splitter — breaks into multiple projectiles</li>
-      <li><b>Characters</b> have mild passives shown under their cards.</li>
-      <li>Create or join a 4-letter room code for multiplayer.</li>
+      <li><b>Finish Him:</b> When an opponent is low, one more hit finishes the round. Survive and get a small HP recovery.</li>
+      <li><b>Obstacles</b> block shots and can be destroyed. Later rounds add more cover.</li>
+      <li><b>Weapons:</b><br>Arrow — fast & precise<br>Axe — slower, higher damage, strong vs cover<br>Splitter — breaks into multiple projectiles</li>
+      <li><b>Shop:</b> Earn coins from hits, headshots, destroys and wins. Buy gear that reduces damage, resists wind, boosts speed/damage, or consumables (Heal Potion, Barrier Crystal).</li>
+      <li>Create or join a 4-letter room code for multiplayer (single round currently).</li>
     </ul>
     <div class="close-hint">(tap anywhere to close)</div>
   `;
   $('ihelp').classList.add('on');
 };
+
+/* ========== SHOP ========== */
+function openShop() {
+  buildShop();
+  show('shop');
+}
+
+function buildShop() {
+  updateStatsBar();
+  const grid = $('shopGrid');
+  grid.innerHTML = SHOP_ITEMS.map(it => {
+    const owned = me.owned.includes(it.id) || (it.type === 'consumable' && (me.consumables[it.id] || 0) > 0);
+    const equipped = me.equipped.includes(it.id);
+    const count = it.type === 'consumable' ? (me.consumables[it.id] || 0) : 0;
+    let btnLabel = 'Buy';
+    let btnClass = '';
+    if (it.type === 'equip') {
+      if (equipped) { btnLabel = 'Equipped'; btnClass = 'inst'; }
+      else if (me.owned.includes(it.id)) { btnLabel = 'Equip'; btnClass = 'secondary'; }
+    } else {
+      btnLabel = count > 0 ? `Buy more (${count})` : 'Buy';
+    }
+    return `<div class="shop-card${me.owned.includes(it.id) ? ' owned' : ''}${equipped ? ' equipped' : ''}">
+      <div class="icon">${it.icon}</div>
+      <div>${it.name}</div>
+      <div class="desc">${it.desc}</div>
+      <div class="price">🪙 ${it.price}</div>
+      <button data-id="${it.id}" class="${btnClass}">${btnLabel}</button>
+    </div>`;
+  }).join('');
+
+  grid.onclick = e => {
+    const btn = e.target.closest('button[data-id]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const it = SHOP_ITEMS.find(x => x.id === id);
+    if (!it) return;
+
+    if (it.type === 'equip') {
+      if (me.equipped.includes(id)) {
+        /* unequip */
+        me.equipped = me.equipped.filter(x => x !== id);
+        save();
+        buildShop();
+        return;
+      }
+      if (!me.owned.includes(id)) {
+        if (me.coins < it.price) { msg('Not enough coins!'); return; }
+        me.coins -= it.price;
+        me.owned.push(id);
+      }
+      /* Equip (one per type-ish — just allow multiple for simplicity) */
+      if (!me.equipped.includes(id)) me.equipped.push(id);
+      save();
+      buildShop();
+    } else {
+      /* consumable */
+      if (me.coins < it.price) { msg('Not enough coins!'); return; }
+      me.coins -= it.price;
+      me.consumables[id] = (me.consumables[id] || 0) + 1;
+      save();
+      buildShop();
+    }
+  };
+}
+
+$('bShop').onclick = openShop;
+$('bShopBack').onclick = () => { show('menu'); updateStatsBar(); };
 
 const needDb = () => {
   if (!db) {
@@ -2439,7 +2913,6 @@ function listen() {
           obstacles[i].destroyed = !!o.destroyed;
         }
       });
-      /* Refresh standing heights after obstacle changes */
       P.forEach(p => { if (!p.dead) p.gy = groundYAt(p.x, st.sc, obstacles); });
     }
 
@@ -2463,7 +2936,13 @@ function listen() {
     if (isHost && r.guest && !started) {
       started = true;
       msg();
-      startGame({ mode: 'net', my: 0, a: r.host, b: r.guest, sc: r.scene });
+      /* Net matches stay single-round for sync simplicity */
+      match.round = 1;
+      match.score = [0, 0];
+      match.activeGear = gearEffects();
+      match.usedHeal = false;
+      match.usedBlock = false;
+      startRound({ mode: 'net', my: 0, a: r.host, b: r.guest, sc: r.scene });
     }
   });
 }
@@ -2510,7 +2989,12 @@ $('bJoin').onclick = async () => {
     isHost = false;
     started = true;
     msg();
-    startGame({ mode: 'net', my: 1, a: d.host, b: { name: n, ch: me.ch }, sc: d.scene });
+    match.round = 1;
+    match.score = [0, 0];
+    match.activeGear = gearEffects();
+    match.usedHeal = false;
+    match.usedBlock = false;
+    startRound({ mode: 'net', my: 1, a: d.host, b: { name: n, ch: me.ch }, sc: d.scene });
     listen();
   } catch (e) {
     msg('Join failed: ' + e.message);
@@ -2525,7 +3009,6 @@ let signup = 0, pendingName = '';
 if (auth) {
   auth.onAuthStateChanged(async u => {
     user = u;
-    /* Don't show screens while loader is still visible */
     if ($('load').classList.contains('on')) return;
 
     if (u) {
@@ -2635,8 +3118,8 @@ instBtns.forEach(b => b.onclick = async () => {
   }
 
   $('itx').innerHTML = isIOS
-    ? 'On iPhone/iPad:<br>tap <b>Share</b> &#11014;&#65039; then <b>Add to Home Screen</b>.<br><br><small>(tap to close)</small>'
-    : 'Open your browser menu (&#8942;) and choose <b>Install app</b> / <b>Add to Home screen</b>.<br><br><small>(tap to close)</small>';
+    ? 'On iPhone/iPad:<br>tap <b>Share</b> ⬆️ then <b>Add to Home Screen</b>.<br><br><small>(tap to close)</small>'
+    : 'Open your browser menu (⋮) and choose <b>Install app</b> / <b>Add to Home screen</b>.<br><br><small>(tap to close)</small>';
 
   $('ihelp').classList.add('on');
 });
@@ -2648,6 +3131,14 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js').catch(() => { });
   });
 }
+
+/* Give new players a small starter coin stash */
+if (me.coins === 0 && me.wins === 0 && me.losses === 0 && !pref.starterGiven) {
+  me.coins = 100;
+  pref.starterGiven = true;
+  save();
+}
+updateStatsBar();
 </script>
 </body>
 </html>
