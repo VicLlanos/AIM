@@ -197,18 +197,31 @@ addEventListener('resize',rs);rs();
 let WG=null,Cl=[],LT=[],TK={},ph=[0,0,0],PD=[],M,ZC=[[0,0]];
 function hgt(x,z){
   const d=H(x,z),f=Math.max(0,Math.min(1,(WR-d)/55));
-  let h=(Math.sin(x*.028+ph[0])*Math.cos(z*.024+ph[1])*3.4
-        +Math.sin((x+z)*.048+ph[2])*1.4
-        +Math.sin(x*.09)*Math.cos(z*.07)*.9
-        +Math.sin(x*.015)*2.1
-        +4.2)*f-(1-f)*9;
-  /* ridges & valleys */
-  h+=Math.sin(x*.012+z*.009)*1.8*f;
+  let h=(Math.sin(x*.028+ph[0])*Math.cos(z*.024+ph[1])*2.6
+        +Math.sin((x+z)*.048+ph[2])*1.1
+        +Math.sin(x*.09)*Math.cos(z*.07)*.7
+        +Math.sin(x*.015)*1.6
+        +3.4)*f-(1-f)*9;
+  h+=Math.sin(x*.012+z*.009)*1.2*f;
   for(const p of PD){
     const q=H(x-p[0],z-p[1]);
-    if(q<p[2]+28){const k=Math.max(0,Math.min(1,(q-p[2])/28));h=1.1+(h-1.1)*k*k*(3-2*k)}
+    if(q<p[2]+28){const k=Math.max(0,Math.min(1,(q-p[2])/28));h=1.05+(h-1.05)*k*k*(3-2*k)}
   }
   return h;
+}
+/* Standing surface: terrain + tops of solid boxes (so you can jump onto crates/roofs) */
+function groundY(x,z,fromY){
+  let gy=hgt(x,z);
+  const feet=fromY!=null?fromY:gy+2;
+  for(const c of Cl){
+    const margin=.42;
+    if(x>c[0]-margin&&x<c[3]+margin&&z>c[2]-margin&&z<c[5]+margin){
+      const top=c[4];
+      /* only stand on top if we are above or very near the top (not under it) */
+      if(top>gy+.05&&feet>=top-.55)gy=Math.max(gy,top);
+    }
+  }
+  return gy;
 }
 function box(x,y,z,w,h,d,col){
   const s=[w/2,h/2,d/2],o=[x,y,z],k=new THREE.Color(col);
@@ -221,6 +234,11 @@ function box(x,y,z,w,h,d,col){
   }
 }
 function solid(x,y,z,w,h,d,col){box(x,y,z,w,h,d,col);Cl.push([x-w/2,y-h/2,z-d/2,x+w/2,y+h/2,z+d/2])}
+/* Crate helper — classic CS-style cover boxes */
+function crate(x,z,sx,sy,sz,col){
+  const gy=hgt(x,z);
+  solid(x,gy+sy/2,z,sx,sy,sz,col||'#8B7355');
+}
 
 /* Better loot meshes — shaped like the actual item */
 function makeLootMesh(k){
@@ -318,20 +336,40 @@ function gen(sd){
   };
 
   const [dt,hb,af,cp,sb,dp,ru,qu]=POI;
-  /* Downtown denser */
-  for(let i=0;i<4;i++)for(let j=0;j<4;j++)if(r()<.85)
-    bld(dt[0]+(i-1.5)*24,dt[1]+(j-1.5)*22,12+r()*5|0,11+r()*4|0,5+r()*16|0,pick(['#8d949c','#a8aeb5','#6f7882','#b9b4a8']),2);
-  /* Harbor containers */
-  for(let i=0;i<4;i++)for(let j=0;j<5;j++)if(r()<.75)cont(hb[0]-28+i*14+r()*2,hb[1]-24+j*12,j%2);
+  const wood=['#8B7355','#A0522D','#6B5344','#9C7A5A','#7A6548'];
+  const metal=['#6a6e72','#5a5e62','#7a7e82','#4a4e52'];
+  /* place cover crates — de_dust style mid-boxes you can stand on and hide behind */
+  const placeCrates=(cx,cz,n,spread)=>{
+    for(let i=0;i<n;i++){
+      const x=cx+(r()-.5)*spread,z=cz+(r()-.5)*spread;
+      if(H(x,z)>WR-12)continue;
+      const sx=1.1+r()*1.6,sy=1.0+r()*1.4,sz=1.1+r()*1.6;
+      crate(x,z,sx,sy,sz,pick(wood));
+      if(r()<.35)crate(x+(r()-.5)*.8,z+(r()-.5)*.8,sx*.85,sy*.9,sz*.85,pick(wood)); /* stack */
+      if(r()<.25)loot(x,z);
+    }
+  };
+
+  /* Downtown — tight streets + alley crates */
+  for(let i=0;i<4;i++)for(let j=0;j<4;j++)if(r()<.88)
+    bld(dt[0]+(i-1.5)*24,dt[1]+(j-1.5)*22,12+r()*5|0,11+r()*4|0,5+r()*14|0,pick(['#8d949c','#a8aeb5','#6f7882','#b9b4a8','#c4b8a0']),2);
+  placeCrates(dt[0],dt[1],28,55);
+
+  /* Harbor — shipping containers + box stacks */
+  for(let i=0;i<4;i++)for(let j=0;j<5;j++)if(r()<.8)cont(hb[0]-28+i*14+r()*2,hb[1]-24+j*12,j%2);
   bld(hb[0]+22,hb[1]-26,18,12,7,'#7a6f64',3);
-  /* Airfield */
+  placeCrates(hb[0],hb[1],22,48);
+
+  /* Airfield hangars + runway cover */
   bld(af[0],af[1]-16,36,20,10,'#9aa1a8',6);
   bld(af[0]+34,af[1]+8,12,9,5,'#b5aca0',2);
   box(af[0]-6,1.05,af[1]+26,90,.12,14,'#2a2c30');
   for(let i=0;i<9;i++)box(af[0]-42+i*12,1.12,af[1]+26,5.5,.05,.55,'#eee');
   box(af[0]-34,1.05,af[1]+4,14,.12,14,'#2a2c30');
   box(af[0]-34,1.12,af[1]+4,7,.05,1.1,'#ffd23a');
-  /* Compound */
+  placeCrates(af[0]-10,af[1]+10,18,40);
+
+  /* Compound walls + interior crates */
   const cx=cp[0],cz=cp[1],cwall='#5a6350';
   solid(cx,2.6,cz-30,58,3.2,.9,cwall);solid(cx-30,2.6,cz,.9,3.2,58,cwall);
   solid(cx+30,2.6,cz,.9,3.2,58,cwall);solid(cx-18,2.6,cz+30,22,3.2,.9,cwall);
@@ -339,36 +377,53 @@ function gen(sd){
   solid(cx+26,6.5,cz-26,6,11,6,'#4a5244');
   bld(cx-14,cz-12,16,12,5,'#6b7560',3);bld(cx+12,cz+6,14,12,5,'#6b7560',3);
   for(let i=0;i<6;i++)solid(cx-16+i*3.2,1.7,cz+18,2.6,1.3,1.1,'#a8946a');
+  placeCrates(cx,cz,16,36);
+
   /* Suburbs */
   for(let i=0;i<4;i++)for(let j=0;j<3;j++)if(r()<.8)
     bld(sb[0]-30+i*22,sb[1]-16+j*22,12,10,4+r()*3|0,pick(['#d9c7a7','#c9d3dc','#d9a7a7','#b7cdb0']),2);
+  placeCrates(sb[0],sb[1],14,40);
+
   /* Depot */
   cont(dp[0]-10,dp[1]-8,0);cont(dp[0]+10,dp[1]+8,1);bld(dp[0],dp[1],11,10,4,'#8a8f95',3);
-  /* Ruins */
-  for(let i=0;i<5;i++){
-    const rx=ru[0]+(r()-.5)*30,rz=ru[1]+(r()-.5)*30;
+  placeCrates(dp[0],dp[1],12,28);
+
+  /* Ruins — broken walls + boxes */
+  for(let i=0;i<6;i++){
+    const rx=ru[0]+(r()-.5)*32,rz=ru[1]+(r()-.5)*32;
     solid(rx,1.8+r()*2,rz,3+r()*4,2+r()*3,3+r()*3,pick(['#6b6358','#5a5248','#7a7268']));
-    if(r()<.5)loot(rx,rz);
+    if(r()<.55)loot(rx,rz);
   }
+  placeCrates(ru[0],ru[1],14,30);
+
   /* Quarry */
   for(let i=0;i<4;i++)solid(qu[0]+(r()-.5)*20,2+r()*3,qu[1]+(r()-.5)*20,4+r()*3,3+r()*4,4+r()*3,'#8a8070');
   for(let i=0;i<4;i++)loot(qu[0]+(r()-.5)*16,qu[1]+(r()-.5)*16);
+  placeCrates(qu[0],qu[1],10,24);
+
+  /* mid-map dust lanes — classic CS long mid with box clusters */
+  placeCrates(0,0,20,70);
+  placeCrates(40,-30,12,35);
+  placeCrates(-50,20,12,35);
+  placeCrates(30,60,10,30);
+  placeCrates(-40,-50,10,30);
 
   /* scattered houses */
-  for(let i=0,n=0;i<280&&n<14;i++){
+  for(let i=0,n=0;i<280&&n<12;i++){
     const x=(r()-.5)*480,z=(r()-.5)*480;
     if(H(x,z)>WR-20||hgt(x,z)<1.5||PD.some(p=>H(x-p[0],z-p[1])<p[2]+18))continue;
     n++;bld(x,z,7,6,3.4,'#9c8f7c',2);
+    placeCrates(x,z,3,10);
   }
 
-  /* terrain mesh */
+  /* terrain mesh — sandier de_dust palette */
   const tg=new THREE.PlaneGeometry(2*WR+60,2*WR+60,96,96).rotateX(-PI/2);
   const pa=tg.attributes.position,col=new Float32Array(pa.count*3),cc=new THREE.Color();
   for(let i=0;i<pa.count;i++){
     const x=pa.getX(i),z=pa.getZ(i),h=hgt(x,z);pa.setY(i,h);
     const pd=PD.some(p=>H(x-p[0],z-p[1])<p[2]);
-    cc.set(pd?'#7b8187':h<.6?'#d8c58f':h>4.5?'#6a7a52':h>2.8?'#5f8a4a':'#6b9a55');
-    const v=.9+.14*Math.sin(x*.55)*Math.cos(z*.48);
+    cc.set(pd?'#8a8478':h<.5?'#d4c4a0':h>4?'#7a8a5a':h>2.5?'#9a9a6a':'#c4b48a');
+    const v=.9+.12*Math.sin(x*.55)*Math.cos(z*.48);
     col.set([cc.r*v,cc.g*v,cc.b*v],i*3);
   }
   tg.setAttribute('color',new THREE.BufferAttribute(col,3));tg.computeVertexNormals();
@@ -419,19 +474,48 @@ function zone(t){
   return{x:a[0]+(b[0]-a[0])*f,z:a[1]+(b[1]-a[1])*f,r:ZR[i]+(ZR[i+1]-ZR[i])*f,i,f,left:f?0:HOLD-l};
 }
 
-/* ---------- CHARACTERS ---------- */
+/* ---------- CHARACTERS (human proportions) ---------- */
 function soldier(i){
-  const C=CH[i],g=new THREE.Group(),mt=c=>new THREE.MeshLambertMaterial({color:c});
+  const C=CH[i],g=new THREE.Group();
+  const mt=c=>new THREE.MeshLambertMaterial({color:c});
   const bx=(w,h,d,x,y,z,c,p)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mt(c));o.position.set(x,y,z);(p||g).add(o);return o};
-  const lg=x=>{const p=new THREE.Group();p.position.set(x,.9,0);g.add(p);bx(.24,.55,.26,0,-.3,0,C.s,p);bx(.25,.4,.28,0,-.7,0,'#1b1d20',p);return p};
-  g.l1=lg(-.14);g.l2=lg(.14);
-  bx(.56,.62,.3,0,1.22,0,C.s);bx(.6,.42,.34,0,1.3,0,'#2a2f35');bx(.5,.08,.36,0,1.02,0,C.c);
-  bx(.4,.46,.2,0,1.3,.27,'#33383f');bx(.1,.1,.06,0,1.5,-.18,C.c);
-  bx(.24,.26,.24,0,1.7,0,C.k);bx(.34,.16,.36,0,1.86,0,C.s);bx(.3,.08,.04,0,1.76,-.13,C.c);
-  if(i==0)bx(.26,.14,.26,0,1.62,0,'#14161a');
-  const ar=x=>{const p=new THREE.Group();p.position.set(x,1.45,0);p.rotation.x=1.35;g.add(p);bx(.15,.55,.15,0,-.25,0,C.s,p);bx(.13,.13,.13,0,-.55,0,'#1b1d20',p);return p};
-  ar(-.4);ar(.4);
-  g.gn=bx(.09,.13,.8,.12,1.38,-.5,'#222');g.rotation.order='YXZ';return g;
+  /* legs — thigh + shin + boot */
+  const lg=x=>{
+    const p=new THREE.Group();p.position.set(x,.95,0);g.add(p);
+    bx(.22,.48,.24,0,-.24,0,C.s,p);           /* thigh */
+    bx(.2,.42,.22,0,-.68,.02,'#2a2e34',p);     /* shin */
+    bx(.22,.12,.28,0,-.95,.04,'#1a1c20',p);     /* boot */
+    return p;
+  };
+  g.l1=lg(-.13);g.l2=lg(.13);
+  /* torso */
+  bx(.48,.55,.26,0,1.28,0,C.s);                 /* chest */
+  bx(.52,.2,.28,0,1.52,0,'#2c3238');            /* shoulders / vest top */
+  bx(.44,.12,.28,0,1.05,0,C.c);                 /* belt accent */
+  bx(.36,.38,.14,0,1.32,.16,'#33383f');          /* vest front */
+  /* neck */
+  bx(.14,.1,.14,0,1.62,0,C.k);
+  /* head — more human oval */
+  bx(.28,.3,.26,0,1.82,0,C.k);                  /* skull */
+  bx(.3,.1,.28,0,1.98,0,C.s);                   /* hair / helmet base */
+  bx(.26,.06,.06,0,1.88,-.12,C.c);              /* visor / goggles strip */
+  if(i===0)bx(.29,.12,.29,0,1.78,0,'#14161a');  /* Ghost mask */
+  /* face hint */
+  bx(.06,.04,.02,-.07,1.84,-.13,'#1a1a1a');     /* eye L */
+  bx(.06,.04,.02,.07,1.84,-.13,'#1a1a1a');      /* eye R */
+  /* arms — upper + forearm + hand */
+  const ar=x=>{
+    const p=new THREE.Group();p.position.set(x,1.48,0);p.rotation.x=1.25;g.add(p);
+    bx(.16,.42,.16,0,-.2,0,C.s,p);              /* upper arm */
+    bx(.14,.36,.14,0,-.52,0,'#2a2e34',p);       /* forearm */
+    bx(.12,.1,.12,0,-.72,0,C.k,p);              /* hand */
+    return p;
+  };
+  ar(-.38);ar(.38);
+  /* weapon mount */
+  g.gn=bx(.08,.1,.7,.1,1.36,-.42,'#222');
+  g.rotation.order='YXZ';
+  return g;
 }
 
 /* ---------- STATE ---------- */
@@ -820,16 +904,27 @@ addEventListener('keyup',e=>keys[e.key.toLowerCase()]=0);
 addEventListener('contextmenu',e=>e.preventDefault());
 
 /* ---------- UPDATE ---------- */
+const PLAYER_R=.38, PLAYER_H=1.75;
+function blocked(nx,ny,nz){
+  /* horizontal collision against solid AABBs; allow standing on tops */
+  for(const c of Cl){
+    const top=c[4], bot=c[1];
+    /* skip if fully above the box (standing on it) or fully below */
+    if(ny+.15>=top)continue;
+    if(ny+PLAYER_H<=bot)continue;
+    if(nx>c[0]-PLAYER_R&&nx<c[3]+PLAYER_R&&nz>c[2]-PLAYER_R&&nz<c[5]+PLAYER_R)return true;
+  }
+  return false;
+}
 function mv(o,dx,dz){
-  for(const[ax,az]of[[dx,0],[0,dz]]){
-    const nx=o.x+ax,nz=o.z+az;
-    if(hgt(nx,nz)<-.5)continue;
-    let ok=1;
-    for(const c of Cl){
-      if(c[1]>o.y+1.7||c[4]<o.y+.4)continue;
-      if(nx>c[0]-.38&&nx<c[3]+.38&&nz>c[2]-.38&&nz<c[5]+.38){ok=0;break}
-    }
-    if(ok){o.x=nx;o.z=nz}
+  /* axis-separated movement for accurate wall sliding */
+  const steps=3;
+  const sx=dx/steps,sz=dz/steps;
+  for(let i=0;i<steps;i++){
+    const nx=o.x+sx,nz=o.z;
+    if(hgt(nx,nz)>-0.6&&!blocked(nx,o.y,nz))o.x=nx;
+    const nx2=o.x,nz2=o.z+sz;
+    if(hgt(nx2,nz2)>-0.6&&!blocked(nx2,o.y,nz2))o.z=nz2;
   }
 }
 let nt=0,wtk=0,last=performance.now();
@@ -841,26 +936,39 @@ function upd(dt){
     let ay=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+jy;
     const l=H(ax,ay);if(l>1){ax/=l;ay/=l}
 
-    /* sprint / crouch / stamina */
-    const wantSprint=(keys.shift||false)&&l>.4&&!me.crouch&&me.stam>5&&!me.rl&&!me.use;
+    /* sprint / crouch / stamina — consistent key state */
+    const shiftHeld=!!(keys.shift||keys['shift']);
+    const wantSprint=shiftHeld&&l>.35&&!me.crouch&&me.stam>4&&!me.rl&&!me.use;
     me.sprint=wantSprint?1:0;
-    if(me.sprint){me.stam=Math.max(0,me.stam-28*dt);if(me.stam<=0)me.sprint=0}
-    else me.stam=Math.min(100,me.stam+(me.crouch?22:14)*dt);
+    if(me.sprint){me.stam=Math.max(0,me.stam-26*dt);if(me.stam<=0)me.sprint=0}
+    else me.stam=Math.min(100,me.stam+(me.crouch?24:15)*dt);
     $('stamBar').style.width=me.stam+'%';
 
     if(go){
-      const base=me.use?2.8:me.crouch?3.1:5.4;
-      const spr=me.sprint?1.55:1;
-      const sp=base*spr*(me.rl>0?.82:1);
+      const base=me.use?2.6:me.crouch?2.9:5.2;
+      const spr=me.sprint?1.6:1;
+      const sp=base*spr*(me.rl>0?.8:1);
       const s=Math.sin(me.yaw),c=Math.cos(me.yaw);
       mv(me,(ax*c+ay*s)*sp*dt,(-ax*s+ay*c)*sp*dt);
-      me.ph+=l*sp*dt*(me.crouch?.9:1.5);
+      me.ph+=l*sp*dt*(me.crouch?.85:1.45);
 
-      const gy=hgt(me.x,me.z);
-      if(keys[' ']&&me.y<=gy+.06&&me.vy<=0&&!me.crouch)me.vy=7.2;
-      keys[' ']=0;
-      me.vy-=23*dt;me.y+=me.vy*dt;
-      if(me.y<=gy){me.y=gy;me.vy=0}
+      /* vertical: land on terrain OR crate/roof tops */
+      const gy=groundY(me.x,me.z,me.y);
+      const onGround=me.y<=gy+.08&&me.vy<=0;
+      if(keys[' ']&&onGround&&!me.crouch){me.vy=7.4;keys[' ']=0}
+      else if(keys[' '])keys[' ']=0;
+      me.vy-=24*dt;
+      me.y+=me.vy*dt;
+      /* ceiling check against box bottoms when rising */
+      if(me.vy>0){
+        for(const c of Cl){
+          if(me.x>c[0]-PLAYER_R&&me.x<c[3]+PLAYER_R&&me.z>c[2]-PLAYER_R&&me.z<c[5]+PLAYER_R){
+            if(me.y+PLAYER_H>c[1]&&me.y<c[1]){me.y=c[1]-PLAYER_H;me.vy=0}
+          }
+        }
+      }
+      const gy2=groundY(me.x,me.z,me.y);
+      if(me.y<=gy2){me.y=gy2;me.vy=0}
 
       const id=me.sl[me.cs];
       if(id>=0){
