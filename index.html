@@ -56,6 +56,7 @@ input,select{width:min(18em,86vw);max-width:320px;text-align:center;user-select:
 #xh:before{left:11px;top:0;width:2px;height:24px;background:linear-gradient(var(--c) 0 7px,transparent 7px 17px,var(--c) 17px)}
 #xh:after{top:11px;left:0;height:2px;width:24px;background:linear-gradient(90deg,var(--c) 0 7px,transparent 7px 17px,var(--c) 17px)}
 #xh.hit{--c:#ff3b30;transform:scale(1.3)}#xh.hs{--c:#ffe14a}#xh.ads{transform:scale(.75);opacity:.85}
+#xh.auto{--c:#ffe14a;transform:scale(1.15);filter:drop-shadow(0 0 4px #ffe14a)}
 #dv{position:absolute;inset:0;box-shadow:inset 0 0 90px #f22;opacity:0;transition:opacity .25s}
 #sv{position:absolute;inset:0;box-shadow:inset 0 0 110px #4a6dff;opacity:0;transition:opacity .4s}
 #am{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(58px + env(safe-area-inset-bottom));text-align:center;font:800 18px 'Exo 2';text-shadow:0 0 4px #000}
@@ -291,7 +292,6 @@ function addLadder(x,z,y0,y1,face){
   Ld.push([lx,y0,lz,y1,.6]);
 }
 
-
 function box(x,y,z,w,h,d,col){const s=[w/2,h/2,d/2],o=[x,y,z],k=new THREE.Color(col);for(let a=0;a<3;a++)for(const sg of[1,-1]){const b=(a+1)%3,c=(a+2)%3,q=[[-1,-1],[1,-1],[1,1],[-1,1]];if(sg<0)q.reverse();const i0=M.p.length/3,sh=a==1?(sg>0?1.1:.55):.85;for(const[u,v]of q){const p=[0,0,0],n=[0,0,0];p[a]=o[a]+sg*s[a];p[b]=o[b]+u*s[b];p[c]=o[c]+v*s[c];n[a]=sg;M.p.push(...p);M.n.push(...n);M.c.push(k.r*sh,k.g*sh,k.b*sh)}M.i.push(i0,i0+1,i0+2,i0,i0+2,i0+3)}}
 function solid(x,y,z,w,h,d,col){box(x,y,z,w,h,d,col);Cl.push([x-w/2,y-h/2,z-d/2,x+w/2,y+h/2,z+d/2])}
 function crate(x,y,z,sx,sy,sz,col){solid(x,y+sy/2,z,sx,sy,sz,col||'#8B7355')}
@@ -397,36 +397,39 @@ function gen(sd,mapId){
   const lanes=(cx,cz,n,spread)=>{for(let i=0;i<n;i++){const x=cx+(r()-.5)*spread,z=cz+(r()-.5)*spread;const sx=1.3+r()*1.5,sy=1+r()*1.3,sz=1.3+r()*1.5;crate(x,0,z,sx,sy,sz,pick([col.crate,col.crate2]));if(r()<.25)crate(x,sy,z,sx*.7,sy*.6,sz*.7,col.crate);if(r()<.12)loot(x,z,sy+.85)}};
   lanes(0,0,5,20);lanes(-28,0,4,16);lanes(28,0,4,16);lanes(0,-28,4,16);lanes(0,28,4,16);
 
-  /* ladders flush against building walls (center x/z, outer face, height) */
-  /* plaza buildings: attach to +z / -z outer walls */
-  addLadder(-18,18+5.05+.15,0,5.1,0); /* (-18,18) w12 d10 h5 south */
-  addLadder(18,18+5.05+.15,0,5.1,0);
-  addLadder(-18,-18-5.05-.15,0,4.6,1);
-  addLadder(18,-18-5.05-.15,0,4.6,1);
-  /* warehouses: attach to outer long side */
-  addLadder(-36-7.05-.15,0,0,6.1,3); /* west face of west warehouse */
-  addLadder(36+7.05+.15,0,0,6.1,2);
-  /* center tower */
-  addLadder(0,-5.05-.15,0,5.5,1);
+  /* ladders — properly attached to outer walls of buildings/containers */
+  /* Plaza buildings: attach to +z / -z outer walls, flush with the wall */
+  addLadder(-18,18+5.05+0.15,0,5.1,0); /* (-18,18) w12 d10 h5 south face */
+  addLadder(18,18+5.05+0.15,0,5.1,0);
+  addLadder(-18,-18-5.05-0.15,0,4.6,1);
+  addLadder(18,-18-5.05-0.15,0,4.6,1);
+  /* Warehouses: attach to outer long side */
+  addLadder(-38-7.05-0.15,0,0,6.1,3); /* west face of west warehouse */
+  addLadder(38+7.05+0.15,0,0,6.1,2);
+  /* Center tower */
+  addLadder(0,-5.05-0.15,0,5.5,1);
   if(mapId===0){
-    addLadder(-48,40+7.05+.15,0,5.1,0);
-    addLadder(48,40+7.05+.15,0,5.1,0);
+    addLadder(-48,40+7.05+0.15,0,5.1,0);
+    addLadder(48,40+7.05+0.15,0,5.1,0);
   }
   if(mapId===1){
-    addLadder(0,-78+11+.15,0,7.1,0);
-    addLadder(0,78-11-.15,0,7.1,1);
-    addLadder(-40,-20-8-.15,7,10,1);
-    addLadder(40,20+8+.15,7,10,0);
+    addLadder(0,-78+11+0.15,0,7.1,0);
+    addLadder(0,78-11-0.15,0,7.1,1);
+    addLadder(-40,-20-8-0.15,7,10,1);
+    addLadder(40,20+8+0.15,7,10,0);
   }
   if(mapId===2){
-    addLadder(0,0+7.05+.15,0,6.1,0);
-    addLadder(-22,22+5.05+.15,0,5.1,0);
-    addLadder(22,-22-5.05-.15,0,5.1,1);
+    addLadder(0,0+7.05+0.15,0,6.1,0);
+    addLadder(-22,22+5.05+0.15,0,5.1,0);
+    addLadder(22,-22-5.05-0.15,0,5.1,1);
   }
   if(mapId===3){
-    addLadder(-30,25+6.05+.15,0,5.1,0);
-    addLadder(30,-25-6.05-.15,0,5.1,1);
-    addLadder(0,-3.55-.15,0,3.5,1);
+    addLadder(-30,25+6.05+0.15,0,5.1,0);
+    addLadder(30,-25-6.05-0.15,0,5.1,1);
+    addLadder(0,-3.55-0.15,0,3.5,1);
+    /* Container ladders */
+    addLadder(-20, -10+1.2+0.15, 0, 2.9, 0);
+    addLadder(10, 15+1.2+0.15, 0, 2.9, 0);
   }
   /* sparse world loot */
   for(let i=0;i<14;i++){const a=r()*6.28,d=12+r()*42;loot(Math.cos(a)*d,Math.sin(a)*d,.9)}
@@ -473,7 +476,7 @@ function soldier(i){
 }
 
 let uid,uname='',pend='',ch=0,wins=0,xp=0,deaths=0,signup=0,rf,host=0,live=0,off=0,t0=0,seed=0,Pi={},startN=1,kills=0,done=0,fire=0,held=0,jx=0,jy=0,keys={},demo=1,capT=0,dmgDone=0,ggLevel=0,ready=0;
-const me={x:0,y:0,z:0,vy:0,yaw:0,pitch:0,hp:100,sh:0,al:1,sl:[0,-1],cs:0,mg:[12,0],inv:{med:1,shld:0},cd:0,rl:0,use:0,uk:0,ph:0,invuln:0,kick:0,crouch:0,sprint:0,stam:100,team:0,ads:0,slide:0,slideT:0,swT:0,ml:0};
+const me={x:0,y:0,z:0,vy:0,yaw:0,pitch:0,hp:100,sh:0,al:1,sl:[0,-1],cs:0,mg:[12,0],inv:{med:1,shld:0},cd:0,rl:0,use:0,uk:'',ph:0,invuln:0,kick:0,crouch:0,sprint:0,stam:100,team:0,ads:0,slide:0,slideT:0,swT:0,ml:0};
 const P={},PM={},TR=[];
 const BOT_NAMES=['Nova','Rex','Kai','Jinx','Orion','Nyx','Volt','Ash'];
 let BOTN=0;
@@ -1121,6 +1124,27 @@ function minimap(Z){
   mm.fillStyle=CH[ch].c;mm.beginPath();mm.moveTo(0,-7);mm.lineTo(4,4);mm.lineTo(-4,4);mm.closePath();mm.fill();
   mm.restore();
 }
+
+/* Auto-fire assist: check if crosshair is aimed at an enemy (mobile only) */
+function isAimingAtEnemy(){
+  if(!mob)return false;
+  const eyeY=me.crouch||me.slide?EYE*.68:EYE;
+  const o={x:me.x,y:me.y+eyeY,z:me.z},f=fwd();
+  /* Cast a ray from camera center */
+  let closest=null,closestT=W[me.sl[me.cs]]?.rg||150;
+  for(const k in P){
+    const p=P[k];
+    if(!p.al)continue;
+    if(gmode==='tdm'&&(p.team|0)===me.team)continue;
+    const h=rp(o,f,p,closestT);
+    if(h&&h[0]<closestT){closestT=h[0];closest=k}
+  }
+  if(!closest)return false;
+  /* Check line of sight (no wall blocking) */
+  const t=ray(o,f,closestT+0.5);
+  return t>=closestT-0.6;
+}
+
 function frame(n){
   const dt=Math.min(.05,(n-last)/1000);last=n;const tm=n/1000;
   if(live){upd(dt);const t=nowT(),Z=zone(t);let tg=me;if(!me.al)tg=Object.values(P).find(p=>p.al)||me;
@@ -1134,6 +1158,23 @@ function frame(n){
       V.set(p.x,p.y+2.1,p.z).project(cam);let el=NT[k]||(NT[k]=Object.assign(document.createElement('div'),{className:'nt'}));if(!el.parentNode)nts.appendChild(el);
       const d=H(p.x-cam.position.x,p.z-cam.position.z);if(V.z<1&&d<85&&me.al&&!p.bot){el.style.display='block';el.style.left=(V.x*.5+.5)*innerWidth+'px';el.style.top=(-V.y*.5+.5)*innerHeight+'px';el.innerHTML=`<span style="color:${CH[p.c|0].c}">${esc((Pi[k]||{}).n||'')}</span> <i style="font-style:normal;color:#ff6a4a">${p.hp|0}</i>`}else el.style.display='none'}
     for(const o of LT)if(o.m.visible){o.m.rotation.y=tm*1.5;o.m.position.y=o.y+Math.sin(tm*2.4+o.id)*.07}
+    
+    /* Auto-fire: on mobile, if crosshair is on an enemy and the gun is automatic (or can fire), fire */
+    if(mob&&me.al&&live==1&&fire===0){
+      const id=me.sl[me.cs];
+      if(id>=0&&me.swT<=0&&me.cd<=0&&me.rl<=0&&me.mg[me.cs]>0&&!me.use){
+        if(isAimingAtEnemy()){
+          const w=W[id];
+          if(w.au||!held){shoot();held=1}
+        }
+      }
+    }
+    /* Crosshair auto-aim visual indicator */
+    if(mob&&me.al&&live==1){
+      $('xh').classList.toggle('auto',isAimingAtEnemy());
+    }else{
+      $('xh').classList.remove('auto');
+    }
   }else{const a=tm*.04;cam.position.set(Math.cos(a)*85,32+Math.sin(tm*.14)*5,Math.sin(a)*85);cam.lookAt(0,3,0);vm.visible=false;if($('m').classList.contains('on'))cards(tm);for(const k in NT)NT[k].style.display='none'}
   ren.render(scene,cam);requestAnimationFrame(frame);
 }
