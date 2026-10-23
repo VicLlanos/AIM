@@ -67,19 +67,45 @@ body.g #xpbar{display:block}#xpbar i{display:block;height:100%;background:#c4b5f
 #sbd{display:none;position:fixed;inset:0;background:#0a140aee;z-index:8;align-items:center;justify-content:center;flex-direction:column;gap:8px;font-family:'Exo 2',sans-serif}
 #sbd.on{display:flex}#sbd table{border-collapse:collapse;min-width:280px}#sbd th,#sbd td{padding:6px 14px;text-align:left;border-bottom:1px solid #2a4a2a}
 #sbd th{color:#7dff6b;font-size:12px}#sbd .me{color:#9dff8a}
-#js{position:absolute;left:calc(16px + env(safe-area-inset-left));bottom:calc(16px + env(safe-area-inset-bottom));width:100px;height:100px;border-radius:50%;border:2px solid #3a6a3a44;background:#0a140a33;display:none}
-#js i{position:absolute;left:28px;top:28px;width:44px;height:44px;border-radius:50%;background:#7dff6b44;border:2px solid #7dff6b88}
-.tc{position:absolute;display:none;pointer-events:auto;align-items:center;justify-content:center;border-radius:50%;padding:0;background:#0a140acc;border:2px solid #3a6a3a88;font-size:9px;color:#e8f0e8;touch-action:none;font-family:'Exo 2',sans-serif;opacity:.9}
-#bf{right:calc(14px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));width:78px;height:78px;background:radial-gradient(#5dde4a,#1a7014);border-color:#9dff8a;font-size:12px}
-#bj{right:calc(100px + env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));width:48px;height:48px}
-#br{right:calc(14px + env(safe-area-inset-right));bottom:calc(100px + env(safe-area-inset-bottom));width:48px;height:48px}
-#bads{right:calc(100px + env(safe-area-inset-right));bottom:calc(72px + env(safe-area-inset-bottom));width:48px;height:48px;border-color:#c4b5fd}
-#bs{left:calc(16px + env(safe-area-inset-left));bottom:calc(130px + env(safe-area-inset-bottom));width:40px;height:40px}
-#bm{left:calc(62px + env(safe-area-inset-left));bottom:calc(130px + env(safe-area-inset-bottom));width:40px;height:40px;border-color:#7dff6b88}
-#bc{left:calc(108px + env(safe-area-inset-left));bottom:calc(130px + env(safe-area-inset-bottom));width:40px;height:40px;border-color:#4ac8ff88}
-#bcr{left:calc(16px + env(safe-area-inset-left));bottom:calc(176px + env(safe-area-inset-bottom));width:40px;height:40px;border-color:#a0a0a088}
-.tc:active{background:#3a6a3a88;opacity:1}
-@media(pointer:coarse){body.g .tc{display:flex}body.g #js{display:block}}
+/* CODM-style mobile controls — edges only, clear center view */
+#js{position:absolute;left:calc(12px + env(safe-area-inset-left));bottom:calc(18px + env(safe-area-inset-bottom));width:118px;height:118px;border-radius:50%;border:2px solid rgba(255,255,255,.18);background:rgba(0,0,0,.22);display:none}
+#js i{position:absolute;left:34px;top:34px;width:50px;height:50px;border-radius:50%;background:rgba(125,255,107,.35);border:2px solid rgba(125,255,107,.65);box-shadow:0 0 12px rgba(125,255,107,.25)}
+.tc{position:absolute;display:none;pointer-events:auto;align-items:center;justify-content:center;border-radius:50%;padding:0;background:rgba(8,16,8,.55);border:2px solid rgba(255,255,255,.22);font-size:9px;color:#e8f0e8;touch-action:none;font-family:'Exo 2',sans-serif;opacity:.92;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);letter-spacing:.02em}
+/* Fire — primary, bottom-right (CODM) */
+#bf{right:calc(16px + env(safe-area-inset-right));bottom:calc(22px + env(safe-area-inset-bottom));width:86px;height:86px;background:radial-gradient(circle at 40% 35%,#7dff6b,#1a7014 70%);border-color:rgba(157,255,138,.7);font-size:13px;font-weight:800;box-shadow:0 0 20px rgba(61,255,58,.25)}
+/* Jump — left of fire */
+#bj{right:calc(112px + env(safe-area-inset-right));bottom:calc(28px + env(safe-area-inset-bottom));width:52px;height:52px}
+/* Crouch/slide — above jump */
+#bcr{right:calc(112px + env(safe-area-inset-right));bottom:calc(90px + env(safe-area-inset-bottom));width:48px;height:48px;border-color:rgba(180,180,180,.45)}
+/* Reload — above fire */
+#br{right:calc(22px + env(safe-area-inset-right));bottom:calc(118px + env(safe-area-inset-bottom));width:50px;height:50px}
+/* ADS — above crouch / mid-right */
+#bads{right:calc(112px + env(safe-area-inset-right));bottom:calc(148px + env(safe-area-inset-bottom));width:50px;height:50px;border-color:rgba(196,181,253,.55)}
+/* Utility row — above joystick, left side (out of combat view) */
+#bs{left:calc(14px + env(safe-area-inset-left));bottom:calc(150px + env(safe-area-inset-bottom));width:44px;height:44px}
+#bm{left:calc(64px + env(safe-area-inset-left));bottom:calc(150px + env(safe-area-inset-bottom));width:44px;height:44px;border-color:rgba(125,255,107,.4)}
+#bc{left:calc(114px + env(safe-area-inset-left));bottom:calc(150px + env(safe-area-inset-bottom));width:44px;height:44px;border-color:rgba(74,200,255,.4)}
+.tc:active{background:rgba(61,255,58,.25);opacity:1;transform:scale(.96)}
+@media(pointer:coarse){
+  body.g .tc{display:flex}
+  body.g #js{display:block}
+  /* lift HUD so it clears thumb zones */
+  body.g #am{bottom:calc(78px + env(safe-area-inset-bottom));font-size:16px}
+  body.g #hb{bottom:calc(62px + env(safe-area-inset-bottom));width:min(200px,36vw)}
+  body.g #stamina{bottom:calc(74px + env(safe-area-inset-bottom))}
+  body.g #inv{bottom:calc(8px + env(safe-area-inset-bottom));transform:translateX(-50%) scale(.92)}
+  body.g #mm{width:84px;height:84px;opacity:.9}
+  body.g #tp{font-size:12px}
+}
+/* landscape phones: slightly tighter */
+@media(pointer:coarse) and (max-height:420px){
+  #js{width:96px;height:96px}
+  #js i{left:26px;top:26px;width:44px;height:44px}
+  #bf{width:72px;height:72px;font-size:11px}
+  #bj,#br,#bads,#bcr{width:42px;height:42px;font-size:8px}
+  #bs,#bm,#bc{width:38px;height:38px;font-size:8px}
+  #bs,#bm,#bc{bottom:calc(120px + env(safe-area-inset-bottom))}
+}
 .nt{position:fixed;font-size:11px;transform:translate(-50%,-100%);text-shadow:0 0 2px #000;white-space:nowrap;display:none;pointer-events:none;font-family:'Exo 2',sans-serif}
 #rt{position:fixed;inset:0;background:#0a120add;display:none;align-items:center;justify-content:center;z-index:9;font:900 18px 'Exo 2';text-align:center;padding:24px}
 @media(orientation:portrait){body.g.mb #rt{display:flex}}
@@ -375,7 +401,7 @@ function spawnBots(n){
   const spawns=[[-40,20],[40,20],[-40,-20],[40,-20],[0,40],[0,-40],[-25,0],[25,0]];
   for(let i=0;i<n;i++){
     const id='bot'+i, sp=spawns[i%spawns.length], ci=i%CH.length;
-    const w=CH[ci].load[0];
+    const w=[0,1,1,2,3,7][R()*6|0]; /* prefer non-sniper */
     P[id]={x:sp[0]+(R()-.5)*6,y:0,z:sp[1]+(R()-.5)*6,yaw:R()*6.28,pitch:0,hp:100,sh:0,al:1,c:ci,w:w,kills:0,deaths:0,k:0,bot:1,
       tx:null,state:'roam',t:0,cd:0,tgt:null,ph:0};
     P[id].y=groundY(P[id].x,P[id].z,5);
@@ -386,20 +412,31 @@ function spawnBots(n){
 function botShoot(b,id){
   if(b.cd>0||!me.al||me.invuln>0)return;
   const S=W[b.w|0]||W[0];
-  const o={x:b.x,y:b.y+1.5,z:b.z};
-  const dx=me.x-b.x,dy=(me.y+EYE*.7)-(b.y+1.5),dz=me.z-b.z;
-  const dist=H(dx,dz);if(dist<1)return;
-  let d=[dx,dy,dz];const len=H(...d);d=d.map(v=>v/len);
-  /* accuracy: worse at range */
-  const sp=.02+dist*.0008;
-  d=[d[0]+(R()-.5)*sp,d[1]+(R()-.5)*sp,d[2]+(R()-.5)*sp];
+  const o={x:b.x,y:b.y+1.45,z:b.z};
+  const dx=me.x-b.x,dy=(me.y+EYE*.65)-(b.y+1.45),dz=me.z-b.z;
+  const dist=H(dx,dz);
+  if(dist<2.5||dist>48)return;
+  /* strict LOS — must clear almost all the way to player */
+  let d0=[dx,dy,dz];const len0=H(...d0);d0=d0.map(v=>v/len0);
+  const blockedT=ray(o,d0,dist+0.5);
+  if(blockedT<dist-0.7)return; /* wall / cover in the way */
+  /* aim with large inaccuracy */
+  let d=[d0[0],d0[1],d0[2]];
+  const sp=.045+dist*.0015+(b.hp<40?.02:0);
+  d=[d[0]+(R()-.5)*sp*2,d[1]+(R()-.5)*sp*2,d[2]+(R()-.5)*sp*2];
   const l2=H(...d);d=d.map(v=>v/l2);
   let t=ray(o,d,S.rg);
   const hit=rp(o,d,{x:me.x,y:me.y,z:me.z},t);
-  trace(o,d,hit?hit[0]:t,1);
-  b.cd=1/(S.r*(.7+R()*.4));
-  snd('s',Math.max(.06,1-dist/100));
-  if(hit){const dmg=Math.round(S.d*(hit[1]?1.6:1)*(0.7+R()*.3));hurt(dmg,id)}
+  trace(o,d,hit?hit[0]:Math.min(t,dist),1);
+  /* slow fire rate */
+  b.cd=0.55+1/(S.r*(.35+R()*.25));
+  snd('s',Math.max(.05,1-dist/110));
+  if(hit){
+    /* reduced damage, rare headshot bonus */
+    const hs=hit[1]&&R()<.25;
+    const dmg=Math.round(S.d*(hs?1.25:1)*(.4+R()*.25));
+    if(dmg>0)hurt(Math.min(dmg,22),id); /* hard cap per shot */
+  }
 }
 function updateBots(dt){
   if(!BOTN)return;
@@ -407,58 +444,67 @@ function updateBots(dt){
     const b=P[id];if(!b.bot)continue;
     if(!b.al){
       b.t=(b.t||0)+dt;
-      if(b.t>2.5){
+      if(b.t>3.2){
         const spawns=[[-40,20],[40,20],[-40,-20],[40,-20],[0,40],[0,-40]];
         const sp=spawns[R()*spawns.length|0];
-        b.x=sp[0];b.z=sp[1];b.y=groundY(b.x,b.z,5);b.hp=100;b.sh=0;b.al=1;b.t=0;b.state='roam';b.invuln=1.5;
+        b.x=sp[0];b.z=sp[1];b.y=groundY(b.x,b.z,5);b.hp=100;b.sh=0;b.al=1;b.t=0;b.state='roam';b.aimT=0;
         if(PM[id])PM[id].visible=true;
       }
       continue;
     }
     b.cd=Math.max(0,(b.cd||0)-dt);
     b.t=(b.t||0)-dt;
+    b.aimT=Math.max(0,(b.aimT||0)-dt);
     const dist=H(me.x-b.x,me.z-b.z);
-    const canSee=me.al&&dist<70&&dist>2;
-    /* simple LOS: if ray to player not blocked much */
+    /* LOS check */
     let see=false;
-    if(canSee){
-      const o={x:b.x,y:b.y+1.5,z:b.z};
+    if(me.al&&dist>3&&dist<55){
+      const o={x:b.x,y:b.y+1.45,z:b.z};
       const dx=me.x-b.x,dz=me.z-b.z,l=H(dx,dz);
-      const d=[dx/l,((me.y+1)-(b.y+1.5))/l,dz/l];
-      const t=ray(o,d,dist+1);
-      see=t>=dist-1.2;
+      const d=[dx/l,((me.y+EYE*.6)-(b.y+1.45))/l,dz/l];
+      const t=ray(o,d,dist+0.5);
+      see=t>=dist-0.65;
     }
-    if(see){b.state='fight';b.tgt='me'}
-    else if(b.t<=0){b.state=R()<.3?'chase':'roam';b.t=1.5+R()*2.5;b.tgt=null}
+    if(see){
+      b.aimT=(b.aimT||0)+dt*2; /* need ~0.7s acquire */
+      if(b.aimT>0.7)b.state='fight';
+      else b.state='alert';
+    }else{
+      b.aimT=Math.max(0,(b.aimT||0)-dt*1.5);
+      if(b.t<=0){b.state=R()<.22?'chase':'roam';b.t=2+R()*3}
+    }
 
     let ax=0,az=0;
     if(b.state==='fight'&&me.al){
       const ang=Math.atan2(me.x-b.x,me.z-b.z);
-      b.yaw+=(ang-b.yaw)*Math.min(1,dt*4);
-      /* strafe + approach */
-      const side=Math.sin(performance.now()*.002+id.length)*.7;
-      const back=dist<12?-0.3:dist>35?0.9:0.25;
+      b.yaw+=(ang-b.yaw)*Math.min(1,dt*2.2);
+      const side=Math.sin(performance.now()*.0015+id.length)*.55;
+      const back=dist<14?-0.15:dist>40?0.7:0.15;
       ax=Math.sin(b.yaw)*back+Math.cos(b.yaw)*side;
       az=Math.cos(b.yaw)*back-Math.sin(b.yaw)*side;
-      if(dist<55&&b.cd<=0&&R()<.08)botShoot(b,id);
+      /* shoot rarely, only after acquire, only with LOS */
+      if(dist<45&&b.cd<=0&&b.aimT>0.7&&R()<.025)botShoot(b,id);
+    }else if(b.state==='alert'&&me.al){
+      const ang=Math.atan2(me.x-b.x,me.z-b.z);
+      b.yaw+=(ang-b.yaw)*Math.min(1,dt*1.5);
+      ax=Math.sin(b.yaw)*.3;az=Math.cos(b.yaw)*.3;
     }else if(b.state==='chase'&&me.al){
       const ang=Math.atan2(me.x-b.x,me.z-b.z);
-      b.yaw+=(ang-b.yaw)*Math.min(1,dt*2.5);
-      ax=Math.sin(b.yaw);az=Math.cos(b.yaw);
+      b.yaw+=(ang-b.yaw)*Math.min(1,dt*1.8);
+      ax=Math.sin(b.yaw)*.85;az=Math.cos(b.yaw)*.85;
     }else{
-      if(b.t<=0||!b.wx){b.wx=(R()-.5)*80;b.wz=(R()-.5)*80;b.t=2+R()*3}
+      if(b.t<=0||b.wx==null){b.wx=(R()-.5)*70;b.wz=(R()-.5)*70;b.t=2.5+R()*3}
       const ang=Math.atan2(b.wx-b.x,b.wz-b.z);
-      b.yaw+=(ang-b.yaw)*Math.min(1,dt*2);
-      ax=Math.sin(b.yaw);az=Math.cos(b.yaw);
-      if(H(b.x-b.wx,b.z-b.wz)<3)b.t=0;
+      b.yaw+=(ang-b.yaw)*Math.min(1,dt*1.6);
+      ax=Math.sin(b.yaw)*.7;az=Math.cos(b.yaw)*.7;
+      if(H(b.x-b.wx,b.z-b.wz)<4)b.t=0;
     }
-    const sp=4.2*dt;
+    const sp=3.6*dt;
     const nx=b.x+ax*sp,nz=b.z+az*sp;
     if(hgt(nx,b.z)>-1&&!blocked(nx,b.y,b.z))b.x=nx;
     if(hgt(b.x,nz)>-1&&!blocked(b.x,b.y,nz))b.z=nz;
     b.y=groundY(b.x,b.z,b.y+0.5);
-    b.ph+=(Math.abs(ax)+Math.abs(az))*sp*8;
-    /* network-style fields for renderer */
+    b.ph+=(Math.abs(ax)+Math.abs(az))*sp*7;
     b.tx=b.x;b.ty=b.y;b.tz=b.z;
   }
 }
@@ -542,7 +588,7 @@ function begin(d){
   if(!d||live)return;demo=0;seed=d.seed;t0=d.t0;if(d.mode)gmode=d.mode;if(d.map!=null)gmap=d.map;gen(seed,gmap);
   const ids=Object.keys(d.p).sort(),i=ids.indexOf(uid);startN=ids.length;
   const spawns=[[-45,0],[45,0],[0,-45],[0,45],[-30,30],[30,-30]];const sp=spawns[i%spawns.length];
-  Object.assign(me,{x:sp[0],z:sp[1],vy:0,hp:100,sh:0,al:1,cd:0,rl:0,use:0,ph:0,invuln:2.2,kick:0,crouch:0,sprint:0,stam:100,ads:0,slide:0,slideT:0,swT:0,team:gmode==='tdm'?(i%2):0});
+  Object.assign(me,{x:sp[0],z:sp[1],vy:0,hp:100,sh:0,al:1,cd:0,rl:0,use:0,ph:0,invuln:3.5,kick:0,crouch:0,sprint:0,stam:100,ads:0,slide:0,slideT:0,swT:0,team:gmode==='tdm'?(i%2):0});
   me.y=groundY(me.x,me.z,10);me.yaw=Math.atan2(-me.x,-me.z);me.pitch=0;
   kills=0;deaths=0;done=0;dmgDone=0;fire=held=0;ggLevel=0;live=1;scr('');
   applyLoadout();vm.visible=true;
@@ -606,7 +652,7 @@ function die(by){
     setTimeout(respawn,2e3);ov('Eliminated','Respawning…',[['OK',()=>scr('')]])}
   else{setTimeout(respawn,2200);ov('Eliminated','Kills '+kills+' · Respawning',[['OK',()=>scr('')]])}
 }
-function respawn(){if(!live||done)return;const spawns=[[-45,0],[45,0],[0,-45],[0,45],[-30,30],[30,-30]];const sp=spawns[R()*spawns.length|0];me.x=sp[0];me.z=sp[1];me.y=groundY(me.x,me.z,10);me.hp=100;me.sh=0;me.al=1;me.invuln=2;me.vy=0;me.ads=0;vm.visible=true;scr('');cap('Respawned')}
+function respawn(){if(!live||done)return;const spawns=[[-45,0],[45,0],[0,-45],[0,45],[-30,30],[30,-30]];const sp=spawns[R()*spawns.length|0];me.x=sp[0];me.z=sp[1];me.y=groundY(me.x,me.z,10);me.hp=100;me.sh=0;me.al=1;me.invuln=2.8;me.vy=0;me.ads=0;vm.visible=true;scr('');cap('Respawned')}
 function endMatch(won,extra){
   if(done)return;done=1;live=2;
   const gain=Math.min(80,15+kills*8+Math.round(dmgDone/40)+(won?25:0));xp+=gain;
@@ -630,8 +676,8 @@ const jsE=$('js'),jk=$('jk');let jid=null,jo=null,lid=null,lp=null;
 const isUI=e=>e.target.closest&&e.target.closest('button');
 addEventListener('pointerdown',e=>{if(live!=1)return;if(e.pointerType=='mouse'){if(!document.pointerLockElement)cv.requestPointerLock&&cv.requestPointerLock();else if(e.button==0)fire=1;else if(e.button==2)me.ads=1;return}if(isUI(e))return;if(e.clientX<innerWidth*.42&&jid==null){jid=e.pointerId;jo=[e.clientX,e.clientY];jsE.style.left=(e.clientX-50)+'px';jsE.style.bottom=(innerHeight-e.clientY-50)+'px'}else if(lid==null){lid=e.pointerId;lp=[e.clientX,e.clientY]}});
 addEventListener('pointermove',e=>{if(e.pointerType=='mouse'){if(document.pointerLockElement&&live==1){const m=me.ads?.0014:.0023;me.yaw-=e.movementX*m*sens;me.pitch=Math.max(-1.3,Math.min(1.3,me.pitch-e.movementY*m*sens))}return}
-  if(e.pointerId==jid){let dx=(e.clientX-jo[0])/48,dy=(e.clientY-jo[1])/48;const l=H(dx,dy);if(l>1){dx/=l;dy/=l}jx=dx;jy=dy;jk.style.transform=`translate(${dx*32}px,${dy*32}px)`}
-  else if(e.pointerId==lid){const m=me.ads?.0035:.0055;me.yaw-=(e.clientX-lp[0])*m*sens;me.pitch=Math.max(-1.3,Math.min(1.3,me.pitch-(e.clientY-lp[1])*m*sens));lp=[e.clientX,e.clientY]}});
+  if(e.pointerId==jid){let dx=(e.clientX-jo[0])/52,dy=(e.clientY-jo[1])/52;const l=H(dx,dy);if(l>1){dx/=l;dy/=l}if(l<.12){dx=0;dy=0}jx=dx;jy=dy;jk.style.transform=`translate(${dx*34}px,${dy*34}px)`}
+  else if(e.pointerId==lid){const m=me.ads?.0038:.0062;me.yaw-=(e.clientX-lp[0])*m*sens;me.pitch=Math.max(-1.3,Math.min(1.3,me.pitch-(e.clientY-lp[1])*m*sens));lp=[e.clientX,e.clientY]}});
 const up=e=>{if(e.pointerType=='mouse'){if(e.button==0)fire=0;if(e.button==2)me.ads=0;return}if(e.pointerId==jid){jid=null;jx=jy=0;jk.style.transform='';jsE.style.left='';jsE.style.bottom=''}if(e.pointerId==lid)lid=null};
 addEventListener('pointerup',up);addEventListener('pointercancel',up);
 const bf=$('bf');bf.onpointerdown=e=>{fire=1;bf.setPointerCapture(e.pointerId);e.stopPropagation()};bf.onpointerup=bf.onpointercancel=()=>{fire=0};
@@ -668,7 +714,7 @@ function upd(dt){
     const l=H(ax,ay);if(l>1){ax/=l;ay/=l}
     const shiftHeld=!!(keys.shift||keys['shift']||keys.Shift);
     if(me.slideT>0){me.slideT-=dt;me.slide=me.slideT>0?1:0;if(!me.slide)me.crouch=0}
-    const wantSprint=shiftHeld&&l>.25&&!me.crouch&&!me.ads&&me.stam>2&&!me.rl&&me.use<=0&&!me.slide;
+    const autoSprint=mob&&l>.82;const wantSprint=(shiftHeld||autoSprint)&&l>.25&&!me.crouch&&!me.ads&&me.stam>2&&!me.rl&&me.use<=0&&!me.slide;
     me.sprint=wantSprint?1:0;
     if(me.sprint){me.stam=Math.max(0,me.stam-32*dt);if(me.stam<=0)me.sprint=0}
     else me.stam=Math.min(100,me.stam+(me.crouch?22:14)*dt);
