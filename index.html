@@ -369,6 +369,108 @@ function soldier(i){
 let uid,uname='',pend='',ch=0,wins=0,xp=0,deaths=0,signup=0,rf,host=0,live=0,off=0,t0=0,seed=0,Pi={},startN=1,kills=0,done=0,fire=0,held=0,jx=0,jy=0,keys={},demo=1,capT=0,dmgDone=0,ggLevel=0,ready=0;
 const me={x:0,y:0,z:0,vy:0,yaw:0,pitch:0,hp:100,sh:0,al:1,sl:[0,-1],cs:0,mg:[12,0],inv:{med:1,shld:0},cd:0,rl:0,use:0,uk:0,ph:0,invuln:0,kick:0,crouch:0,sprint:0,stam:100,team:0,ads:0,slide:0,slideT:0,swT:0};
 const P={},PM={},TR=[];
+const BOT_NAMES=['Nova','Rex','Kai','Jinx','Orion','Nyx','Volt','Ash'];
+let BOTN=0;
+function spawnBots(n){
+  const spawns=[[-40,20],[40,20],[-40,-20],[40,-20],[0,40],[0,-40],[-25,0],[25,0]];
+  for(let i=0;i<n;i++){
+    const id='bot'+i, sp=spawns[i%spawns.length], ci=i%CH.length;
+    const w=CH[ci].load[0];
+    P[id]={x:sp[0]+(R()-.5)*6,y:0,z:sp[1]+(R()-.5)*6,yaw:R()*6.28,pitch:0,hp:100,sh:0,al:1,c:ci,w:w,kills:0,deaths:0,k:0,bot:1,
+      tx:null,state:'roam',t:0,cd:0,tgt:null,ph:0};
+    P[id].y=groundY(P[id].x,P[id].z,5);
+    Pi[id]={n:BOT_NAMES[i%BOT_NAMES.length],c:ci};
+  }
+  BOTN=n;
+}
+function botShoot(b,id){
+  if(b.cd>0||!me.al||me.invuln>0)return;
+  const S=W[b.w|0]||W[0];
+  const o={x:b.x,y:b.y+1.5,z:b.z};
+  const dx=me.x-b.x,dy=(me.y+EYE*.7)-(b.y+1.5),dz=me.z-b.z;
+  const dist=H(dx,dz);if(dist<1)return;
+  let d=[dx,dy,dz];const len=H(...d);d=d.map(v=>v/len);
+  /* accuracy: worse at range */
+  const sp=.02+dist*.0008;
+  d=[d[0]+(R()-.5)*sp,d[1]+(R()-.5)*sp,d[2]+(R()-.5)*sp];
+  const l2=H(...d);d=d.map(v=>v/l2);
+  let t=ray(o,d,S.rg);
+  const hit=rp(o,d,{x:me.x,y:me.y,z:me.z},t);
+  trace(o,d,hit?hit[0]:t,1);
+  b.cd=1/(S.r*(.7+R()*.4));
+  snd('s',Math.max(.06,1-dist/100));
+  if(hit){const dmg=Math.round(S.d*(hit[1]?1.6:1)*(0.7+R()*.3));hurt(dmg,id)}
+}
+function updateBots(dt){
+  if(!BOTN)return;
+  for(const id in P){
+    const b=P[id];if(!b.bot)continue;
+    if(!b.al){
+      b.t=(b.t||0)+dt;
+      if(b.t>2.5){
+        const spawns=[[-40,20],[40,20],[-40,-20],[40,-20],[0,40],[0,-40]];
+        const sp=spawns[R()*spawns.length|0];
+        b.x=sp[0];b.z=sp[1];b.y=groundY(b.x,b.z,5);b.hp=100;b.sh=0;b.al=1;b.t=0;b.state='roam';b.invuln=1.5;
+        if(PM[id])PM[id].visible=true;
+      }
+      continue;
+    }
+    b.cd=Math.max(0,(b.cd||0)-dt);
+    b.t=(b.t||0)-dt;
+    const dist=H(me.x-b.x,me.z-b.z);
+    const canSee=me.al&&dist<70&&dist>2;
+    /* simple LOS: if ray to player not blocked much */
+    let see=false;
+    if(canSee){
+      const o={x:b.x,y:b.y+1.5,z:b.z};
+      const dx=me.x-b.x,dz=me.z-b.z,l=H(dx,dz);
+      const d=[dx/l,((me.y+1)-(b.y+1.5))/l,dz/l];
+      const t=ray(o,d,dist+1);
+      see=t>=dist-1.2;
+    }
+    if(see){b.state='fight';b.tgt='me'}
+    else if(b.t<=0){b.state=R()<.3?'chase':'roam';b.t=1.5+R()*2.5;b.tgt=null}
+
+    let ax=0,az=0;
+    if(b.state==='fight'&&me.al){
+      const ang=Math.atan2(me.x-b.x,me.z-b.z);
+      b.yaw+=(ang-b.yaw)*Math.min(1,dt*4);
+      /* strafe + approach */
+      const side=Math.sin(performance.now()*.002+id.length)*.7;
+      const back=dist<12?-0.3:dist>35?0.9:0.25;
+      ax=Math.sin(b.yaw)*back+Math.cos(b.yaw)*side;
+      az=Math.cos(b.yaw)*back-Math.sin(b.yaw)*side;
+      if(dist<55&&b.cd<=0&&R()<.08)botShoot(b,id);
+    }else if(b.state==='chase'&&me.al){
+      const ang=Math.atan2(me.x-b.x,me.z-b.z);
+      b.yaw+=(ang-b.yaw)*Math.min(1,dt*2.5);
+      ax=Math.sin(b.yaw);az=Math.cos(b.yaw);
+    }else{
+      if(b.t<=0||!b.wx){b.wx=(R()-.5)*80;b.wz=(R()-.5)*80;b.t=2+R()*3}
+      const ang=Math.atan2(b.wx-b.x,b.wz-b.z);
+      b.yaw+=(ang-b.yaw)*Math.min(1,dt*2);
+      ax=Math.sin(b.yaw);az=Math.cos(b.yaw);
+      if(H(b.x-b.wx,b.z-b.wz)<3)b.t=0;
+    }
+    const sp=4.2*dt;
+    const nx=b.x+ax*sp,nz=b.z+az*sp;
+    if(hgt(nx,b.z)>-1&&!blocked(nx,b.y,b.z))b.x=nx;
+    if(hgt(b.x,nz)>-1&&!blocked(b.x,b.y,nz))b.z=nz;
+    b.y=groundY(b.x,b.z,b.y+0.5);
+    b.ph+=(Math.abs(ax)+Math.abs(az))*sp*8;
+    /* network-style fields for renderer */
+    b.tx=b.x;b.ty=b.y;b.tz=b.z;
+  }
+}
+function hurtBot(id,dmg,by){
+  const b=P[id];if(!b||!b.al||!b.bot)return;
+  b.hp-=dmg;showDmg(Math.round(dmg));
+  if(b.hp<=0){b.hp=0;b.al=0;b.t=0;b.deaths=(b.deaths||0)+1;if(PM[id])PM[id].visible=false;
+    if(by===uid||by==='me'){kills++;cap('+1 ELIM');feed(`${uname} ✦ ${Pi[id].n}`)}
+    else feed(`${(Pi[by]||{}).n||'?'} ✦ ${Pi[id].n}`);
+  }
+}
+
 let sens=1;try{sens=+localStorage.getItem('sn')||1}catch(e){}$('sn').value=sens;$('sn').oninput=e=>{sens=+e.target.value;try{localStorage.setItem('sn',sens)}catch(x){}};
 const scr=i=>{['a','m','l','o'].forEach(k=>$(k).classList.toggle('on',k==i));document.body.classList.toggle('g',!i);if(i=='a'||i=='m')demo=1};
 const msg=(t,e='mg')=>$(e).textContent=t||'';
@@ -444,7 +546,9 @@ function begin(d){
   me.y=groundY(me.x,me.z,10);me.yaw=Math.atan2(-me.x,-me.z);me.pitch=0;
   kills=0;deaths=0;done=0;dmgDone=0;fire=held=0;ggLevel=0;live=1;scr('');
   applyLoadout();vm.visible=true;
-  cap(gmode==='br'?'Drop!':gmode==='gg'?'Gun Game!':gmode==='ffa'?'FFA!':'TDM!');
+  BOTN=0;for(const k of Object.keys(P)){if(P[k]&&P[k].bot){delete P[k];if(PM[k]){scene.remove(PM[k]);delete PM[k]}if(Pi[k])delete Pi[k]}}
+  if(startN<=1&&(gmode==='ffa'||gmode==='tdm'||gmode==='gg')){spawnBots(5);cap(gmode.toUpperCase()+' · 5 bots');}
+  else cap(gmode==='br'?'Drop!':gmode==='gg'?'Gun Game!':gmode==='ffa'?'FFA!':'TDM!');
   try{screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape').catch(()=>{})}catch(e){}
   snd('p');
 }
@@ -483,8 +587,8 @@ function shoot(){
   for(let i=0;i<S.q;i++){let d=[f[0]+(R()-.5)*spread*2,f[1]+(R()-.5)*spread*2,f[2]+(R()-.5)*spread*2];const l=H(...d);d=d.map(v=>v/l);let t=ray(o,d,S.rg),vic=null,hd=0;
     for(const k in P){const p=P[k];if(!p.al)continue;if(gmode==='tdm'&&(p.team|0)===me.team)continue;const h=rp(o,d,p,t);if(h){t=h[0];vic=k;hd=h[1]}}
     if(vic){acc[vic]=(acc[vic]||0)+S.d*(hd?1.85:1);hm=Math.max(hm,hd?2:1)}if(!first)first={d,t};if(i<3)trace(o,d,t,1)}
-  for(const v in acc){ev({k:'h',v,d:Math.round(acc[v]),u:uid});showDmg(Math.round(acc[v]))}
-  if(hm){const x=$('xh');x.className='hit'+(hm>1?' hs':'');setTimeout(()=>x.className=me.ads?'ads':'',110);snd('h');for(const v in acc)dmgDone+=acc[v]}
+  for(const v in acc){const dmg=Math.round(acc[v]);if(P[v]&&P[v].bot)hurtBot(v,dmg,uid);else{ev({k:'h',v,d:dmg,u:uid});showDmg(dmg)}dmgDone+=dmg}
+  if(hm){const x=$('xh');x.className='hit'+(hm>1?' hs':'');setTimeout(()=>x.className=me.ads?'ads':'',110);snd('h')}
   snd('s',.7);me.pitch+=S.rec*(S.q>1?.2:1)*(me.ads?.5:1);updateInvUI();
   ev({k:'b',u:uid,x:+o.x.toFixed(1),y:+o.y.toFixed(1),z:+o.z.toFixed(1),a:first.d.map(v=>+v.toFixed(3)).join('_'),t:+first.t.toFixed(1),w:id});
 }
@@ -593,7 +697,8 @@ function upd(dt){
   /* ADS FOV */
   const targetFov=me.ads&&me.al?52:78;cam.fov+=(targetFov-cam.fov)*Math.min(1,dt*12);cam.updateProjectionMatrix();
   $('xh').classList.toggle('ads',!!me.ads&&me.al);
-  for(const k in P){const p=P[k];if(p.tx==null)continue;const f=Math.min(1,dt*15);p.ph+=H(p.tx-p.x,p.tz-p.z)*1.4;p.x+=(p.tx-p.x)*f;p.y+=(p.ty-p.y)*f;p.z+=(p.tz-p.z)*f}
+  updateBots(dt);
+  for(const k in P){const p=P[k];if(p.bot)continue;if(p.tx==null)continue;const f=Math.min(1,dt*15);p.ph+=H(p.tx-p.x,p.tz-p.z)*1.4;p.x+=(p.tx-p.x)*f;p.y+=(p.ty-p.y)*f;p.z+=(p.tz-p.z)*f}
   for(const e of TR)if(e.l>0){e.l-=dt;if(e.l<=0)e.mesh.visible=false}
   nt+=dt;if(live==1&&nt>.08){nt=0;
     if(rf)rf.child('s/'+uid).set([me.x.toFixed(1),me.y.toFixed(1),me.z.toFixed(1),me.yaw.toFixed(2),me.pitch.toFixed(2),me.hp|0,me.sh|0,ch,me.sl[me.cs],me.al?1:0,kills,deaths].join(',')).catch(()=>{});
