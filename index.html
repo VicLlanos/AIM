@@ -249,29 +249,6 @@ const ZR=[95,62,40,24,12,4],HOLD=38,SHR=22,SD=[1,2,4,7,11,16];
 
 function hgt(x,z){const d=H(x,z);if(d>WR+5)return -8;for(const p of PD){const q=H(x-p[0],z-p[1]);if(q<p[2])return p[3]||0}return Math.sin(x*.08)*Math.cos(z*.07)*.12}
 function groundY(x,z,fromY){let gy=hgt(x,z);const feet=fromY!=null?fromY:gy+2;for(const c of Cl){if(x>c[0]-.4&&x<c[3]+.4&&z>c[2]-.4&&z<c[5]+.4){const top=c[4];if(top>gy+.04&&feet>=top-.5)gy=Math.max(gy,top)}}return gy}
-let Ld=[]; /* ladders: [x,z,y0,y1,r] */
-function nearLadder(x,y,z){
-  for(const L of Ld){
-    if(H(x-L[0],z-L[2])<L[4]+.35&&y>=L[1]-.4&&y<=L[3]+.6)return L;
-  }
-  return null;
-}
-function addLadder(x,z,y0,y1){
-  /* visual rungs + rails */
-  const h=y1-y0, mid=(y0+y1)/2;
-  const railC='#6a6a6a', rungC='#8a8070';
-  solid(x-.28,mid,z,.06,h,.06,railC);
-  solid(x+.28,mid,z,.06,h,.06,railC);
-  const steps=Math.max(3,Math.floor(h/.45));
-  for(let i=0;i<=steps;i++){
-    const yy=y0+i*(h/steps);
-    box(x,yy,z,.55,.05,.08,rungC);
-  }
-  /* top landing marker */
-  box(x,y1+.05,z,.5,.06,.5,'#7a7060');
-  Ld.push([x,y0,z,y1,.55]);
-}
-
 function box(x,y,z,w,h,d,col){const s=[w/2,h/2,d/2],o=[x,y,z],k=new THREE.Color(col);for(let a=0;a<3;a++)for(const sg of[1,-1]){const b=(a+1)%3,c=(a+2)%3,q=[[-1,-1],[1,-1],[1,1],[-1,1]];if(sg<0)q.reverse();const i0=M.p.length/3,sh=a==1?(sg>0?1.1:.55):.85;for(const[u,v]of q){const p=[0,0,0],n=[0,0,0];p[a]=o[a]+sg*s[a];p[b]=o[b]+u*s[b];p[c]=o[c]+v*s[c];n[a]=sg;M.p.push(...p);M.n.push(...n);M.c.push(k.r*sh,k.g*sh,k.b*sh)}M.i.push(i0,i0+1,i0+2,i0,i0+2,i0+3)}}
 function solid(x,y,z,w,h,d,col){box(x,y,z,w,h,d,col);Cl.push([x-w/2,y-h/2,z-d/2,x+w/2,y+h/2,z+d/2])}
 function crate(x,y,z,sx,sy,sz,col){solid(x,y+sy/2,z,sx,sy,sz,col||'#8B7355')}
@@ -293,7 +270,7 @@ function makeLootMesh(k){
 function gen(sd,mapId){
   const r=rng(sd),pick=a=>a[r()*a.length|0];mapId=mapId|0;
   if(WG){scene.remove(WG);WG.traverse(o=>{if(o.geometry)o.geometry.dispose()})}
-  WG=new THREE.Group();scene.add(WG);Cl=[];LT=[];TK={};Ld=[];
+  WG=new THREE.Group();scene.add(WG);Cl=[];LT=[];TK={};
   PD=[[0,0,58,0],[-72,42,24,0],[72,42,24,0],[-72,-42,24,0],[72,-42,24,0],[0,78,20,mapId===1?7:0],[0,-78,20,mapId===1?7:0]];
   M={p:[],n:[],c:[],i:[]};let id=1;
   /* scarcer loot */
@@ -377,14 +354,6 @@ function gen(sd,mapId){
   const lanes=(cx,cz,n,spread)=>{for(let i=0;i<n;i++){const x=cx+(r()-.5)*spread,z=cz+(r()-.5)*spread;const sx=1.3+r()*1.5,sy=1+r()*1.3,sz=1.3+r()*1.5;crate(x,0,z,sx,sy,sz,pick([col.crate,col.crate2]));if(r()<.25)crate(x,sy,z,sx*.7,sy*.6,sz*.7,col.crate);if(r()<.12)loot(x,z,sy+.85)}};
   lanes(0,0,5,20);lanes(-28,0,4,16);lanes(28,0,4,16);lanes(0,-28,4,16);lanes(0,28,4,16);
 
-  /* ladders onto roofs / pads */
-  addLadder(-18,18+5.2,0,5.2);addLadder(18,18+5.2,0,5.2);
-  addLadder(-18,-18-5.2,0,4.7);addLadder(18,-18-5.2,0,4.7);
-  addLadder(-38-7.2,0,0,6.2);addLadder(38+7.2,0,0,6.2);
-  addLadder(0,-4.6,0,5.2);
-  if(mapId===1){addLadder(0,-78,0,7.2);addLadder(0,78,0,7.2);addLadder(-40,-20,7,9.5);addLadder(40,20,7,9.5)}
-  if(mapId===2){addLadder(0,7.2,0,6.2);addLadder(-22,22+5.2,0,5.2);addLadder(22,-22-5.2,0,5.2)}
-  if(mapId===3){addLadder(-30,25+6.2,0,5.2);addLadder(30,-25-6.2,0,5.2);addLadder(0,3.6,0,3.6)}
   /* sparse world loot */
   for(let i=0;i<14;i++){const a=r()*6.28,d=12+r()*42;loot(Math.cos(a)*d,Math.sin(a)*d,.9)}
 
@@ -825,23 +794,8 @@ function upd(dt){
       else mv(me,(ax*c+ay*s)*sp*dt,(-ax*s+ay*c)*sp*dt);
       me.ph+=l*sp*dt*(me.crouch?.7:1.4);
       const gy=groundY(me.x,me.z,me.y);const onGround=me.y<=gy+.1&&me.vy<=0;
-      const lad=nearLadder(me.x,me.y,me.z);
-      if(lad){
-        /* climb: hold W/up or joystick forward to go up, S down */
-        const climb=(keys.w||keys.arrowup||jy<-.25)?1:(keys.s||keys.arrowdown||jy>.25)?-1:0;
-        if(climb||keys[' ']){
-          me.vy=0;
-          me.y+=((climb||1)*3.8)*dt;
-          if(me.y>lad[3]){me.y=lad[3]+.05;me.vy=.5}
-          if(me.y<lad[1])me.y=lad[1];
-          me.ph+=dt*6;
-        }else if(!onGround){me.vy-=8*dt;me.y+=me.vy*dt} /* slow slide if idle on ladder */
-        if(keys[' '])keys[' ']=0;
-      }else{
-        if(keys[' ']&&onGround&&!me.crouch&&!me.slide){me.vy=7.5;keys[' ']=0}else if(keys[' '])keys[' ']=0;
-        me.vy-=26*dt;me.y+=me.vy*dt;
-      }
-
+      if(keys[' ']&&onGround&&!me.crouch&&!me.slide){me.vy=7.5;keys[' ']=0}else if(keys[' '])keys[' ']=0;
+      me.vy-=26*dt;me.y+=me.vy*dt;
       if(me.vy>0){for(const c of Cl){if(me.x>c[0]-PLAYER_R&&me.x<c[3]+PLAYER_R&&me.z>c[2]-PLAYER_R&&me.z<c[5]+PLAYER_R){if(me.y+PLAYER_H>c[1]&&me.y<c[1]){me.y=c[1]-PLAYER_H;me.vy=0}}}}
       const gy2=groundY(me.x,me.z,me.y);if(me.y<=gy2){me.y=gy2;me.vy=0}
       const id=me.sl[me.cs];if(id>=0&&me.swT<=0){const w=W[id];if(me.cd<=0&&me.rl<=0&&fire&&(w.au||!held))shoot()}held=fire;
@@ -873,7 +827,7 @@ function hudT(t,Z){
   $('al').textContent=(gmode==='br'?'ALIVE '+alive:gmode==='gg'?'LVL '+(ggLevel+1):'K '+kills)+' · '+gmode.toUpperCase();
   if(gmode==='br'){const s=Math.ceil(Z.left),fm=x=>Math.floor(x/60)+':'+String(x%60).padStart(2,'0');$('st').textContent=t<0?'START '+Math.ceil(-t):Z.f?'CLOSING':'ZONE '+fm(s)}
   else{const left=Math.max(0,Math.ceil(MATCH_T-t));$('st').textContent=t<0?'START '+Math.ceil(-t):Math.floor(left/60)+':'+String(left%60).padStart(2,'0')}
-  const id=me.sl[me.cs];if(id>=0){const w=W[id];const empty=me.mg[me.cs]<=0&&(me.sl[1]<0||me.mg[1]<=0);$('am').innerHTML=`${me.rl>0?'RELOAD':me.swT>0?'SWAP':me.ml>0?'MELEE':empty?'0 — [V] MELEE':me.mg[me.cs]+'/'+w.m}<small>${w.n} · ${nearLadder(me.x,me.y,me.z)?'CLIMB':me.slide?'SLIDE':me.ads?'ADS':me.crouch?'CROUCH':me.sprint?'SPRINT':'RUN'}</small>`}
+  const id=me.sl[me.cs];if(id>=0){const w=W[id];const empty=me.mg[me.cs]<=0&&(me.sl[1]<0||me.mg[1]<=0);$('am').innerHTML=`${me.rl>0?'RELOAD':me.swT>0?'SWAP':me.ml>0?'MELEE':empty?'0 — [V] MELEE':me.mg[me.cs]+'/'+w.m}<small>${w.n} · ${me.slide?'SLIDE':me.ads?'ADS':me.crouch?'CROUCH':me.sprint?'SPRINT':'RUN'}</small>`}
   else $('am').innerHTML='[V] MELEE';
   $('hbar').style.width=me.hp+'%';$('sb').style.width=me.sh+'%';
   if(gmode==='br'){const out=t>0&&H(me.x-Z.x,me.z-Z.z)>Z.r;$('sv').style.opacity=out?.8:0;scene.fog.color.set(out?'#6a7acc':'#a8c8e8')}else{$('sv').style.opacity=0;scene.fog.color.set('#a8c8e8')}
