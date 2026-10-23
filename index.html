@@ -531,9 +531,10 @@ function spawnBots(n){
   for(let i=0;i<n;i++){
     const id='bot'+i, sp=spawns[i%spawns.length], ci=i%CH.length;
     const w=weapons[R()*weapons.length|0];
-    P[id]={x:sp[0]+(R()-.5)*6,y:0,z:sp[1]+(R()-.5)*6,yaw:R()*6.28,pitch:0,hp:d.hp,sh:gdiff==='hard'?25:0,al:1,c:ci,w:w,kills:0,deaths:0,k:0,bot:1,
+    const fs=findSpawn(sp[0],sp[1]);
+    P[id]={x:fs.x,y:fs.y,z:fs.z,yaw:R()*6.28,pitch:0,hp:d.hp,sh:gdiff==='hard'?25:0,al:1,c:ci,w:w,kills:0,deaths:0,k:0,bot:1,
       tx:null,state:'roam',t:0,cd:0,tgt:null,ph:0,aimT:0,maxHp:d.hp};
-    P[id].y=groundY(P[id].x,P[id].z,5);
+    unstuck(P[id]);
     Pi[id]={n:BOT_NAMES[i%BOT_NAMES.length],c:ci};
   }
   BOTN=n;
@@ -597,7 +598,7 @@ function updateBots(dt){
       if(b.t>df.respawn){
         const spawns=[[-40,20],[40,20],[-40,-20],[40,-20],[0,40],[0,-40]];
         const sp=spawns[R()*spawns.length|0];
-        b.x=sp[0];b.z=sp[1];b.y=groundY(b.x,b.z,5);b.hp=b.maxHp||df.hp;b.sh=gdiff==='hard'?15:0;b.al=1;b.t=0;b.state='roam';b.aimT=0;b.tgt=null;
+        const fs=findSpawn(sp[0],sp[1]);b.x=fs.x;b.z=fs.z;b.y=fs.y;unstuck(b);b.hp=b.maxHp||df.hp;b.sh=gdiff==='hard'?15:0;b.al=1;b.t=0;b.state='roam';b.aimT=0;b.tgt=null;
         if(PM[id])PM[id].visible=true;
       }
       continue;
@@ -741,9 +742,10 @@ function applyLoadout(){
 function begin(d){
   if(!d||live)return;demo=0;seed=d.seed;t0=d.t0;if(d.mode)gmode=d.mode;if(d.map!=null)gmap=d.map;if(d.diff)gdiff=d.diff;gen(seed,gmap);
   const ids=Object.keys(d.p).sort(),i=ids.indexOf(uid);startN=ids.length;
-  const spawns=[[-45,0],[45,0],[0,-45],[0,45],[-30,30],[30,-30]];const sp=spawns[i%spawns.length];
-  Object.assign(me,{x:sp[0],z:sp[1],vy:0,hp:100,sh:0,al:1,cd:0,rl:0,use:0,ph:0,invuln:3.5,kick:0,crouch:0,sprint:0,stam:100,ads:0,slide:0,slideT:0,swT:0,team:gmode==='tdm'?(i%2):0});
-  me.y=groundY(me.x,me.z,10);me.yaw=Math.atan2(-me.x,-me.z);me.pitch=0;
+  const prefs=[[-42,0],[42,0],[0,-42],[0,42],[-28,28],[28,-28]];const pref=prefs[i%prefs.length];
+  const sp=findSpawn(pref[0],pref[1]);
+  Object.assign(me,{x:sp.x,z:sp.z,y:sp.y,vy:0,hp:100,sh:0,al:1,cd:0,rl:0,use:0,ph:0,invuln:3.5,kick:0,crouch:0,sprint:0,stam:100,ads:0,slide:0,slideT:0,swT:0,team:gmode==='tdm'?(i%2):0});
+  unstuck(me);me.yaw=Math.atan2(-me.x,-me.z);me.pitch=0;
   kills=0;deaths=0;done=0;dmgDone=0;fire=held=0;ggLevel=0;live=1;scr('');
   applyLoadout();vm.visible=true;
   BOTN=0;for(const k of Object.keys(P)){if(P[k]&&P[k].bot){delete P[k];if(PM[k]){scene.remove(PM[k]);delete PM[k]}if(Pi[k])delete Pi[k]}}
@@ -828,7 +830,7 @@ function die(by){
     setTimeout(respawn,2e3);ov('Eliminated','Respawning…',[['OK',()=>scr('')]])}
   else{setTimeout(respawn,2200);ov('Eliminated','Kills '+kills+' · Respawning',[['OK',()=>scr('')]])}
 }
-function respawn(){if(!live||done)return;const spawns=[[-45,0],[45,0],[0,-45],[0,45],[-30,30],[30,-30]];const sp=spawns[R()*spawns.length|0];me.x=sp[0];me.z=sp[1];me.y=groundY(me.x,me.z,10);me.hp=100;me.sh=0;me.al=1;me.invuln=2.8;me.vy=0;me.ads=0;vm.visible=true;scr('');cap('Respawned')}
+function respawn(){if(!live||done)return;const prefs=[[-42,0],[42,0],[0,-42],[0,42],[-28,28],[28,-28]];const pref=prefs[R()*prefs.length|0];const sp=findSpawn(pref[0],pref[1]);me.x=sp.x;me.z=sp.z;me.y=sp.y;unstuck(me);me.hp=100;me.sh=0;me.al=1;me.invuln=2.8;me.vy=0;me.ads=0;vm.visible=true;scr('');cap('Respawned')}
 function endMatch(won,extra){
   if(done)return;done=1;live=2;
   const gain=Math.min(80,15+kills*8+Math.round(dmgDone/40)+(won?25:0));xp+=gain;
@@ -898,9 +900,67 @@ function updateScoreboard(){
   $('sbb').innerHTML=rows.map(r=>`<tr class="${r.me?'me':''}"><td>${esc(r.n)}</td><td>${r.k}</td><td>${r.d}</td><td>${r.k*100-r.d*30}</td></tr>`).join('');
 }
 
-const PLAYER_R=.36,PLAYER_H=1.7;
-function blocked(nx,ny,nz){for(const c of Cl){if(ny+.1>=c[4])continue;if(ny+PLAYER_H<=c[1])continue;if(nx>c[0]-PLAYER_R&&nx<c[3]+PLAYER_R&&nz>c[2]-PLAYER_R&&nz<c[5]+PLAYER_R)return true}return false}
-function mv(o,dx,dz){const steps=3,sx=dx/steps,sz=dz/steps;for(let i=0;i<steps;i++){const nx=o.x+sx;if(hgt(nx,o.z)>-1&&!blocked(nx,o.y,o.z))o.x=nx;const nz=o.z+sz;if(hgt(o.x,nz)>-1&&!blocked(o.x,o.y,nz))o.z=nz}}
+const PLAYER_R=.38,PLAYER_H=1.7;
+function blocked(nx,ny,nz){
+  for(const c of Cl){
+    if(ny+.08>=c[4]-0.02)continue; /* standing on top is OK */
+    if(ny+PLAYER_H<=c[1]+0.02)continue;
+    if(nx>c[0]-PLAYER_R&&nx<c[3]+PLAYER_R&&nz>c[2]-PLAYER_R&&nz<c[5]+PLAYER_R)return true;
+  }
+  return false;
+}
+/* Push entity out of any overlapping solid */
+function unstuck(o){
+  for(let pass=0;pass<4;pass++){
+    let fixed=false;
+    for(const c of Cl){
+      const feet=o.y, head=o.y+PLAYER_H;
+      if(feet>=c[4]-0.02||head<=c[1]+0.02)continue;
+      if(!(o.x>c[0]-PLAYER_R&&o.x<c[3]+PLAYER_R&&o.z>c[2]-PLAYER_R&&o.z<c[5]+PLAYER_R))continue;
+      /* overlap — push out along smallest axis */
+      const ox1=o.x-(c[0]-PLAYER_R), ox2=(c[3]+PLAYER_R)-o.x;
+      const oz1=o.z-(c[2]-PLAYER_R), oz2=(c[5]+PLAYER_R)-o.z;
+      const oyTop=c[4]-feet; /* distance to stand on top */
+      const m=Math.min(ox1,ox2,oz1,oz2,Math.max(0,oyTop));
+      if(m===oyTop&&oyTop>0&&oyTop<1.2){o.y=c[4];o.vy=0}
+      else if(m===ox1)o.x=c[0]-PLAYER_R-0.02;
+      else if(m===ox2)o.x=c[3]+PLAYER_R+0.02;
+      else if(m===oz1)o.z=c[2]-PLAYER_R-0.02;
+      else o.z=c[5]+PLAYER_R+0.02;
+      fixed=true;
+    }
+    if(!fixed)break;
+  }
+  /* keep above terrain */
+  const gy=groundY(o.x,o.z,o.y+1);
+  if(o.y<gy){o.y=gy;o.vy=0}
+}
+function mv(o,dx,dz){
+  const steps=4,sx=dx/steps,sz=dz/steps;
+  for(let i=0;i<steps;i++){
+    const nx=o.x+sx;
+    if(hgt(nx,o.z)>-1&&!blocked(nx,o.y,o.z))o.x=nx;
+    const nz=o.z+sz;
+    if(hgt(o.x,nz)>-1&&!blocked(o.x,o.y,nz))o.z=nz;
+  }
+}
+function isClear(x,z,y){
+  if(hgt(x,z)<-1)return false;
+  if(blocked(x,y,z))return false;
+  return true;
+}
+function findSpawn(prefX,prefZ){
+  const candidates=[[prefX,prefZ],[0,0],[-40,0],[40,0],[0,-40],[0,40],[-35,35],[35,-35],[-35,-35],[35,35],[-20,0],[20,0],[0,-20],[0,20]];
+  for(const[px,pz] of candidates){
+    for(let attempt=0;attempt<12;attempt++){
+      const x=px+(R()-.5)*8, z=pz+(R()-.5)*8;
+      const y=groundY(x,z,20);
+      if(y>-1&&isClear(x,z,y+.05)&&isClear(x,z,y+.5))return {x,y,z};
+    }
+  }
+  return {x:0,y:groundY(0,0,20),z:0};
+}
+
 let nt=0,wtk=0,last=performance.now();const MATCH_T=180;
 
 function upd(dt){
@@ -944,6 +1004,8 @@ function upd(dt){
 
       if(me.vy>0){for(const c of Cl){if(me.x>c[0]-PLAYER_R&&me.x<c[3]+PLAYER_R&&me.z>c[2]-PLAYER_R&&me.z<c[5]+PLAYER_R){if(me.y+PLAYER_H>c[1]&&me.y<c[1]){me.y=c[1]-PLAYER_H;me.vy=0}}}}
       const gy2=groundY(me.x,me.z,me.y);if(me.y<=gy2){me.y=gy2;me.vy=0}
+      /* if embedded in a wall after fall/move, push out */
+      if(blocked(me.x,me.y,me.z))unstuck(me);
       const id=me.sl[me.cs];if(id>=0&&me.swT<=0){const w=W[id];if(me.cd<=0&&me.rl<=0&&fire&&(w.au||!held))shoot()}held=fire;
       if(me.rl>0){me.rl-=dt;if(me.rl<=0){me.mg[me.cs]=W[me.sl[me.cs]].m;updateInvUI()}}
       if(me.use>0){me.use-=dt;if(me.use<=0){if(me.uk=='m'){me.inv.med=Math.max(0,me.inv.med-1);me.hp=Math.min(100,me.hp+70)}else if(me.uk=='c'){me.inv.shld=Math.max(0,me.inv.shld-1);me.sh=Math.min(100,me.sh+50)}me.use=0;me.uk='';snd('p');updateInvUI()}}
