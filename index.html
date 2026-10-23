@@ -137,8 +137,8 @@ body.g #xpbar{display:block}#xpbar i{display:block;height:100%;background:#c4b5f
 :root{--ac:#7dff6b}
 h1,h2{color:var(--ac)}
 .sc>:first-child{margin-top:auto}.sc>:last-child{margin-bottom:auto}
-.mw{display:flex;flex-wrap:wrap;gap:18px 40px;align-items:center;justify-content:center;width:100%;max-width:960px}
-.mc{display:flex;flex-direction:column;align-items:center;gap:10px;flex:1 1 340px;min-width:0}
+.mw{display:flex;flex-wrap:wrap;gap:18px 28px;align-items:center;justify-content:center;width:100%;max-width:960px}
+.mc{display:flex;flex-direction:column;align-items:center;gap:10px;flex:1 1 280px;min-width:0}
 button:focus-visible,input:focus-visible{outline:2px solid #fff;outline-offset:2px}
 button.p{background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(0,0,0,.22)),var(--ac);border-color:rgba(255,255,255,.6)}
 .modes button,.maps button{min-height:40px;font-size:12px}
@@ -768,7 +768,7 @@ auth.onAuthStateChanged(async u=>{
     pick(ch,1);scr('m');updateXpBar();
   }else{bye();scr('a')}
 });
-$('as').onclick=()=>{signup=!signup;$('at').textContent=signup?'Create account':'Log in to enter the arena.';$('ag').textContent=signup?'Sign up':'Log in';$('as').textContent=signup?'Have an account? Log in':'New here? Create account';msg('','ae')};
+$('as').onclick=()=>{signup=!signup;$('ap').autocomplete=signup?'new-password':'current-password';$('at').textContent=signup?'Create account':'Log in to enter the arena.';$('ag').textContent=signup?'Sign up':'Log in';$('as').textContent=signup?'Have an account? Log in':'New here? Create account';msg('','ae')};
 async function doAuth(ev){
   if(ev)ev.preventDefault();
   const e=t=>msg(t,'ae'),u=$('au').value.trim(),p=$('ap').value;
@@ -1033,7 +1033,7 @@ function begin(d){
   const sp=findSpawn(pref[0],pref[1]);
   Object.assign(me,{x:sp.x,z:sp.z,y:sp.y,vy:0,hp:100,sh:0,al:1,cd:0,rl:0,use:0,ph:0,invuln:3.5,kick:0,crouch:0,sprint:0,stam:100,ads:0,slide:0,slideT:0,swT:0,team:gmode==='tdm'?(i%2):0,mantleT:0,mantleFace:0});
   unstuck(me);me.yaw=Math.atan2(-me.x,-me.z);me.pitch=0;
-  kills=0;deaths=0;done=0;dmgDone=0;fire=held=0;ggLevel=0;knifeMode=0;knifeSwing=0;if(typeof knife!=='undefined')knife.visible=false;live=1;scr('');
+  solo=startN<=1?1:0;kills=0;deaths=0;done=0;dmgDone=0;fire=held=0;ggLevel=0;knifeMode=0;knifeSwing=0;if(typeof knife!=='undefined')knife.visible=false;live=1;scr('');
   applyLoadout();vm.visible=true;wake(1);amb(1);hadLock=0;
   BOTN=0;for(const k of Object.keys(P)){if(P[k]&&P[k].bot){delete P[k];if(PM[k]){scene.remove(PM[k]);delete PM[k]}if(Pi[k])delete Pi[k]}}
   if(startN<=1){const n=D().count;spawnBots(n);cap(gmode.toUpperCase()+' · '+n+' bots · '+gdiff.toUpperCase());}
@@ -1471,7 +1471,7 @@ function dirHit(by){const p=P[by];if(!p)return;const dx=p.x-me.x,dz=p.z-me.z,s=M
 async function wake(on){try{if(on&&navigator.wakeLock&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>wl=null)}else if(!on&&wl){await wl.release();wl=null}}catch(e){}}
 function pause(){if(live!=1||paused)return;paused=1;pt0=Date.now();fire=0;keys={};jx=jy=0;jid=lid=null;me.ads=0;
   $('o').innerHTML=`<h2>Paused</h2><div class="r"><label>Sensitivity <input id="sn2" type="range" min=".3" max="2.5" step=".1" value="${sens}" style="width:140px;padding:0"></label><button id="snb2">${mute?'Sound off':'Sound on'}</button></div><div class="r"><button class="p" id="rs">Resume</button><button id="lm">Leave match</button></div>`;scr('o');
-  $('sn2').oninput=e=>{sens=+e.target.value;try{localStorage.setItem('sn',sens)}catch(x){}};$('snb2').onclick=e=>{toggleMute();e.target.textContent=mute?'Sound off':'Sound on'};$('rs').onclick=resume;$('lm').onclick=()=>bye()}
+  $('sn2').oninput=e=>{sens=+e.target.value;$('sn').value=sens;try{localStorage.setItem('sn',sens)}catch(x){}};$('snb2').onclick=e=>{toggleMute();e.target.textContent=mute?'Sound off':'Sound on'};$('rs').onclick=resume;$('lm').onclick=()=>bye()}
 function resume(){if(!paused)return;paused=0;if(solo)t0+=Date.now()-pt0;scr('');if(!mob)try{cv.requestPointerLock()}catch(e){}}
 function quickPlay(){if(!uid)return;solo=1;begin({seed:R()*1e9|0,t0:Date.now()+off+2500,mode:gmode,map:gmap,diff:gdiff,p:{[uid]:{n:uname,c:ch}}})}
 $('qp').onclick=quickPlay;$('pz').onclick=pause;$('snb').onclick=toggleMute;$('snb').textContent=mute?'Sound off':'Sound on';
@@ -1481,7 +1481,7 @@ document.addEventListener('visibilitychange',()=>{if(live!=1)return;if(document.
 addEventListener('blur',()=>{keys={};fire=0;jx=jy=0;me.ads=0});
 addEventListener('wheel',e=>{if(live==1&&!paused&&me.al)swap()},{passive:true});
 const pr0=Math.min(devicePixelRatio||1,1.75);let pcur=pr0;
-function adapt(ms){ft=ft*.95+ms*.05;if(fc%90)return;if(ft>26&&pcur>.75){pcur=Math.max(.75,pcur-.25);ren.setPixelRatio(pcur);rs()}else if(ft<15&&pcur<pr0){pcur=Math.min(pr0,pcur+.25);ren.setPixelRatio(pcur);rs()}}
+function adapt(ms){ms=Math.min(ms,60);ft=ft*.95+ms*.05;if(fc%90)return;if(ft>26&&pcur>.75){pcur=Math.max(.75,pcur-.25);ren.setPixelRatio(pcur);rs()}else if(ft<15&&pcur<pr0){pcur=Math.min(pr0,pcur+.25);ren.setPixelRatio(pcur);rs()}}
 
 let dip=null,std=matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true;
 const ios=/iphone|ipad|ipod/i.test(navigator.userAgent||'');
