@@ -794,7 +794,7 @@ function gen(sd,mapId){
   for(let i=0;i<uvA2.count;i++)uvA2.setXY(i,uvA2.getX(i)*.5,uvA2.getY(i)*.5);
   merged.castShadow=merged.receiveShadow=true;WG.add(merged);
 
-  { /* scenery: rocks, dry-grass tufts, distant ridges (own RNG so zones/loot stay in sync) */
+  try{ /* scenery: rocks, dry-grass tufts, distant ridges (own RNG so zones/loot stay in sync) */
     const rr=rng(sd+991),ok=(x,z,m)=>{for(const b of Cl)if(b[1]<3&&x>b[0]-m&&x<b[3]+m&&z>b[2]-m&&z<b[5]+m)return 0;return 1};
     const sd_=new THREE.Color(col.sand),tmp=new THREE.Color(),m4=new THREE.Matrix4(),q=new THREE.Quaternion(),e=new THREE.Euler(),sc=new THREE.Vector3(),ps=new THREE.Vector3();
     const scatter=(geo,mat,n,mn,mx,base,yo,sh)=>{const im=new THREE.InstancedMesh(geo,mat,n);let k=0,t=0;
@@ -806,7 +806,7 @@ function gen(sd,mapId){
     scatter(new THREE.ConeGeometry(.12,.7,5),new THREE.MeshStandardMaterial({color:'#fff',roughness:1}),220,.6,1.3,new THREE.Color(col.accent).lerp(sd_,.4),.3,0);
     const n=36,rg=new THREE.InstancedMesh(new THREE.ConeGeometry(1,1,6),new THREE.MeshStandardMaterial({color:new THREE.Color(col.dark).lerp(new THREE.Color(col.sky),.35),roughness:1,flatShading:true}),n);
     for(let i=0;i<n;i++){const a=i/n*6.283+rr()*.1,d=150+rr()*35,h=14+rr()*26,w=24+rr()*26;ps.set(Math.cos(a)*d,h/2-9,Math.sin(a)*d);q.identity();sc.set(w,h,w);m4.compose(ps,q,sc);rg.setMatrixAt(i,m4)}
-    WG.add(rg)}
+    WG.add(rg)}catch(e){console.warn('scenery skipped',e)}
   const zc=[[0,0]];for(let i=1;i<6;i++){const[px,py]=zc[i-1],a=r()*6.28,d=r()*(ZR[i-1]-ZR[i])*.7;zc.push([px+Math.cos(a)*d,py+Math.sin(a)*d])}ZC=zc;
 }
 function zone(t){if(gmode!=='br')return{x:0,z:0,r:999,i:0,f:0,left:999};let i=Math.min(4,Math.max(0,t<0?0:Math.floor(t/(HOLD+SHR)))),l=t-i*(HOLD+SHR),f=l>HOLD?Math.min(1,(l-HOLD)/SHR):0;if(t>=5*(HOLD+SHR)){i=4;f=1}const a=ZC[i],b=ZC[i+1]||a;return{x:a[0]+(b[0]-a[0])*f,z:a[1]+(b[1]-a[1])*f,r:ZR[i]+(ZR[i+1]-ZR[i])*f,i,f,left:f?0:HOLD-l}}
@@ -1645,7 +1645,7 @@ function frame(n){
     if(me.al||tg==me){cam.position.set(me.x,me.y+eyeH+Math.sin(me.ph*2)*.015,me.z);cam.rotation.set(me.pitch+(R()-.5)*(me.shake||0)*.03,me.yaw+(R()-.5)*(me.shake||0)*.03,me.slide*.08,'YXZ')}
     else{cam.position.set(tg.x,tg.y+EYE,tg.z);cam.rotation.set(tg.pitch||0,tg.yaw||0,0,'YXZ')}
     vm.position.z=-.42+me.kick*.06;vm.position.y=-.2-Math.sin(me.ph*2)*.005+(me.rl>0?-.07:0)+(me.crouch||me.slide?.04:0);vm.rotation.x=me.kick*.04;fl.visible=(flT-=dt)>0;vm.visible=me.al&&live==1&&!knifeMode&&!scoped;knifeSwingAnim(dt);
-    if(me.al&&fc%2===0)minimap(Z);if(mapOpen&&fc%2)fullMap(Z);
+    try{if(me.al&&fc%2===0)minimap(Z);if(mapOpen&&fc%2)fullMap(Z)}catch(e){}
     for(const k in P){const p=P[k];if(p.tx==null)continue;let m=PM[k];if(!m){m=PM[k]=soldier(p.c|0);scene.add(m)}m.position.set(p.x,p.y,p.z);m.rotation.y=p.yaw;if(!animModel(m,p,(paused&&solo)?0:dt)||!p.al){if(NT[k])NT[k].style.display='none';if(!m.visible)continue}const sw=p.al?Math.sin(p.ph)*.55:0;m.l1.rotation.x=sw;m.l2.rotation.x=-sw;
       V.set(p.x,p.y+2.1,p.z).project(cam);let el=NT[k]||(NT[k]=Object.assign(document.createElement('div'),{className:'nt'}));if(!el.parentNode)nts.appendChild(el);
       const d=H(p.x-cam.position.x,p.z-cam.position.z);if(V.z<1&&d<85&&me.al&&p.al&&!p.bot){el.style.display='block';el.style.left=(V.x*.5+.5)*innerWidth+'px';el.style.top=(-V.y*.5+.5)*innerHeight+'px';el.innerHTML=`<span style="color:${CH[p.c|0].c}">${esc((Pi[k]||{}).n||'')}</span> <i style="font-style:normal;color:#ff6a4a">${p.hp|0}</i>`}else el.style.display='none'}
@@ -1702,7 +1702,7 @@ function mapBase(){
  x.fillStyle=g;x.beginPath();x.arc(0,0,WR*s,0,7);x.fill();
  x.strokeStyle='rgba(255,255,255,.07)';x.lineWidth=1;for(let i=-120;i<=120;i+=20){x.beginPath();x.moveTo(i*s,-h);x.lineTo(i*s,h);x.moveTo(-h,i*s);x.lineTo(h,i*s);x.stroke()}
  [...Cl].sort((a,b)=>a[4]-b[4]).forEach(b=>{const t=Math.min(b[4],9);x.fillStyle=`hsl(32,${22-t}%,${24+t*3.6}%)`;x.fillRect(b[0]*s,b[2]*s,(b[3]-b[0])*s,(b[5]-b[2])*s)});
- return MB={w:WG,c}
+ MB={w:WG,c};return c
 }
 function ents(x,s,Z,full){
  const r=(full?6:4)/s;
@@ -1748,7 +1748,7 @@ const ST_=[['Aim assist (touch)','aa'],['Invert look Y','iy'],['Vibration','hap'
 function saveS(){try{localStorage.setItem('set',JSON.stringify(S));localStorage.setItem('sn',S.sens)}catch(e){}}
 function applyS(){sens=S.sens;document.documentElement.style.setProperty('--cs',S.cs);pr0=Math.min(devicePixelRatio||1,QC[S.q]??1.75);pcur=pr0;ren.setPixelRatio(pcur);rs();$('fps').style.display=S.fps?'block':'none';
  const ms_=S.q>1?2048:1024,on_=S.q>0;if(sun.castShadow!==on_||sun.shadow.mapSize.x!==ms_){sun.castShadow=on_;sun.shadow.mapSize.set(ms_,ms_);if(sun.shadow.map){sun.shadow.map.dispose();sun.shadow.map=null}scene.traverse(o=>{if(o.material)[].concat(o.material).forEach(m=>m.needsUpdate=true)})}}
-const _sol=soldier;soldier=function(){const g=_sol.apply(this,arguments);if(g&&g.traverse)g.traverse(o=>{if(o.isMesh)o.castShadow=true});return g};
+const _sol=soldier;soldier=function(){const g=_sol.apply(this,arguments);try{if(g&&g.traverse)g.traverse(o=>{if(o.isMesh)o.castShadow=true})}catch(e){}return g};
 function openSettings(back){
  const o=$('o');o.className='sc';
  o.innerHTML=`<div class="stp"><h2>Settings</h2>`+SD_.map((d,i)=>`<label class="srow"><span>${d[0]}</span><span class="r" style="flex-wrap:nowrap"><input type="range" data-i="${i}" min="${d[2]}" max="${d[3]}" step="${d[4]}" value="${S[d[1]]}"><output>${d[5](S[d[1]])}</output></span></label>`).join('')
