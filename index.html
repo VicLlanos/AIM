@@ -259,6 +259,31 @@ button:focus-visible,input:focus-visible{outline-color:var(--ac)}
 .jg button{border-radius:0 10px 10px 0;padding:0 .9em}
 .dp .m{text-align:center;min-height:1.2em}
 @media(max-height:520px){.dp{padding:14px!important;gap:9px!important}.dp .big{min-height:48px}.dp .modes button,.dp .maps button{min-height:36px}}
+
+/* ===== v4 two-step menu ===== */
+#m{justify-content:flex-start}
+#m>.tb{margin:0 0 0 auto;position:static}
+#m>.mw{margin:auto 0}
+#m[data-step="1"] .dp,#m[data-step="2"] .hero{display:none}
+.hero{width:100%;max-width:560px;flex:1 1 320px}
+.hero .big{width:min(100%,340px);min-height:54px;font-size:18px;letter-spacing:.05em}
+.sh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-6px 0 -2px}
+.sh .gh{padding-left:0}
+#mch{display:flex;align-items:center;gap:8px;font:800 16px 'Exo 2';color:var(--ac)}
+#mch i{width:10px;height:10px;border-radius:50%;background:var(--ac);box-shadow:0 0 10px var(--ac)}
+.dl,.dr{display:flex;flex-direction:column;gap:14px;min-width:0;flex:1}
+@media(orientation:landscape){#cl.r{width:min(100%,max(300px,calc(.8*(100dvh - 330px)*4 + 40px)))}}
+@media(orientation:landscape) and (max-height:520px){
+  .hero h1,#hi,.hero .xpm{display:none}
+  #cl.r{width:min(100%,max(320px,calc(.8*(100dvh - 205px)*4 + 40px)));gap:8px}
+  .cd b{padding:4px 0 5px;font-size:11px}
+  .cb{min-height:0;font-size:12px}.cb b{font-size:15px;display:inline;margin-right:8px}
+  .hero{gap:7px}.hero .big{min-height:44px}
+  .dp{flex-direction:row!important;flex:1 1 560px!important;max-width:700px;gap:16px!important;align-items:flex-start!important}
+  .dp .dl .sh{margin:0}
+  .dl,.dr{gap:9px}
+  #m>.tb .gh{min-height:30px;font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -304,34 +329,41 @@ button:focus-visible,input:focus-visible{outline-color:var(--ac)}
   <button class="l" id="as">New here? Create account</button>
   <p class="m" id="ae"></p>
 </div>
-<div class="sc" id="m"><div class="tb"><button class="gh" id="stb">Settings</button><button class="gh" id="snb">Sound on</button><button class="gh" id="so">Sign out</button></div>
+<div class="sc" id="m" data-step="1"><div class="tb"><button class="gh" id="stb">Settings</button><button class="gh" id="snb">Sound on</button><button class="gh" id="so">Sign out</button></div>
 <div class="mw"><div class="mc hero">
   <h1>Emberfall<small>ARENA FPS</small></h1>
   <p id="hi"></p><div class="xpm"><i id="xpFill"></i></div>
+  <p class="lb" style="align-self:center">Choose your operator</p>
   <div class="r" id="cl"></div>
   <div class="cb" id="cb"></div>
+  <button class="p big" id="mnext">Continue</button>
   </div><div class="mc dp">
-  <div class="grp"><p class="lb">Game mode</p><div class="modes">
+  <div class="sh" style="flex:0 0 auto;width:100%;position:absolute;display:none"></div>
+  <div class="dl">
+   <div class="sh"><button class="gh" id="mback">&lsaquo; Change operator</button><span id="mch"></span></div>
+   <div class="grp"><p class="lb">Game mode</p><div class="modes">
     <button class="on" data-mode="br">Battle Royale</button>
     <button data-mode="ffa">Free For All</button>
     <button data-mode="tdm">Team Deathmatch</button>
     <button data-mode="gg">Gun Game</button>
-  </div></div>
-  <div class="grp"><p class="lb">Arena</p><div class="maps">
+   </div></div>
+   <div class="grp"><p class="lb">Arena</p><div class="maps">
     <button class="on" data-map="0">Dust Bowl</button>
     <button data-map="1">Sky Pads</button>
     <button data-map="2">Oasis Fort</button>
     <button data-map="3">Dune Yards</button>
-  </div></div>
-  <div class="grp"><p class="lb">Bot difficulty</p><div class="maps" id="diffs">
+   </div></div>
+  </div><div class="dr">
+   <div class="grp"><p class="lb">Bot difficulty</p><div class="maps" id="diffs">
     <button data-diff="easy">Easy</button>
     <button class="on" data-diff="medium">Medium</button>
     <button data-diff="hard">Hard</button>
-  </div></div>
-  <button class="p big" id="qp">Play solo</button>
-  <div class="mp"><button id="mk">Create room</button><div class="jg"><input id="jc" maxlength="4" placeholder="CODE"><button id="jn">Join</button></div></div>
-  <button class="p ib" style="display:none">Install app</button>
-  <p class="m" id="mg"></p></div></div>
+   </div></div>
+   <button class="p big" id="qp">Play solo</button>
+   <div class="mp"><button id="mk">Create room</button><div class="jg"><input id="jc" maxlength="4" placeholder="CODE"><button id="jn">Join</button></div></div>
+   <button class="p ib" style="display:none">Install app</button>
+   <p class="m" id="mg"></p>
+  </div></div></div>
 </div>
 <div class="sc" id="l">
   <h2>Room <span id="rc"></span></h2>
@@ -721,6 +753,8 @@ function gen(sd,mapId){
     if(r()<.55)crate(x+(r()-.5)*(w-3),.15,z+(r()-.5)*(d-3),1.3+r()*.7,1.1+r()*.5,1.3+r()*.7,col.crate);
     if(r()<.45)loot(x+(r()-.5)*(w-2.5),z+(r()-.5)*(d-2.5),h*.3);
     box(x,h*.55,z+d/2+t*.4,w*.45,h*.2,.08,'#3a4a4a');
+    {const wy=Math.min(h*.55,2.6),W2=(px,pz,ax,sg)=>{const o=sg*.31;box(px+(ax?o:0),wy,pz+(ax?0:o),ax?.12:1.7,1.4,ax?1.7:.12,'#7a6850');box(px+(ax?o+sg*.03:0),wy,pz+(ax?0:o+sg*.03),ax?.14:1.4,1.1,ax?1.4:.14,'#1d272e')};
+     for(const k of[-1,1]){W2(x+k*w*.28,z+d/2,0,1);W2(x+k*w*.28,z-d/2,0,-1);W2(x+w/2,z+k*d*.28,1,1);W2(x-w/2,z+k*d*.28,1,-1)}}
   };
 
   if(mapId===0){
@@ -893,34 +927,39 @@ function buildGun(k,hh){
   g.userData={sy,mz};
   if(hh){hand(g,gx[0],gx[1],gx[2],1,0);if(hh===1)hand(g,fg[0],fg[1],fg[2],-1,pi?0:1)}
   return g}
+const CHF=['#12171c','#4f6130','#4a3626','#8a9db6'];
 function soldier(i){
-  const C=CH[i],g=new THREE.Group();
+  const C=CH[i],F=CHF[i],g=new THREE.Group(),SC=[[.93,1],[1,.99],[1.13,1.02],[1.05,1.05]][i];g.scale.set(SC[0],SC[1],SC[0]);
   const mt=(c,r=.82,m=.05)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
   const bx=(w,h,d,x,y,z,c,p,r,m)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mt(c,r,m));o.position.set(x,y,z);(p||g).add(o);return o};
   const cy=(a,b,h,x,y,z,c,p,r,m)=>{const o=new THREE.Mesh(new THREE.CylinderGeometry(a,b,h,10),mt(c,r,m));o.position.set(x,y,z);(p||g).add(o);return o};
   const sp=(r,x,y,z,sx,sy,sz,c,p,rg)=>{const o=new THREE.Mesh(new THREE.SphereGeometry(r,14,10),mt(c,rg||.85,.03));o.position.set(x,y,z);o.scale.set(sx,sy,sz);(p||g).add(o);return o};
   const lens=(w,h,d,x,y,z)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshBasicMaterial({color:C.c}));o.position.set(x,y,z);g.add(o)};
   const lg=x=>{const p=new THREE.Group();p.position.set(x,.94,0);g.add(p);
-    cy(.08,.066,.4,0,-.2,0,C.s,p,.9,.02);bx(.13,.1,.05,0,-.4,-.065,'#171c20',p,.8,.1);cy(.064,.055,.34,0,-.55,.01,'#1c262c',p,.88,.03);
+    cy(.08,.066,.4,0,-.2,0,F,p,.9,.02);bx(.13,.1,.05,0,-.4,-.065,'#171c20',p,.8,.1);cy(.064,.055,.34,0,-.55,.01,'#1c262c',p,.88,.03);
     bx(.15,.12,.25,0,-.73,-.02,'#0e1114',p,.75,.08);bx(.155,.035,.27,0,-.8,-.02,'#07080a',p,.7,.1);return p};
   g.l1=lg(-.105);g.l2=lg(.105);
-  bx(.34,.14,.2,0,.99,0,C.s,null,.88,.03);bx(.37,.05,.21,0,1.06,0,'#15191c',null,.6,.2);bx(.06,.04,.02,0,1.06,-.112,C.c,null,.4,.5);
+  bx(.34,.14,.2,0,.99,0,F,null,.88,.03);bx(.37,.05,.21,0,1.06,0,'#15191c',null,.6,.2);bx(.06,.04,.02,0,1.06,-.112,C.c,null,.4,.5);
   bx(.07,.1,.06,-.2,.98,-.03,'#1c242a');bx(.07,.1,.06,.2,.98,-.03,'#1c242a');
-  bx(.38,.44,.21,0,1.3,0,C.s,null,.88,.03);bx(.42,.34,.24,0,1.34,0,'#1c252b',null,.7,.12);bx(.3,.27,.06,0,1.35,-.13,'#2b353b',null,.6,.2);bx(.3,.025,.065,0,1.23,-.13,C.c,null,.5,.3);
+  bx(.38,.44,.21,0,1.3,0,F,null,.88,.03);bx(.42,.34,.24,0,1.34,0,'#1c252b',null,.7,.12);bx(.3,.27,.06,0,1.35,-.13,'#2b353b',null,.6,.2);bx(.3,.025,.065,0,1.23,-.13,C.c,null,.5,.3);
   for(let k=0;k<3;k++)bx(.075,.1,.05,-.1+k*.1,1.15,-.14,'#222c26');
   cy(.05,.06,.1,0,1.58,0,C.k,null,.9,.02);
-  bx(.3,.34,.14,0,1.33,.18,'#232a22');bx(.28,.08,.14,0,1.53,.2,'#2f3a2a');
+  if(i)bx(.3,.34,.14,0,1.33,.18,'#232a22');if(i)bx(.28,.08,.14,0,1.53,.2,'#2f3a2a');else bx(.22,.3,.05,0,1.33,.14,'#0b0f13');
   sp(.095,-.245,1.52,0,1,.7,1.1,'#1c252b');sp(.095,.245,1.52,0,1,.7,1.1,'#1c252b');
   sp(.11,0,1.76,0,.95,1.12,1,C.k,null,.9);
   if(i!==0){bx(.03,.02,.012,-.04,1.77,-.1,'#111');bx(.03,.02,.012,.04,1.77,-.1,'#111');bx(.02,.03,.025,0,1.74,-.108,C.k)}
   if(i===0){sp(.12,0,1.755,0,.97,1.1,1.02,'#0e1317');bx(.13,.045,.02,0,1.775,-.108,C.k);bx(.18,.055,.04,0,1.775,-.112,'#0a0d10');lens(.15,.03,.012,0,1.775,-.135);bx(.02,.25,.02,.12,1.45,.2,'#111')}
-  if(i===1){bx(.2,.09,.2,0,1.72,0,'#6a2222',null,.9);bx(.04,.05,.04,.1,1.7,.1,'#6a2222');cy(.118,.122,.07,0,1.855,0,C.s);bx(.18,.015,.1,0,1.85,-.13,C.s);bx(.05,.12,.03,-.25,1.56,0,C.c,null,.4,.5);bx(.05,.12,.03,.25,1.56,0,C.c,null,.4,.5)}
-  if(i===2){sp(.14,0,1.8,0,1,.85,1.05,C.s,null,.5);bx(.2,.06,.04,0,1.775,-.112,'#101820',null,.2,.6);lens(.16,.02,.012,0,1.775,-.135);bx(.02,.1,.02,-.1,1.7,-.04,'#111');bx(.02,.1,.02,.1,1.7,-.04,'#111');bx(.05,.04,.05,0,1.9,-.1,'#111');bx(.34,.1,.1,0,1.46,-.14,C.c,null,.5,.4)}
+  if(i===1){bx(.2,.09,.2,0,1.72,0,'#6a2222',null,.9);bx(.04,.05,.04,.1,1.7,.1,'#6a2222');cy(.118,.122,.07,0,1.855,0,F);bx(.18,.015,.1,0,1.85,-.13,F);bx(.05,.12,.03,-.25,1.56,0,C.c,null,.4,.5);bx(.05,.12,.03,.25,1.56,0,C.c,null,.4,.5)}
+  if(i===2){sp(.14,0,1.8,0,1,.85,1.05,F,null,.5);bx(.2,.06,.04,0,1.775,-.112,'#101820',null,.2,.6);lens(.16,.02,.012,0,1.775,-.135);bx(.02,.1,.02,-.1,1.7,-.04,'#111');bx(.02,.1,.02,.1,1.7,-.04,'#111');bx(.05,.04,.05,0,1.9,-.1,'#111');bx(.34,.1,.1,0,1.46,-.14,C.c,null,.5,.4)}
   if(i===3){sp(.125,0,1.82,0,1,.8,1.06,'#2a3a55');sp(.03,0,1.93,0,1,1,1,'#e8eef8');cy(.078,.088,.1,0,1.6,-.005,C.c,null,.95,0);bx(.19,.05,.04,0,1.835,-.105,'#10141c',null,.3,.5);lens(.16,.03,.012,0,1.835,-.127)}
+  if(i===0){cy(.1,.17,.12,0,1.55,0,'#0b0f13',null,.9,0);lens(.02,.22,.012,-.13,1.32,-.134);lens(.02,.22,.012,.13,1.32,-.134);lens(.06,.012,.012,0,1.5,-.14)}
+  if(i===1){for(let k=0;k<14;k++)bx(.07,.05,.215,((k*5%9)-4)*.04,1.1+(k*3%7)*.06,0,k%2?'#2c381a':'#7a8544');cy(0,.045,.18,-.27,1.64,0,C.c,null,.4,.5);cy(0,.045,.18,.27,1.64,0,C.c,null,.4,.5);sp(.032,.14,1.2,-.17,1,1.3,1,'#3a4a24');sp(.032,.2,1.2,-.17,1,1.3,1,'#3a4a24')}
+  if(i===2){bx(.2,.11,.2,-.28,1.56,0,C.c,null,.45,.4);bx(.2,.11,.2,.28,1.56,0,C.c,null,.45,.4);bx(.32,.3,.05,0,1.38,-.165,C.c,null,.45,.4);cy(.09,.09,.42,-.09,1.35,.27,'#7a2a1a');cy(.09,.09,.42,.09,1.35,.27,'#7a2a1a')}
+  if(i===3){cy(.2,.25,.42,0,.9,0,F,null,.95,0);sp(.1,-.25,1.54,0,1,.7,1.1,'#e8eef8',null,1);sp(.1,.25,1.54,0,1,.7,1.1,'#e8eef8',null,1);sp(.15,0,1.77,.04,1,.9,1.02,'#e8eef8',null,1)}
   const ar=(x,s,rx)=>{const p=new THREE.Group();p.position.set(x,1.47,0);p.rotation.z=-s*.3;p.rotation.x=rx;g.add(p);
-    cy(.048,.042,.3,0,-.15,0,C.s,p);bx(.1,.06,.1,0,-.3,.01,'#171c20',p,.8,.1);cy(.04,.036,.27,0,-.44,0,'#1a2228',p);sp(.046,0,-.59,0,1,1.1,1,'#14181b',p);return p};
+    cy(.048,.042,.3,0,-.15,0,F,p);bx(.1,.06,.1,0,-.3,.01,'#171c20',p,.8,.1);cy(.04,.036,.27,0,-.44,0,'#1a2228',p);sp(.046,0,-.59,0,1,1.1,1,'#14181b',p);return p};
   ar(-.255,-1,1.45);ar(.255,1,1.05);
-  g.gn=buildGun(CH[i].load[0],0);g.gn.position.set(.02,1.27,-.34);g.add(g.gn);
+  g.gn=buildGun([1,3,2,4][i],0);g.gn.position.set(.02,1.27,-.34);g.add(g.gn);
   g.rotation.order='YXZ';return g;
 }
 
@@ -975,7 +1014,7 @@ auth.onAuthStateChanged(async u=>{
     uid=u.uid;uname=u.displayName||pend||'Op';
     try{const d=(await db.ref('users/'+uid).once('value')).val();if(d){ch=d.ch|0;wins=d.w|0;xp=d.xp|0}}catch(e){}
     const hi=$('hi');if(hi)hi.textContent=`${uname} · Wins ${wins} · XP ${xp}`;
-    pick(ch,1);scr('m');updateXpBar();
+    pick(ch,1);$('m').dataset.step=1;scr('m');updateXpBar();
   }else{bye();scr('a')}
 });
 $('as').onclick=()=>{signup=!signup;$('ap').autocomplete=signup?'new-password':'current-password';$('at').textContent=signup?'Create account':'Log in to enter the arena.';$('ag').textContent=signup?'Sign up':'Log in';$('as').textContent=signup?'Have an account? Log in':'New here? Create account';msg('','ae')};
@@ -1019,9 +1058,10 @@ const pc=new THREE.PerspectiveCamera(32,120/150,.1,20);pc.position.set(.2,1.2,3.
 const pm=CH.map((c,i)=>{const s=soldier(i);s.gn.position.z=-.3;ps.add(s);s.visible=false;return s});
 $('cl').innerHTML=CH.map((c,i)=>`<button class="cd" data-i="${i}" style="--c:${c.c}"><canvas width="120" height="150"></canvas><b>${c.n}</b></button>`).join('');
 const cg=[...$('cl').children].map(b=>b.firstChild.getContext('2d'));
-function cards(tm){pm.forEach((s,i)=>{pm.forEach(o=>o.visible=0);s.visible=true;s.rotation.y=PI+.3+Math.sin(tm*.6+i)*.4;pr.render(ps,pc);cg[i].clearRect(0,0,120,150);cg[i].drawImage(pr.domElement,0,0)})}
-function pick(i,q){ch=i;document.documentElement.style.setProperty('--ac',CH[i].c);[...$('cl').children].forEach((b,j)=>b.classList.toggle('on',j==i));$('cb').innerHTML=`<b style="color:${CH[i].c}">${CH[i].n}</b>${CH[i].b}`;if(!q&&uid)db.ref('users/'+uid).update({ch:i}).catch(()=>{})}
+function cards(tm){pm.forEach((s,i)=>{pm.forEach(o=>o.visible=false);s.visible=true;s.rotation.y=PI+.3+Math.sin(tm*.6+i)*.4;pr.render(ps,pc);cg[i].clearRect(0,0,120,150);cg[i].drawImage(pr.domElement,0,0)})}
+function pick(i,q){ch=i;document.documentElement.style.setProperty('--ac',CH[i].c);[...$('cl').children].forEach((b,j)=>b.classList.toggle('on',j==i));$('cb').innerHTML=`<b style="color:${CH[i].c}">${CH[i].n}</b>${CH[i].b}`;$('mch').innerHTML=`<i></i>${CH[i].n}`;if(!q&&uid)db.ref('users/'+uid).update({ch:i}).catch(()=>{})}
 $('cl').onclick=e=>{const b=e.target.closest('button');if(b)pick(+b.dataset.i)};
+$('mnext').onclick=()=>{$('m').dataset.step=2;$('m').scrollTop=0};$('mback').onclick=()=>{$('m').dataset.step=1;$('m').scrollTop=0};
 
 
 function spawnBots(n){
@@ -1324,7 +1364,7 @@ let knifeMode=0,knifeSwing=0;
 
 
 function setVM(){const id=me.sl[me.cs];for(const k in VG)VG[k].visible=false;
-  HM.skin.color.set(CH[ch].k);HM.sleeve.color.set(CH[ch].s);HM.band.color.set(CH[ch].c);
+  HM.skin.color.set(CH[ch].k);HM.sleeve.color.set(CHF[ch]);HM.band.color.set(CH[ch].c);
   if(knifeMode){knife.visible=true;return}knife.visible=false;if(id<0)return;
   const g=VG[id];g.visible=true;vmSy=g.userData.sy;fl.position.set(0,.02,g.userData.mz-.02)}
 const tm_=new THREE.MeshBasicMaterial({color:'#ffe9a0',transparent:true,opacity:.65});for(let i=0;i<28;i++){const m=new THREE.Mesh(new THREE.BoxGeometry(.025,.025,1),tm_);m.visible=false;scene.add(m);TR.push({mesh:m,l:0})}
@@ -1737,7 +1777,7 @@ function frame(n){
     }else{
       $('xh').classList.remove('auto');
     }
-  }else{const a=tm*.04;cam.position.set(Math.cos(a)*85,32+Math.sin(tm*.14)*5,Math.sin(a)*85);cam.lookAt(0,3,0);vm.visible=false;if($('m').classList.contains('on')&&fc%3===0)cards(tm);for(const k in NT)NT[k].style.display='none'}
+  }else{const a=tm*.04;cam.position.set(Math.cos(a)*85,32+Math.sin(tm*.14)*5,Math.sin(a)*85);cam.lookAt(0,3,0);vm.visible=false;if($('m').classList.contains('on')&&$('m').dataset.step!=='2'&&fc%3===0)cards(tm);for(const k in NT)NT[k].style.display='none'}
   if(S.fps&&fc%20===0)$('fps').textContent=Math.round(1000/Math.max(ft,1))+' FPS · '+pcur.toFixed(2)+'x';updPart(dt);ren.render(scene,cam);requestAnimationFrame(frame);
 }
 
